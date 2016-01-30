@@ -2,6 +2,8 @@
  * Created by Awesome on 1/30/2016.
  */
 
+import parse   from 'comment-parser';
+
 module.exports = function (chunk, enc, cb) {
     var content = chunk.contents.toString();
     var parsed  = parse(content);
@@ -48,7 +50,7 @@ module.exports = function (chunk, enc, cb) {
 
                     // set route function
                     routes[tag.type][tag.name] = {
-                        'controller' : '/app/bundles' + chunk.path.split('bundles')[1].replace(/\\/g, '/'),
+                        'controller' : './app/bundles' + chunk.path.split('bundles')[1].replace(/\\/g, '/'),
                         'action'     : fn
                     };
                 }

@@ -2,10 +2,11 @@
  * Created by Awesome on 1/30/2016.
  */
 
-import controller from '/bin/bundles/core/controller';
+import controller from '../../../../bin/bundles/core/controller';
 
 class defaultController extends controller {
     constructor() {
+        super();
 
         this.indexAction = this.indexAction.bind(this);
     }

@@ -2,11 +2,10 @@
 
 // import app dependencies
 import app       from '../app';
-import debug     from 'debug';
 import http      from 'http';
 
 // create debug
-var debug = debug('EdenFrame:server');
+var debug = require('debug')('EdenFrame:server');
 
 // get port from environment or default
 var port = normalizePort(process.env.PORT || '3000');

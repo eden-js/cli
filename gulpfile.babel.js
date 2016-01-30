@@ -8,7 +8,6 @@
 import gulp    from 'gulp';
 import rename  from 'gulp-rename';
 import sass    from 'gulp-sass';
-import parse   from 'comment-parser';
 import through from 'through2';
 import routing from './bin/util/gulp.routing';
 import fs      from 'fs';

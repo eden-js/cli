@@ -8,7 +8,6 @@ import routes       from './cache/routes';
 import express      from 'express';
 import path         from 'path';
 import favicon      from 'favicon';
-import logger       from 'logger';
 import cookieParser from 'cookie-parser';
 import bodyParser   from 'body-parser';
 import Mongorito    from 'mongorito';
@@ -25,7 +24,7 @@ app.set('view engine', 'hbs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger(config.environment));
+// app.use(logger(config.environment));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
@@ -34,6 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // import routes
 var register = {};
 var routing  = [];
+var router   = express.Router();
 for (var type in routes) {
     for (var route in routes[type]) {
         if (!register[routes[type][route]['controller']]) {
@@ -42,10 +42,10 @@ for (var type in routes) {
 
             register[routes[type][route]['controller']] = new controller();
         }
-        routing.push(app[type](route, register[routes[type][route]['controller']][routes[type][route]['action']]));
+        router[type](route, register[routes[type][route]['controller']][routes[type][route]['action']]);
     }
 }
-app.use('/', routing);
+app.use('/', router);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
