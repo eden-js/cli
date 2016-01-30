@@ -4,6 +4,7 @@
 
 // import dependencies
 import config       from './config';
+import routes       from './cache/routes';
 import express      from 'express';
 import path         from 'path';
 import favicon      from 'favicon';
@@ -31,8 +32,20 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // import routes
-app.use('/', routes);
-app.use('/users', users);
+var register = {};
+var routing  = [];
+for (var type in routes) {
+    for (var route in routes[type]) {
+        if (!register[routes[type][route]['controller']]) {
+            // create new controller
+            var controller = require(routes[type][route]['controller']);
+
+            register[routes[type][route]['controller']] = new controller();
+        }
+        routing.push(app[type](route, register[routes[type][route]['controller']][routes[type][route]['action']]));
+    }
+}
+app.use('/', routing);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
