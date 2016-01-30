@@ -28,3 +28,6 @@ npm-debug.log
 
 # IDE
 .idea
+
+# configuration
+config.js
