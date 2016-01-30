@@ -1,9 +1,10 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+import express      from 'express';
+import path         from 'path';
+import favicon      from 'favicon';
+import logger       from 'logger';
+import cookieParser from 'cookie-parser';
+import bodyParser   from 'body-parser';
+
 
 var routes = require('./routes/index');
 var users = require('./routes/users');

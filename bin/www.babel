@@ -1,38 +1,30 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
+// import app dependencies
+import app   from '../app';
+import debug from 'debug';
+import http  from 'http';
 
-var app = require('../app');
-var debug = require('debug')('EdenFrame:server');
-var http = require('http');
+// create debug
+var debug = debug('EdenFrame:server');
 
-/**
- * Get port from environment and store in Express.
- */
-
+// get port from environment or default
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
-/**
- * Create HTTP server.
- */
-
+// create http server
 var server = http.createServer(app);
 
-/**
- * Listen on provided port, on all network interfaces.
- */
-
+// listen on port
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
 /**
- * Normalize a port into a number, string, or false.
+ * normalize port function
+ * @param val
+ * @returns {*}
  */
-
 function normalizePort(val) {
   var port = parseInt(val, 10);
 
@@ -50,9 +42,9 @@ function normalizePort(val) {
 }
 
 /**
- * Event listener for HTTP server "error" event.
+ * on error function
+ * @param error
  */
-
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
@@ -78,9 +70,8 @@ function onError(error) {
 }
 
 /**
- * Event listener for HTTP server "listening" event.
+ * on listening
  */
-
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'
