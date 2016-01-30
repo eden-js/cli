@@ -1,14 +1,21 @@
+/**
+ * Created by Awesome on 1/30/2016.
+ */
+
+// import dependencies
+import config       from './config';
 import express      from 'express';
 import path         from 'path';
 import favicon      from 'favicon';
 import logger       from 'logger';
 import cookieParser from 'cookie-parser';
 import bodyParser   from 'body-parser';
+import Mongorito    from 'mongorito';
 
+// create database connection
+Mongorito.connect(config.database[config.environment].host + '/' + config.database[config.environment].db);
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
-
+// setup express
 var app = express();
 
 // view engine setup
@@ -17,12 +24,13 @@ app.set('view engine', 'hbs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+app.use(logger(config.environment));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// import routes
 app.use('/', routes);
 app.use('/users', users);
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 // import app dependencies
-import app   from '../app';
-import debug from 'debug';
-import http  from 'http';
+import app       from '../app';
+import debug     from 'debug';
+import http      from 'http';
 
 // create debug
 var debug = debug('EdenFrame:server');
