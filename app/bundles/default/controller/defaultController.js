@@ -15,7 +15,7 @@ class defaultController extends controller {
      * @param req
      * @param res
      *
-     * @route /
+     * @route {get} /
      */
     indexAction(req, res) {
         res.send('hello world');
