@@ -5,9 +5,10 @@
 'use strict';
 
 // import dependancies
-import gulp  from 'gulp';
-import sass  from 'gulp-sass';
-import parse from 'comment-parser';
+import gulp    from 'gulp';
+import sass    from 'gulp-sass';
+import parse   from 'comment-parser';
+import through from 'through2';
 
 // gulp sass task
 gulp.task('sass', function () {
