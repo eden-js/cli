@@ -4,7 +4,7 @@
 
 'use strict';
 
-import parse   from 'comment-parser';
+var parse = require('comment-parser');
 
 module.exports = function (chunk, enc, cb) {
     var content = chunk.contents.toString();

@@ -29,6 +29,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 
+if (config.environment == 'dev') {
+    app.use(require('connect-livereload')());
+}
+
 // set powered by
 app.use(function(req, res, next){
     res.setHeader('X-Powered-By', 'EdenFrame');

@@ -5,15 +5,16 @@
 'use strict';
 
 // import dependancies
-var gulp = require('gulp');
-var rename = require('gulp-rename');
-var sass = require('gulp-sass');
-var babel = require('gulp-babel');
+var gulp    = require('gulp');
+var rename  = require('gulp-rename');
+var sass    = require('gulp-sass');
+var babel   = require('gulp-babel');
 var through = require('through2');
-var uglify = require('gulp-uglifyjs');
+var uglify  = require('gulp-uglifyjs');
 var routing = require('./bin/util/gulp.routing');
-var fs = require('fs');
-var del = require('del');
+var fs      = require('fs');
+var del     = require('del');
+var server  = require('gulp-express');
 
 /**
  * GULP TASKS
@@ -39,8 +40,6 @@ gulp.task('routes', function () {
                 if (err) {
                     return console.log(err);
                 }
-
-                console.log('routes file created');
             });
         });
 });
@@ -58,6 +57,32 @@ gulp.task('sass:watch', function () {
 gulp.task('routes:watch', function () {
     gulp.watch('./app/bundles/**/*Controller.js', ['routes']);
 });
+
+// full server task
+gulp.task('devServer', function () {
+    // Start the server at the beginning of the task
+    server.run(['./bin/server.js']);
+
+    // watch sass pipe
+    gulp.watch(['./sass/**/*.scss'], function(event){
+        gulp.run('sass');
+        server.notify(event);
+    });
+
+    // watch routes pipe
+    gulp.watch(['./app/bundles/**/*Controller.js'], function(event){
+        gulp.run('routes');
+        server.notify(event);
+    });
+
+    // watch javascript
+    gulp.watch(['./app/**/*.js'], function(event) {
+        server.notify(event);
+    });
+});
+
+// set default task devServer
+gulp.task('default', ['devServer']);
 
 /**
  * recursively merge object

@@ -23,6 +23,17 @@ class defaultController extends controller {
     indexAction(req, res) {
         res.send('hello world');
     }
+
+    /**
+     * test action
+     * @param req
+     * @param res
+     *
+     * @route {get} /test
+     */
+    testAction(req, res) {
+        res.send('hello test');
+    }
 }
 
 module.exports = defaultController;
