@@ -1,14 +1,19 @@
 #!/usr/bin/env node
 
+// global approot variable
+var path = require('path');
+global.appRoot = path.dirname(path.resolve(__dirname));
+
 // import app dependencies
-import app       from '../app';
-import http      from 'http';
+var app    = require(global.appRoot + '/app');
+var http   = require('http');
+var config = require(global.appRoot + '/config');
 
 // create debug
 var debug = require('debug')('EdenFrame:server');
 
 // get port from environment or default
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || config.port);
 app.set('port', port);
 
 // create http server

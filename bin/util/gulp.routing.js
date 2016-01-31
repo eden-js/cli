@@ -2,6 +2,8 @@
  * Created by Awesome on 1/30/2016.
  */
 
+'use strict';
+
 import parse   from 'comment-parser';
 
 module.exports = function (chunk, enc, cb) {

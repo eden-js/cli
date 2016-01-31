@@ -2,11 +2,13 @@
  * Created by Awesome on 1/30/2016.
  */
 
-import controller from '../../../../bin/bundles/core/controller';
+'use strict';
+
+var controller = require(global.appRoot + '/bin/bundles/core/controller');
 
 class defaultController extends controller {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.indexAction = this.indexAction.bind(this);
     }

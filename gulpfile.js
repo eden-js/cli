@@ -5,12 +5,19 @@
 'use strict';
 
 // import dependancies
-import gulp    from 'gulp';
-import rename  from 'gulp-rename';
-import sass    from 'gulp-sass';
-import through from 'through2';
-import routing from './bin/util/gulp.routing';
-import fs      from 'fs';
+var gulp = require('gulp');
+var rename = require('gulp-rename');
+var sass = require('gulp-sass');
+var babel = require('gulp-babel');
+var through = require('through2');
+var uglify = require('gulp-uglifyjs');
+var routing = require('./bin/util/gulp.routing');
+var fs = require('fs');
+var del = require('del');
+
+/**
+ * GULP TASKS
+ */
 
 // gulp sass task
 gulp.task('sass', function () {
@@ -19,16 +26,7 @@ gulp.task('sass', function () {
         .pipe(gulp.dest('./css'));
 });
 
-// gulp sass watch task
-gulp.task('sass:watch', function () {
-    gulp.watch('./sass/**/*.scss', ['sass']);
-});
-// gulp sass watch task
-gulp.task('routes:watch', function () {
-    gulp.watch('./app/bundles/**/*Controller.js', ['routes']);
-});
-
-// gulp route task
+// gulp routes task
 gulp.task('routes', function () {
     var allRoutes = {};
     gulp.src('./app/bundles/**/*Controller.js')
@@ -36,9 +34,9 @@ gulp.task('routes', function () {
         .on('data', function (data) {
             MergeRecursive(allRoutes, data.routes);
         })
-        .on('end', function() {
-            fs.writeFile('./cache/routes.json', JSON.stringify(allRoutes), function(err) {
-                if(err) {
+        .on('end', function () {
+            fs.writeFile('./cache/routes.json', JSON.stringify(allRoutes), function (err) {
+                if (err) {
                     return console.log(err);
                 }
 
@@ -47,26 +45,39 @@ gulp.task('routes', function () {
         });
 });
 
-/*
- * Recursively merge properties of two objects
+/**
+ * GULP WATCH TASKS
+ */
+
+// gulp sass watch task
+gulp.task('sass:watch', function () {
+    gulp.watch('./sass/**/*.scss', ['sass']);
+});
+
+// gulp routes watch task
+gulp.task('routes:watch', function () {
+    gulp.watch('./app/bundles/**/*Controller.js', ['routes']);
+});
+
+/**
+ * recursively merge object
+ * @param obj1
+ * @param obj2
+ * @returns {*}
+ * @constructor
  */
 function MergeRecursive(obj1, obj2) {
-
     for (var p in obj2) {
         try {
             // Property in destination object set; update its value.
-            if ( obj2[p].constructor==Object ) {
+            if (obj2[p].constructor == Object) {
                 obj1[p] = MergeRecursive(obj1[p], obj2[p]);
-
             } else {
                 obj1[p] = obj2[p];
-
             }
-
-        } catch(e) {
+        } catch (e) {
             // Property in destination object not set; create it and set its value.
             obj1[p] = obj2[p];
-
         }
     }
 
