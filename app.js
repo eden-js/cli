@@ -11,6 +11,7 @@ var favicon      = require('favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 var Mongorito    = require('mongorito');
+var exphbs       = require('express-handlebars');
 
 // create database connection
 Mongorito.connect(config.database[config.environment].host + '/' + config.database[config.environment].db);
@@ -20,6 +21,26 @@ var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'cache/view'));
+app.engine('hbs', exphbs({
+    layoutsDir    : path.join(__dirname, 'cache/view/layout'),
+    defaultLayout : 'main.layout.hbs',
+    extname       : '.hbs',
+    helpers       : {
+        block: function (name) {
+            var blocks  = this._blocks,
+                content = blocks && blocks[name];
+
+            return content ? content.join('\n') : null;
+        },
+
+        contentFor: function (name, options) {
+            var blocks = this._blocks || (this._blocks = {}),
+                block  = blocks[name] || (blocks[name] = []);
+
+            block.push(options.fn(this));
+        }
+    }
+}));
 app.set('view engine', 'hbs');
 
 // uncomment after placing your favicon in /public
@@ -30,7 +51,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 
 if (config.environment == 'dev') {
-    app.use(require('connect-livereload')());
+    // app.use(require('connect-livereload')());
 }
 
 // set powered by

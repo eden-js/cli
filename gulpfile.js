@@ -5,17 +5,19 @@
 'use strict';
 
 // import dependancies
-var gulp    = require('gulp');
-var rename  = require('gulp-rename');
-var sass    = require('gulp-sass');
-var babel   = require('gulp-babel');
-var through = require('through2');
-var path    = require('path');
-var uglify  = require('gulp-uglifyjs');
-var routing = require('./bin/util/gulp.routing');
-var fs      = require('fs');
-var del     = require('del');
-var server  = require('gulp-express');
+var gulp       = require('gulp');
+var rename     = require('gulp-rename');
+var sass       = require('gulp-sass');
+var babel      = require('gulp-babel');
+var through    = require('through2');
+var path       = require('path');
+var uglify     = require('gulp-uglifyjs');
+var routing    = require('./bin/util/gulp.routing');
+var fs         = require('fs');
+var del        = require('del');
+var server     = require('gulp-express');
+var minifyCss  = require('gulp-minify-css');
+var sourcemaps = require('gulp-sourcemaps');
 
 /**
  * GULP TASKS
@@ -23,9 +25,13 @@ var server  = require('gulp-express');
 
 // gulp sass task
 gulp.task('sass', function () {
-    gulp.src('./sass/**/*.scss')
+    gulp.src(['node_modules/bootstrap/scss/bootstrap-flex.scss', './sass/**/bootstrap.scss'])
+        .pipe(sourcemaps.init())
         .pipe(sass.sync().on('error', sass.logError))
-        .pipe(gulp.dest('./css'));
+        .pipe(minifyCss())
+        .pipe(rename('app.min.css'))
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest('./www/assets/css'));
 });
 
 // gulp routes task

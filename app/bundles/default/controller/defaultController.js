@@ -22,7 +22,7 @@ class defaultController extends controller {
      */
     indexAction(req, res) {
         res.render('home', {
-            'test' : 'testing'
+            'title' : 'Home'
         });
     }
 
