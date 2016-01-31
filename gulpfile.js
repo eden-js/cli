@@ -45,6 +45,7 @@ gulp.task('routes', function () {
         });
 });
 
+// gulp views task
 gulp.task('views', function() {
     gulp.src(['./app/bundles/*/view/**/*.hbs', './bin/bundles/*/view/**/*.hbs'])
         .pipe(rename(function(filePath) {
@@ -69,6 +70,14 @@ gulp.task('sass:watch', function () {
 gulp.task('routes:watch', function () {
     gulp.watch('./app/bundles/**/*Controller.js', ['routes']);
 });
+
+// gulp routes watch task
+gulp.task('views:watch', function () {
+    gulp.watch('./app/bundles/**/*.hbs', ['views']);
+});
+
+// main gulp watch task
+gulp.task('watch', ['sass:watch', 'routes:watch', 'views:watch']);
 
 // full server task
 gulp.task('devServer', function () {
