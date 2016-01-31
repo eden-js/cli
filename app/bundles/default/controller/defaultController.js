@@ -21,7 +21,9 @@ class defaultController extends controller {
      * @route {get} /
      */
     indexAction(req, res) {
-        res.send('hello world');
+        res.render('home', {
+            'test' : 'testing'
+        });
     }
 
     /**

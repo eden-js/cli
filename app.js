@@ -19,7 +19,7 @@ Mongorito.connect(config.database[config.environment].host + '/' + config.databa
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'cache/views'));
+app.set('views', path.join(__dirname, 'cache/view'));
 app.set('view engine', 'hbs');
 
 // uncomment after placing your favicon in /public

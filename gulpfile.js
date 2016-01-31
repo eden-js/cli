@@ -10,6 +10,7 @@ var rename  = require('gulp-rename');
 var sass    = require('gulp-sass');
 var babel   = require('gulp-babel');
 var through = require('through2');
+var path    = require('path');
 var uglify  = require('gulp-uglifyjs');
 var routing = require('./bin/util/gulp.routing');
 var fs      = require('fs');
@@ -42,6 +43,17 @@ gulp.task('routes', function () {
                 }
             });
         });
+});
+
+gulp.task('views', function() {
+    gulp.src(['./app/bundles/*/view/**/*.hbs', './bin/bundles/*/view/**/*.hbs'])
+        .pipe(rename(function(filePath) {
+            var amended = filePath.dirname.split(path.sep);
+            amended.shift();
+            amended.shift();
+            filePath.dirname = amended.join(path.sep);
+        }))
+        .pipe(gulp.dest('cache/view'));
 });
 
 /**
