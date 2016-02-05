@@ -37,4 +37,3 @@ www
 
 # ignore custom bundles
 app/bundles/*
-!app/bundles/default

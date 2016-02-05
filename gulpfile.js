@@ -71,7 +71,7 @@ gulp.task('routes', function () {
 
 // gulp views task
 gulp.task('views', function() {
-    gulp.src(['./app/bundles/*/view/**/*.hbs', './bin/bundles/*/view/**/*.hbs'])
+    gulp.src(['./bin/bundles/*/view/**/*.hbs', './app/bundles/*/view/**/*.hbs'])
         .pipe(rename(function(filePath) {
             var amended = filePath.dirname.split(path.sep);
             amended.shift();
