@@ -34,3 +34,7 @@ config.js
 cache
 nginx.conf
 www
+
+# ignore custom bundles
+app/bundles/*
+!app/bundles/default

@@ -8,10 +8,8 @@
 var gulp       = require('gulp');
 var rename     = require('gulp-rename');
 var sass       = require('gulp-sass');
-var babel      = require('gulp-babel');
 var through    = require('through2');
 var path       = require('path');
-var uglify     = require('gulp-uglifyjs');
 var routing    = require('./bin/util/gulp.routing');
 var fs         = require('fs');
 var del        = require('del');
@@ -25,13 +23,33 @@ var sourcemaps = require('gulp-sourcemaps');
 
 // gulp sass task
 gulp.task('sass', function () {
-    gulp.src(['node_modules/bootstrap/scss/bootstrap-flex.scss', './sass/**/bootstrap.scss'])
-        .pipe(sourcemaps.init())
-        .pipe(sass.sync().on('error', sass.logError))
-        .pipe(minifyCss())
-        .pipe(rename('app.min.css'))
-        .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./www/assets/css'));
+    var allSass = '';
+    gulp.src(['node_modules/bootstrap/scss/bootstrap-flex.scss', './bin/bundles/*/resources/scss/bootstrap.scss', './app/bundles/*/resources/scss/bootstrap.scss'])
+        .pipe(through.obj(function(chunk, enc, cb) {
+            allSass = allSass + '@import ".' + chunk.path.replace(__dirname, '').split('\\').join('/') + '"; ';
+
+            this.push({ allSass : allSass });
+            cb(null, chunk);
+        }))
+        .on('data', function (data) {
+            // do nothing
+        })
+        .on('end', function () {
+            fs.writeFile('./tmp.scss', allSass, function (err) {
+                if (err) {
+                    return console.log(err);
+                }
+                gulp.src('./tmp.scss')
+                    .pipe(sourcemaps.init())
+                    .pipe(sass({outputStyle: 'compressed'}))
+                    .pipe(rename('app.min.css'))
+                    .pipe(sourcemaps.write('./'))
+                    .pipe(gulp.dest('./www/assets/css'))
+                    .on('end', function() {
+                        fs.unlinkSync('./tmp.scss');
+                    });
+            });
+        })
 });
 
 // gulp routes task
@@ -91,7 +109,7 @@ gulp.task('devServer', function () {
     server.run(['./bin/server.js']);
 
     // watch sass pipe
-    gulp.watch(['./sass/**/*.scss'], function(event){
+    gulp.watch(['./app/bundles/**/*.scss'], function(event){
         gulp.run('sass');
         server.notify(event);
     });
@@ -99,6 +117,12 @@ gulp.task('devServer', function () {
     // watch routes pipe
     gulp.watch(['./app/bundles/**/*Controller.js'], function(event){
         gulp.run('routes');
+        server.notify(event);
+    });
+
+    // watch views pipe
+    gulp.watch(['./app/bundles/**/*.hbs'], function(event) {
+        gulp.run('views');
         server.notify(event);
     });
 
