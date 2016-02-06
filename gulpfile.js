@@ -6,6 +6,7 @@
 
 // import dependancies
 var gulp       = require('gulp');
+var glob       = require('glob');
 var rename     = require('gulp-rename');
 var sass       = require('gulp-sass');
 var through    = require('through2');
@@ -16,6 +17,10 @@ var del        = require('del');
 var server     = require('gulp-express');
 var minifyCss  = require('gulp-minify-css');
 var sourcemaps = require('gulp-sourcemaps');
+var browserify = require('browserify');
+var babelify   = require('babelify');
+var source     = require('vinyl-source-stream');
+var concat     = require('gulp-concat');
 
 /**
  * GULP TASKS
@@ -81,6 +86,18 @@ gulp.task('views', function() {
         .pipe(gulp.dest('cache/view'));
 });
 
+// gulp routes task
+gulp.task('javascript', function () {
+    var entries = glob.sync('./app/bundles/*/resources/js/bootstrap.js');
+    browserify({
+        entries : entries
+    })
+        .transform(babelify)
+        .bundle()
+        .pipe(source('app.min.js'))
+        .pipe(gulp.dest('./www/assets/js'));
+});
+
 /**
  * GULP WATCH TASKS
  */
@@ -98,6 +115,11 @@ gulp.task('routes:watch', function () {
 // gulp routes watch task
 gulp.task('views:watch', function () {
     gulp.watch('./app/bundles/**/*.hbs', ['views']);
+});
+
+// gulp routes watch task
+gulp.task('javascript:watch', function () {
+    gulp.watch('./app/bundles/*/resources/js/**/*.js', ['javascript']);
 });
 
 // main gulp watch task
@@ -127,7 +149,8 @@ gulp.task('devServer', function () {
     });
 
     // watch javascript
-    gulp.watch(['./app/**/*.js'], function(event) {
+    gulp.watch(['./app/bundles/*/resources/js/**/*.js'], function(event) {
+        gulp.run('javascript');
         server.notify(event);
     });
 });
