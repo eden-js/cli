@@ -179,6 +179,7 @@ gulp.task('devServer', function () {
     // watch tags pipe
     gulp.watch(['./app/bundles/**/*.tag'], function(event) {
         gulp.run('tags');
+        gulp.run('javascript');
         server.notify(event);
     });
 

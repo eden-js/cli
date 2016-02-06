@@ -40,6 +40,14 @@ app.engine('hbs', exphbs({
                 block  = blocks[name] || (blocks[name] = []);
 
             block.push(options.fn(this));
+        },
+
+        json : function(obj) {
+            return JSON.stringify(obj);
+        },
+
+        attrJson : function(obj) {
+            return JSON.stringify(obj).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
     }
 }));
