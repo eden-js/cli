@@ -21,6 +21,8 @@ var browserify = require('browserify');
 var babelify   = require('babelify');
 var source     = require('vinyl-source-stream');
 var concat     = require('gulp-concat');
+var riot       = require('gulp-riot');
+var insert     = require('gulp-insert');
 
 /**
  * GULP TASKS
@@ -86,9 +88,29 @@ gulp.task('views', function() {
         .pipe(gulp.dest('cache/view'));
 });
 
+// gulp tags task
+gulp.task('tags', function() {
+    gulp.src(['./bin/bundles/*/view/**/*.tag', './app/bundles/*/view/**/*.tag'])
+        .pipe(rename(function(filePath) {
+            var amended = filePath.dirname.split(path.sep);
+            amended.shift();
+            amended.shift();
+            amended.shift();
+            filePath.dirname = amended.join(path.sep);
+        }))
+        .pipe(riot({
+            compact: true
+        }))
+        .pipe(concat('tags.min.js'))
+        .pipe(insert.prepend('var riot = require(\'riot\');'))
+        .pipe(gulp.dest('./cache/tag'));
+});
+
 // gulp routes task
 gulp.task('javascript', function () {
-    var entries = glob.sync('./app/bundles/*/resources/js/bootstrap.js');
+    var entries = glob.sync('./bin/bundles/*/resources/js/bootstrap.js');
+        entries.concat(glob.sync('./app/bundles/*/resources/js/bootstrap.js'));
+
     browserify({
         entries : entries
     })
@@ -122,8 +144,14 @@ gulp.task('javascript:watch', function () {
     gulp.watch('./app/bundles/*/resources/js/**/*.js', ['javascript']);
 });
 
+// gulp routes watch task
+gulp.task('tags:watch', function () {
+    gulp.watch('./app/bundles/*/view/**/*.tag', ['tags']);
+});
+
 // main gulp watch task
-gulp.task('watch', ['sass:watch', 'routes:watch', 'views:watch']);
+gulp.task('watch', ['sass:watch', 'routes:watch', 'views:watch', 'tags:watch', 'javascript:watch']);
+gulp.task('install', ['sass', 'routes', 'views', 'tags', 'javascript']);
 
 // full server task
 gulp.task('devServer', function () {
@@ -145,6 +173,12 @@ gulp.task('devServer', function () {
     // watch views pipe
     gulp.watch(['./app/bundles/**/*.hbs'], function(event) {
         gulp.run('views');
+        server.notify(event);
+    });
+
+    // watch tags pipe
+    gulp.watch(['./app/bundles/**/*.tag'], function(event) {
+        gulp.run('tags');
         server.notify(event);
     });
 

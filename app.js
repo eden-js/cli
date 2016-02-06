@@ -12,6 +12,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 var Mongorito    = require('mongorito');
 var exphbs       = require('express-handlebars');
+var hbs          = require('hbs');
+var fs           = require('fs');
 
 // create database connection
 Mongorito.connect(config.database[config.environment].host + '/' + config.database[config.environment].db);
