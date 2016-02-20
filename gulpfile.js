@@ -23,6 +23,8 @@ var source     = require('vinyl-source-stream');
 var concat     = require('gulp-concat');
 var riot       = require('gulp-riot');
 var insert     = require('gulp-insert');
+var streamify  = require('gulp-streamify');
+var uglify     = require('gulp-uglify');
 
 /**
  * GULP TASKS
@@ -109,7 +111,7 @@ gulp.task('tags', function() {
 // gulp routes task
 gulp.task('javascript', function () {
     var entries = glob.sync('./bin/bundles/*/resources/js/bootstrap.js');
-        entries.concat(glob.sync('./app/bundles/*/resources/js/bootstrap.js'));
+        entries = entries.concat(glob.sync('./app/bundles/*/resources/js/bootstrap.js'));
 
     browserify({
         entries : entries
@@ -117,6 +119,9 @@ gulp.task('javascript', function () {
         .transform(babelify)
         .bundle()
         .pipe(source('app.min.js'))
+        .pipe(insert.prepend(fs.readFileSync('./node_modules/bootstrap/dist/js/bootstrap.js')))
+        .pipe(insert.prepend(fs.readFileSync('./node_modules/jquery/dist/jquery.min.js')))
+        .pipe(streamify(uglify()))
         .pipe(gulp.dest('./www/assets/js'));
 });
 
