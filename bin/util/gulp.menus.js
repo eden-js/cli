@@ -24,7 +24,7 @@ module.exports = function (chunk, enc, cb) {
                 // null variables
                 var fn = false;
                 var i  = parsed[key].line;
-                var rt = '';
+                var rt = false;
 
                 // loop lines for function
                 while (!fn) {
@@ -56,6 +56,8 @@ module.exports = function (chunk, enc, cb) {
                     rt = tag.name;
                 }
 
+                console.log(rt);
+
                 // loop tags for menu
                 for (var tag in parsed[key].tags) {
                     // set tag
@@ -65,7 +67,7 @@ module.exports = function (chunk, enc, cb) {
                     if (tag.tag != 'menu') {
                         continue;
                     }
-                    
+
                     // set options
                     var options = JSON.parse(tag.type);
 
@@ -82,6 +84,7 @@ module.exports = function (chunk, enc, cb) {
                     // create menu object
                     var menu = {
                         'title'    : tag.name,
+                        'route'    : rt,
                         'name'     : options.name ? options.name : tag.name,
                         'priority' : options.priority ? parseInt(options.priority) : 0
                     };
@@ -96,13 +99,13 @@ module.exports = function (chunk, enc, cb) {
                         }
                         menus[options.menu][options.parent].push(menu);
                     } else {
-                        if (menus[menu.name]) {
+                        if (menus[options.menu][menu.name]) {
                             for (var key in menu) {
-                                menus[menu.name][key] = menu[key];
+                                menus[options.menu][menu.name][key] = menu[key];
                             }
                         } else {
-                            menus[menu.name] = menu;
-                            menus[menu.name].children = [];
+                            menus[options.menu][menu.name] = menu;
+                            menus[options.menu][menu.name].children = [];
                         }
                     }
                 }
