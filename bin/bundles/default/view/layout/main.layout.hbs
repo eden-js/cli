@@ -8,6 +8,22 @@
         {{{block "pageMeta"}}}
     </head>
     <body>
+        <div class="container">
+            <nav class="navbar navbar-light bg-faded">
+                <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#navbar-header" aria-controls="navbar-header">
+                    ☰
+                </button>
+                <div class="collapse navbar-toggleable-xs" id="navbar-header">
+                    <a class="navbar-brand" href="/">{{ title }}</a>
+                    {{{menu "MAIN" route}}}
+                    <ul class="nav nav-pills pull-xs-right">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Submit Hunt</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
         {{{body}}}
         <script src="/assets/js/app.min.js" defer async type="application/javascript"></script>
         {{{block "pageScripts"}}}
