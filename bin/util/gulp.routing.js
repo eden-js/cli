@@ -6,6 +6,12 @@
 
 var parse = require('comment-parser');
 
+/**
+ * export routing
+ * @param chunk
+ * @param enc
+ * @param cb
+ */
 module.exports = function (chunk, enc, cb) {
     var content = chunk.contents.toString();
     var parsed  = parse(content);
