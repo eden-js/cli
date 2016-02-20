@@ -5,6 +5,7 @@
 // import dependencies
 var config       = require(global.appRoot + '/config');
 var routes       = require(global.appRoot + '/cache/routes');
+var menus        = require(global.appRoot + '/cache/menus.json');
 var path         = require('path');
 var express      = require('express');
 var favicon      = require('favicon');
@@ -48,13 +49,40 @@ app.engine('hbs', exphbs({
 
         attrJson : function(obj) {
             return JSON.stringify(obj).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        },
+
+        menu : function(name, path) {
+            if (menus[name]) {
+                var menu = menus[name];
+                var rtn  = '<ul class="nav navbar-nav">';
+
+                for (var key in menu) {
+                    rtn += '<li class="nav-item">';
+
+                    if (menu[key].children.length) {
+                        rtn += '<a class="nav-link dropdown-toggle' + (path == menu[key].route ? ' active' : '') + '" data-toggle="dropdown" href="' + (menu[key].route ? menu[key].route : '#!') + '" role="button" aria-haspopup="true" aria-expanded="false">' + menu[key].title + '</a>';
+                        rtn += '<div class="dropdown-menu">';
+                        for (var sub in menu[key].children) {
+                            rtn += '<a class="dropdown-item" href="' + (menu[key].children[sub].route ? menu[key].children[sub].route : '#!') + '">' + menu[key].children[sub].title + '</a>';
+                        }
+                        rtn += '</div>';
+                    } else {
+                        rtn += '<a class="nav-link' + (path == menu[key].route ? ' active' : '') + '" href="' + (menu[key].route ? menu[key].route : '#!') + '">' + menu[key].title + '</a>';
+                    }
+
+                    rtn += '</li>';
+                }
+
+                rtn += '</ul>';
+
+                return rtn;
+            }
         }
     }
 }));
 app.set('view engine', 'hbs');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 // app.use(logger(config.environment));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
