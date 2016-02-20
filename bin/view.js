@@ -2,7 +2,7 @@
  * Created by Awesome on 2/20/2016.
  */
 
-
+// require dependencies
 var menus  = require(global.appRoot + '/cache/menus.json');
 var exphbs = require('express-handlebars');
 var path   = require('path');
@@ -57,29 +57,35 @@ module.exports = exphbs({
          * @returns {string}
          */
         menu : function(name, path) {
+            // check menu by name exists
             if (menus[name]) {
+                // set variables
                 var menu = menus[name];
                 var rtn  = '<ul class="nav navbar-nav">';
 
+                // loop menu items
                 for (var key in menu) {
                     rtn += '<li class="nav-item">';
 
+                    // check menu has children
                     if (menu[key].children.length) {
                         rtn += '<a class="nav-link dropdown-toggle' + (path == menu[key].route ? ' active' : '') + '" data-toggle="dropdown" href="' + (menu[key].route ? menu[key].route : '#!') + '" role="button" aria-haspopup="true" aria-expanded="false">' + menu[key].title + '</a>';
                         rtn += '<div class="dropdown-menu">';
+
+                        // loop children
                         for (var sub in menu[key].children) {
                             rtn += '<a class="dropdown-item" href="' + (menu[key].children[sub].route ? menu[key].children[sub].route : '#!') + '">' + menu[key].children[sub].title + '</a>';
                         }
+
                         rtn += '</div>';
                     } else {
                         rtn += '<a class="nav-link' + (path == menu[key].route ? ' active' : '') + '" href="' + (menu[key].route ? menu[key].route : '#!') + '">' + menu[key].title + '</a>';
                     }
-
                     rtn += '</li>';
                 }
-
                 rtn += '</ul>';
 
+                // return menu html
                 return rtn;
             }
         }
