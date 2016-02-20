@@ -12,6 +12,7 @@ var sass       = require('gulp-sass');
 var through    = require('through2');
 var path       = require('path');
 var routing    = require('./bin/util/gulp.routing');
+var menus      = require('./bin/util/gulp.menus');
 var fs         = require('fs');
 var del        = require('del');
 var server     = require('gulp-express');
@@ -71,6 +72,23 @@ gulp.task('routes', function () {
         })
         .on('end', function () {
             fs.writeFile('./cache/routes.json', JSON.stringify(allRoutes), function (err) {
+                if (err) {
+                    return console.log(err);
+                }
+            });
+        });
+});
+
+// gulp routes task
+gulp.task('menus', function () {
+    var allMenus = {};
+    gulp.src('./app/bundles/**/*Controller.js')
+        .pipe(through.obj(menus))
+        .on('data', function (data) {
+            MergeRecursive(allMenus, data.menus);
+        })
+        .on('end', function () {
+            fs.writeFile('./cache/menus.json', JSON.stringify(allMenus), function (err) {
                 if (err) {
                     return console.log(err);
                 }
@@ -140,6 +158,11 @@ gulp.task('routes:watch', function () {
 });
 
 // gulp routes watch task
+gulp.task('menus:watch', function () {
+    gulp.watch('./app/bundles/**/*Controller.js', ['menus']);
+});
+
+// gulp routes watch task
 gulp.task('views:watch', function () {
     gulp.watch('./app/bundles/**/*.hbs', ['views']);
 });
@@ -155,8 +178,8 @@ gulp.task('tags:watch', function () {
 });
 
 // main gulp watch task
-gulp.task('watch', ['sass:watch', 'routes:watch', 'views:watch', 'tags:watch', 'javascript:watch']);
-gulp.task('install', ['sass', 'routes', 'views', 'tags', 'javascript']);
+gulp.task('watch', ['sass:watch', 'routes:watch', 'menus:watch', 'views:watch', 'tags:watch', 'javascript:watch']);
+gulp.task('install', ['sass', 'routes', 'menus', 'views', 'tags', 'javascript']);
 
 // full server task
 gulp.task('devServer', function () {
@@ -172,6 +195,12 @@ gulp.task('devServer', function () {
     // watch routes pipe
     gulp.watch(['./app/bundles/**/*Controller.js'], function(event){
         gulp.run('routes');
+        server.notify(event);
+    });
+
+    // watch menus pipe
+    gulp.watch(['./app/bundles/**/*Controller.js'], function(event){
+        gulp.run('menus');
         server.notify(event);
     });
 
