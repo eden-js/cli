@@ -55,8 +55,9 @@ module.exports = function (chunk, enc, cb) {
                     // set route
                     rt = tag.name;
                 }
-
-                console.log(rt);
+                if (!rt) {
+                    continue;
+                }
 
                 // loop tags for menu
                 for (var tag in parsed[key].tags) {
