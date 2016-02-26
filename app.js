@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
-// require server bootstrap
-require('./bin/server');
+// require server
+require('./bin/bootstrap');

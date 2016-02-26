@@ -2,9 +2,10 @@
  * Created by Awesome on 1/30/2016.
  */
 
+// use strict
 'use strict';
 
-// import dependancies
+// import dependencies
 var gulp       = require('gulp');
 var glob       = require('glob');
 var rename     = require('gulp-rename');
