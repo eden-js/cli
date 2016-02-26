@@ -2,21 +2,23 @@
  * Created by Awesome on 1/30/2016.
  */
 
-    // use strict
+// use strict
 'use strict';
 
-// import dependencies
+// require dependencies
 var glob       = require ('glob');
-var rename     = require ('gulp-rename');
-var sass       = require ('gulp-sass');
-var through    = require ('through2');
 var path       = require ('path');
 var fs         = require ('fs');
-var server     = require ('gulp-express');
-var sourcemaps = require ('gulp-sourcemaps');
+var through    = require ('through2');
 var browserify = require ('browserify');
 var babelify   = require ('babelify');
 var source     = require ('vinyl-source-stream');
+
+// require gulp dependencies
+var rename     = require ('gulp-rename');
+var sass       = require ('gulp-sass');
+var server     = require ('gulp-express');
+var sourcemaps = require ('gulp-sourcemaps');
 var concat     = require ('gulp-concat');
 var riot       = require ('gulp-riot');
 var insert     = require ('gulp-insert');
