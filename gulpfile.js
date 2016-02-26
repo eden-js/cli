@@ -62,6 +62,18 @@ gulp.task('sass', function () {
         })
 });
 
+// gulp daemons task
+gulp.task('daemons', function() {
+    var entries = glob.sync('./bin/bundles/**/*Daemon.js');
+        entries = entries.concat(glob.sync('./app/bundles/**/*Daemon.js'));
+
+    fs.writeFile('./cache/daemons.json', JSON.stringify(entries), function (err) {
+        if (err) {
+            return console.log(err);
+        }
+    });
+});
+
 // gulp routes task
 gulp.task('routes', function () {
     var allRoutes = {};
@@ -149,7 +161,12 @@ gulp.task('javascript', function () {
 
 // gulp sass watch task
 gulp.task('sass:watch', function () {
-    gulp.watch('./sass/**/*.scss', ['sass']);
+    gulp.watch('./app/bundles/**/*.scss', ['sass']);
+});
+
+// gulp daemons watch task
+gulp.task('daemons:watch', function () {
+    gulp.watch('./app/bundles/**/*Daemon.js', ['daemons']);
 });
 
 // gulp routes watch task
@@ -189,6 +206,12 @@ gulp.task('devServer', function () {
     // watch sass pipe
     gulp.watch(['./app/bundles/**/*.scss'], function(event){
         gulp.run('sass');
+        server.notify(event);
+    });
+
+    // watch daemons pipe
+    gulp.watch(['./app/bundles/**/*Daemon.js'], function(event){
+        gulp.run('daemons');
         server.notify(event);
     });
 
