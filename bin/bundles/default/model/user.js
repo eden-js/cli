@@ -2,20 +2,22 @@
  * Created by Awesome on 2/6/2016.
  */
 
+// use strict
 'use strict';
 
-// import dependancies
-var mongorito = require('mongorito');
+// require local dependancies
+var model = require(global.appRoot + '/bin/bundles/core/model');
 
 /**
- * create user class
+ * build user class
  */
-class user extends mongorito.Model {
+class user extends model {
 
 }
 
 /**
  * export user class
+ *
  * @type {user}
  */
 module.exports = user;

@@ -2,11 +2,14 @@
  * Created by Awesome on 2/6/2016.
  */
 
+// require dependencies
 var riot = require('riot');
+
+// require tags from cache (do not use appRoot)
 var tags = require('../../../../../cache/tag/tags.min');
 
 /**
- * edenFrame class
+ * build edenFrame class
  */
 class edenFrame {
     /**
@@ -22,6 +25,7 @@ class edenFrame {
 
     /**
      * renders frontend renderer
+     *
      * @private
      */
     _renderFrontendRenderer() {
@@ -30,7 +34,8 @@ class edenFrame {
 }
 
 /**
- * export edenframe
+ * export edenframe class
+ *
  * @type {edenFrame}
  */
 module.exports = new edenFrame();
