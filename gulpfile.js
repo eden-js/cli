@@ -26,8 +26,8 @@ var streamify  = require ('gulp-streamify');
 var uglify     = require ('gulp-uglify');
 
 // import local dependencies
-var routePipe = require ('./bin/util/gulp.routing');
-var menuPipe  = require ('./bin/util/gulp.menus');
+var routePipe = require ('./bin/util/gulp.route.pipe');
+var menuPipe  = require ('./bin/util/gulp.menu.pipe');
 
 /**
  * build gulp builder class
@@ -50,6 +50,10 @@ class gulpBuilder {
             'daemon' : [
                 './bin/bundles/**/*Daemon.js',
                 './app/bundles/**/*Daemon.js'
+            ],
+            'command' : [
+                './bin/bundles/**/*Command.js',
+                './bin/bundles/**/*Command.js'
             ],
             'route' : [
                 './bin/bundles/**/*Controller.js',
@@ -174,6 +178,13 @@ class gulpBuilder {
                 return console.log (err);
             }
         });
+    }
+
+    /**
+     * command task
+     */
+    command () {
+
     }
 
     /**
