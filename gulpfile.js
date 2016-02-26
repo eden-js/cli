@@ -260,7 +260,7 @@ class gulpBuilder {
             }))
             .pipe (concat ('tags.min.js'))
             .pipe (insert.prepend ('var riot = require(\'riot\');'))
-            .pipe (that.gulp.dest ('./cache/tag'));
+            .pipe (this.gulp.dest ('./cache/tag'));
     }
 
     /**
