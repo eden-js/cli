@@ -12,6 +12,11 @@ var controller = require(global.appRoot + '/bin/bundles/core/controller');
  * build default controller
  */
 class defaultController extends controller {
+    /**
+     * construct default controller
+     *
+     * @param props
+     */
     constructor(props) {
         super(props);
     }
