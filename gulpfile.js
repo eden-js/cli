@@ -39,7 +39,6 @@ class gulpBuilder {
         this.gulp = require ('gulp');
 
         // bind methods
-        this._watch = [];
         this._tasks = {
             'sass' : [
                 'node_modules/bootstrap/scss/bootstrap-flex.scss',
@@ -91,8 +90,11 @@ class gulpBuilder {
             watch.push(keys[i] + ':watch');
         }
 
+        // add install task
         this.gulp.task('install', keys);
+        // add watch task
         this.gulp.task('watch', watch);
+        // add dev server task
         this.gulp.task('dev', () => {
             server.run ([
                 './app.js'
@@ -105,7 +107,8 @@ class gulpBuilder {
                 }]);
             }
         });
-        this.gulp.task('default', ['dev']);
+        // add default task
+        this.gulp.task('default', ['install', 'dev']);
     }
 
     /**
