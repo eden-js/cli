@@ -2,9 +2,13 @@
  * Created by Awesome on 1/30/2016.
  */
 
+// use strict
+'use strict';
+
 // require local dependencies
 var config       = require(global.appRoot + '/config');
 var routes       = require(global.appRoot + '/cache/routes');
+var daemons      = require(global.appRoot + '/cache/daemons');
 var view         = require(global.appRoot + '/bin/view');
 
 // require node dependencies
@@ -36,6 +40,13 @@ app.use(function(req, res, next){
     next();
 });
 
+// allow cors
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
 // create routing
 var register = {};
 var routing  = [];
@@ -52,6 +63,15 @@ for (var type in routes) {
     }
 }
 app.use('/', router);
+
+// create daemons
+var daemonRegister = {};
+for (var key in daemons) {
+    let daemon = daemons[key];
+
+    var controller = require(daemon);
+    daemonRegister[daemon] = new controller();
+}
 
 // 404 error handler
 app.use(function (req, res, next) {
