@@ -1,85 +1,137 @@
 #!/usr/bin/env node
+/**
+ * Created by Awesome on 1/30/2016.
+ */
 
-// global approot variable
-var path = require('path');
-global.appRoot = path.dirname(path.resolve(__dirname));
+// use strict
+'use strict';
 
-// import app dependencies
+// require dependencies
+var path  = require('path');
+var http  = require('http');
+var debug = require('debug')
+
+// require local dependencies
 var app    = require(global.appRoot + '/app');
-var http   = require('http');
 var config = require(global.appRoot + '/config');
 
-// create debug
-var debug = require('debug')('EdenFrame:server');
-
-// get port from environment or default
-var port = normalizePort(process.env.PORT || config.port);
-app.set('port', port);
-
-// create http server
-var server = http.createServer(app);
-
-// listen on port
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
 /**
- * normalize port function
- * @param val
- * @returns {*}
+ * build server class
  */
-function normalizePort(val) {
-  var port = parseInt(val, 10);
+class server {
+    /**
+     * construct server builder class
+     */
+    constructor() {
+        // bind variables
+        this.debugger = false;
+        this.port     = false;
+        this.server   = false;
 
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
+        // bind methods
+        this.onError = this.onError.bind(this);
 
-  if (port >= 0) {
-    // port number
-    return port;
-  }
+        // bind private methods
+        this._registerGlobals  = this._registerGlobals.bind(this);
+        this._registerDebugger = this._registerDebugger.bind(this);
 
-  return false;
+        // run server bootstrap
+        this._registerGlobals();
+        this._registerDebugger();
+        this._registerPort();
+        this._registerServer();
+
+        // build app
+        app.set('port', this.port);
+
+        // run app
+        this.server.listen(this.port);
+
+        // server events
+        this.server.on('error', this.onError);
+        this.server.on('listening', this.onListen);
+    }
+
+    /**
+     * on error function
+     *
+     * @param error
+     */
+    onError(error) {
+        if (error.syscall !== 'listen') {
+            throw error;
+        }
+
+        var bind = typeof this.port === 'string'
+            ? 'Pipe ' + this.port
+            : 'Port ' + this.port;
+
+        // handle specific listen errors with friendly messages
+        switch (error.code) {
+            case 'EACCES':
+                console.error(bind + ' requires elevated privileges');
+                process.exit(1);
+                break;
+            case 'EADDRINUSE':
+                console.error(bind + ' is already in use');
+                process.exit(1);
+                break;
+            default:
+                throw error;
+        }
+    }
+
+    /**
+     * on listen function
+     */
+    onListen() {
+        var addr = this.server.address();
+        var bind = typeof addr === 'string'
+            ? 'pipe ' + addr
+            : 'port ' + addr.port;
+        this.debugger('Listening on ' + bind);
+    }
+
+    /**
+     * registers global variables
+     *
+     * @private
+     */
+    _registerGlobals() {
+        global.appRoot = path.dirname(path.resolve(__dirname));
+    }
+
+    /**
+     * registers server debugger
+     *
+     * @private
+     */
+    _registerDebugger() {
+        this.debugger = debug('EdenFrame:server');
+    }
+
+    /**
+     * registers port
+     *
+     * @private
+     */
+    _registerPort() {
+        this.port = parseInt((process.env.PORT || config.port), 10);
+    }
+
+    /**
+     * registers server
+     *
+     * @private
+     */
+    _registerServer() {
+        this.server = http.createServer(app);
+    }
 }
 
 /**
- * on error function
- * @param error
+ * export server bootstrap
+ *
+ * @type {server}
  */
-function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
-
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
-
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
-}
-
-/**
- * on listening
- */
-function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
-}
+module.exports = new server();
