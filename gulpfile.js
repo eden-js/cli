@@ -26,8 +26,9 @@ var streamify  = require ('gulp-streamify');
 var uglify     = require ('gulp-uglify');
 
 // import local dependencies
-var routePipe = require ('./bin/util/gulp.route.pipe');
-var menuPipe  = require ('./bin/util/gulp.menu.pipe');
+var routePipe   = require ('./bin/util/gulp.route.pipe');
+var commandPipe = require ('./bin/util/gulp.command.pipe');
+var menuPipe    = require ('./bin/util/gulp.menu.pipe');
 
 /**
  * build gulp builder class
@@ -184,7 +185,24 @@ class gulpBuilder {
      * command task
      */
     command () {
+        // set variables
+        var that = this;
+        var all  = {};
 
+        // get all routes
+        this.gulp.src (
+            this._tasks['command']
+        )
+            .pipe (through.obj (commandPipe))
+            .on ('data', (data) => {
+            that._merge(all, data.routes);
+            }).on ('end', function () {
+                fs.writeFile ('./cache/command.json', JSON.stringify (all), function (err) {
+                    if (err) {
+                        return console.log (err);
+                    }
+                });
+            });
     }
 
     /**
