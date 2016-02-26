@@ -67,6 +67,10 @@ gulp.task('daemons', function() {
     var entries = glob.sync('./bin/bundles/**/*Daemon.js');
         entries = entries.concat(glob.sync('./app/bundles/**/*Daemon.js'));
 
+    for (var key in entries) {
+        entries[key] = entries[key].replace('./', '/');
+    }
+
     fs.writeFile('./cache/daemons.json', JSON.stringify(entries), function (err) {
         if (err) {
             return console.log(err);
