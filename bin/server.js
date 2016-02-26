@@ -9,11 +9,14 @@
 // require dependencies
 var path  = require('path');
 var http  = require('http');
-var debug = require('debug')
+var debug = require('debug');
+
+// set global variables
+global.appRoot = path.dirname(path.resolve(__dirname));
 
 // require local dependencies
-var app    = require(global.appRoot + '/app');
-var config = require(global.appRoot + '/config');
+var app    = require('../app');
+var config = require('../config');
 
 /**
  * build server class
@@ -29,14 +32,15 @@ class server {
         this.server   = false;
 
         // bind methods
-        this.onError = this.onError.bind(this);
+        this.onError  = this.onError.bind(this);
+        this.onListen = this.onListen.bind(this);
 
         // bind private methods
-        this._registerGlobals  = this._registerGlobals.bind(this);
         this._registerDebugger = this._registerDebugger.bind(this);
+        this._registerPort     = this._registerPort.bind(this);
+        this._registerServer   = this._registerServer.bind(this);
 
         // run server bootstrap
-        this._registerGlobals();
         this._registerDebugger();
         this._registerPort();
         this._registerServer();
@@ -90,15 +94,6 @@ class server {
             ? 'pipe ' + addr
             : 'port ' + addr.port;
         this.debugger('Listening on ' + bind);
-    }
-
-    /**
-     * registers global variables
-     *
-     * @private
-     */
-    _registerGlobals() {
-        global.appRoot = path.dirname(path.resolve(__dirname));
     }
 
     /**
