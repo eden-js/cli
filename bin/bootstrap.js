@@ -164,7 +164,7 @@ class bootstrap {
      */
     _buildView() {
         // build view engine
-        this.app.set('views', global.appRoot, '/cache/view');
+        this.app.set('views', global.appRoot + '/cache/view');
         this.app.set('view engine', 'hbs');
         this.app.engine('hbs', view);
     }
