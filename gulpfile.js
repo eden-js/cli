@@ -143,7 +143,7 @@ class gulpBuilder {
                             outputStyle : 'compressed'
                         })).pipe (rename ('app.min.css'))
                         .pipe (sourcemaps.write ('./'))
-                        .pipe (gulp.dest ('./www/assets/css'))
+                        .pipe (that.gulp.dest ('./www/assets/css'))
                         .on ('end', () => {
                             fs.unlinkSync ('./tmp.scss');
                         });
@@ -260,7 +260,7 @@ class gulpBuilder {
             }))
             .pipe (concat ('tags.min.js'))
             .pipe (insert.prepend ('var riot = require(\'riot\');'))
-            .pipe (gulp.dest ('./cache/tag'));
+            .pipe (that.gulp.dest ('./cache/tag'));
     }
 
     /**
