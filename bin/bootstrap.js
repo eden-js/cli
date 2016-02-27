@@ -216,11 +216,15 @@ class bootstrap {
 
         // loop routes
         for (var type in routes) {
+            // sort priorities
             var priorities = Object.keys(routes[type]).sort();
 
+            // loop priorities
             for (var i = 0; i < priorities.length; i ++) {
+                // set route type to route priority object
                 let routeType = routes[type][priorities[i]];
 
+                // loop for routes
                 for (var route in routeType) {
                     // check if controller registered
                     if (!that._ctrl[routeType[route]['controller']]) {
