@@ -48,7 +48,6 @@ class bootstrap {
 
         // bind registration methods
         this._register = [
-            '_registerGlobals',
             '_registerDebugger',
             '_registerDatabase',
             '_registerPort'
@@ -63,6 +62,7 @@ class bootstrap {
         // bind build methods
         this._build = [
             '_buildApp',
+            '_buildLocals',
             '_buildServer',
             '_buildView',
             '_buildParser',
@@ -85,15 +85,6 @@ class bootstrap {
     /*
      * REGISTER FUNCTIONS
      */
-
-    /**
-     * registers global variables
-     *
-     * @private
-     */
-    _registerGlobals() {
-        global.title = config.title;
-    }
 
     /**
      * registers server debugger
@@ -152,6 +143,15 @@ class bootstrap {
             res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
             next();
         });
+    }
+
+    /**
+     * builds local variables
+     *
+     * @private
+     */
+    _buildLocals() {
+        this.app.locals.title = config.title;
     }
 
     /**

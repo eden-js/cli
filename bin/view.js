@@ -88,12 +88,6 @@ module.exports = exphbs({
                 // return menu html
                 return rtn;
             }
-        },
-
-        global : function(name) {
-            if (global[name]) {
-                return global[name];
-            }
         }
     }
 });
