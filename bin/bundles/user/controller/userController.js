@@ -134,11 +134,36 @@ class userController extends controller {
         passport.authenticate('local', (err, user, info) => {
             if (!user) {
                 return res.render('login', {
-                    'error' : info.message
+                    'error' : info.message,
+                    'old'   : req.body
                 });
             }
             res.redirect('/');
         })(req, res, next);
+    }
+
+    /**
+     * Register action
+     *
+     * @param req
+     * @param res
+     *
+     * @route {get} /register
+     */
+    registerAction(req, res) {
+        res.render('register', {});
+    }
+
+    /**
+     * Register form action
+     *
+     * @param req
+     * @param res
+     *
+     * @route {post} /register
+     */
+    registerAction(req, res) {
+        res.render('register', {});
     }
 }
 
