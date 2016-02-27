@@ -3,11 +3,9 @@
  */
 
 // require dependencies
+var menus  = require(global.appRoot + '/cache/menus.json');
 var exphbs = require('express-handlebars');
 var path   = require('path');
-
-// require local dependencies
-var menus = require(global.appRoot + '/cache/menus.json');
 
 /**
  * export exhbs constructor
@@ -89,6 +87,12 @@ module.exports = exphbs({
 
                 // return menu html
                 return rtn;
+            }
+        },
+
+        global : function(name) {
+            if (global[name]) {
+                return global[name];
             }
         }
     }

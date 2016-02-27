@@ -48,6 +48,7 @@ class bootstrap {
 
         // bind registration methods
         this._register = [
+            '_registerGlobals',
             '_registerDebugger',
             '_registerDatabase',
             '_registerPort'
@@ -84,6 +85,15 @@ class bootstrap {
     /*
      * REGISTER FUNCTIONS
      */
+
+    /**
+     * registers global variables
+     *
+     * @private
+     */
+    _registerGlobals() {
+        global.title = config.title;
+    }
 
     /**
      * registers server debugger

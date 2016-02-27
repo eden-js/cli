@@ -35,8 +35,7 @@ class defaultController extends controller {
      */
     defaultAction(req, res) {
         res.render('home', {
-            'route' : '/',
-            'title' : 'EdenFrame'
+            'route' : '/'
         });
     }
 }

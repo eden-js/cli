@@ -3,6 +3,8 @@
  */
 
 module.exports = {
+    // title of the app
+    title       : 'EdenFrame',
     // the port to run the app
     port        : '3007',
     // the environment to run the app in
