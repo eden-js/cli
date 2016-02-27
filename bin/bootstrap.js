@@ -214,15 +214,15 @@ class bootstrap {
         // empty controller register
         this._ctrl  = {};
 
-        // loop routes
-        for (var type in routes) {
-            // sort priorities
-            var priorities = Object.keys(routes[type]).sort();
+        // sort priorities
+        var priorities = Object.keys(routes).sort();
 
-            // loop priorities
-            for (var i = 0; i < priorities.length; i ++) {
-                // set route type to route priority object
-                let routeType = routes[type][priorities[i]];
+        // loop priorities
+        for (var i = 0; i < priorities.length; i ++) {
+            let types = routes[priorities[i]];
+
+            for (var type in types) {
+                let routeType = types[type];
 
                 // loop for routes
                 for (var route in routeType) {

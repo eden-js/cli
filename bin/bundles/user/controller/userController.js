@@ -13,8 +13,6 @@ var co = require('co');
 
 /**
  * create user controller
- *
- * @mount /user
  */
 class userController extends controller {
     /**
@@ -25,8 +23,24 @@ class userController extends controller {
         super(props);
 
         // bind methods
+        this.authAction      = this.authAction.bind(this);
         this.loginAction     = this.loginAction.bind(this);
         this.loginFormAction = this.loginFormAction.bind(this);
+    }
+
+    /**
+     * auth action
+     *
+     * @param req
+     * @param res
+     * @param next
+     *
+     * @priority 1
+     * @route {all} /*
+     */
+    authAction(req, res, next) {
+        console.log('working');
+        next();
     }
 
     /**

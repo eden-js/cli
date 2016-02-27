@@ -88,15 +88,15 @@ class configPipe {
                         /// loop mount points
                         for (var y = 0; y < mounts.length; y++) {
                             // ensure type object exists
-                            if (!rtn['routes'][routes[x].type]) {
-                                rtn['routes'][routes[x].type] = {};
+                            if (!rtn['routes'][priority]) {
+                                rtn['routes'][priority] = {};
                             }
                             // ensure priority object exists
-                            if (!rtn['routes'][routes[x].type][priority]) {
-                                rtn['routes'][routes[x].type][priority] = {};
+                            if (!rtn['routes'][priority][routes[x].type]) {
+                                rtn['routes'][priority][routes[x].type] = {};
                             }
                             // add route to array
-                            rtn['routes'][routes[x].type][priority][(mounts[y] + routes[x].route).split('//').join('/')] = {
+                            rtn['routes'][priority][routes[x].type][(mounts[y] + routes[x].route).split('//').join('/')] = {
                                 'controller' : '/' + (chunk.path.indexOf('/app') > -1 ? 'app' : 'bin') + '/bundles' + chunk.path.split('bundles')[1].replace(/\\/g, '/'),
                                 'action'     : isFn
                             }
@@ -292,7 +292,7 @@ class configPipe {
             let tag = tags[i];
 
             // check if priority
-            if (tag.tag == 'mount') {
+            if (tag.tag == 'priority') {
                 return parseInt(tag.name);
             }
         }
