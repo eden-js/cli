@@ -28,9 +28,11 @@ class userController extends controller {
         super(app);
 
         // bind methods
-        this.authAction      = this.authAction.bind(this);
-        this.loginAction     = this.loginAction.bind(this);
-        this.loginFormAction = this.loginFormAction.bind(this);
+        this.authAction         = this.authAction.bind(this);
+        this.loginAction        = this.loginAction.bind(this);
+        this.loginFormAction    = this.loginFormAction.bind(this);
+        this.registerAction     = this.registerAction.bind(this);
+        this.registerFormAction = this.registerFormAction.bind(this);
 
         // build methods
         this.build = this.build.bind(this);
@@ -81,7 +83,7 @@ class userController extends controller {
         }));
         // serializes user
         passport.serializeUser(function(user, done) {
-            done(user._id); // the user id that you have in the session
+            done(user.get('_id').toString()); // the user id that you have in the session
         });
         // deserialize user
         passport.deserializeUser(function(id, done) {
@@ -162,8 +164,65 @@ class userController extends controller {
      *
      * @route {post} /register
      */
-    registerAction(req, res) {
-        res.render('register', {});
+    registerFormAction(req, res) {
+        co(function * () {
+            // check username
+            if (req.body.username.trim().length < 5) {
+                return res.render('register', {
+                    'error' : 'your username must be at least 5 characters long',
+                    'old'   : req.body
+                });
+            }
+
+            // check for user
+            var User = yield user.where({
+                'username' : req.body.username
+            }).findOne();
+
+            // check if user exists
+            if (User) {
+                return res.render('register', {
+                    'error' : 'the username "' + req.body.username + '" is already taken',
+                    'old'   : req.body
+                });
+            }
+
+            // check password length
+            if (req.body.password.trim().length < 5) {
+                return res.render('register', {
+                    'error' : 'your password must be at least 5 characters long',
+                    'old'   : req.body
+                });
+            }
+
+            // check passwords match
+            if (req.body.password != req.body.passwordb) {
+                return res.render('register', {
+                    'error' : 'your passwords do not match',
+                    'old'   : req.body
+                });
+            }
+
+            // everything checks out
+            var hash = crypto.createHmac('sha256', config.secret)
+                .update(req.body.password)
+                .digest('hex');
+
+            // create user
+            User = new user({
+                'username' : req.body.username,
+                'hash'     : hash
+            });
+
+            // save user
+            yield User.save();
+
+            // log user in
+            req.logIn(User, (err) => {
+                console.log(err);
+                res.redirect('/');
+            });
+        });
     }
 }
 
