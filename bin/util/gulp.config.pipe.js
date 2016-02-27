@@ -238,6 +238,7 @@ class configPipe {
                 if (menu) {
                     menus.push({
                         'title'    : tag.name,
+                        'when'     : menu.when ? menu.when : false,
                         'menu'     : menu.menu,
                         'name'     : menu.name ? menu.name : tag.name,
                         'parent'   : menu.parent ? menu.parent : false,

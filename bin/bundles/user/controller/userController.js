@@ -82,16 +82,18 @@ class userController extends controller {
             })
         }));
         // serializes user
-        passport.serializeUser(function(user, done) {
-            done(user.get('_id').toString()); // the user id that you have in the session
+        passport.serializeUser(function(User, done) {
+            done(null, User.get('_id').toString()); // the user id that you have in the session
         });
         // deserialize user
         passport.deserializeUser(function(id, done) {
             co(function * () {
-                var User = yield user.load(id);
+                var User = yield user.findById(id);
 
                 if (User) {
-                    done(User);
+                    done(null, User);
+                } else {
+                    done(false);
                 }
             });
         });
@@ -108,6 +110,10 @@ class userController extends controller {
      * @route {all} /*
      */
     authAction(req, res, next) {
+        // set user locally
+        res.locals.user = req.user;
+
+        // run next
         next();
     }
 
@@ -118,7 +124,7 @@ class userController extends controller {
      * @param res
      *
      * @route {get} /login
-     * @menu {{"name":"LOGIN","menu":"MAIN","priority":1}} Login
+     * @menu {{"name":"LOGIN","menu":"MAIN","when":"!user","priority":1}} Login
      */
     loginAction(req, res) {
         res.render('login', {});
@@ -133,14 +139,17 @@ class userController extends controller {
      * @route {post} /login
      */
     loginFormAction(req, res, next) {
-        passport.authenticate('local', (err, user, info) => {
-            if (!user) {
+        passport.authenticate('local', (err, User, info) => {
+            if (!User) {
                 return res.render('login', {
                     'error' : info.message,
                     'old'   : req.body
                 });
             }
-            res.redirect('/');
+            req.login(User, {}, (err) => {
+                console.log('working');
+                res.redirect('/');
+            });
         })(req, res, next);
     }
 
@@ -218,8 +227,7 @@ class userController extends controller {
             yield User.save();
 
             // log user in
-            req.logIn(User, (err) => {
-                console.log(err);
+            req.login(User, (err) => {
                 res.redirect('/');
             });
         });
@@ -227,7 +235,8 @@ class userController extends controller {
 }
 
 /**
- * user controller
+ * eport user controller
+ *
  * @type {userController}
  */
 module.exports = userController;

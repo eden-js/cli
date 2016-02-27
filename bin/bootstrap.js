@@ -13,7 +13,7 @@ var express      = require('express');
 var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 var mongorito    = require('mongorito');
-var session      = require('express-session')
+var session      = require('express-session');
 
 // set global variables
 global.appRoot = path.dirname(path.resolve(__dirname));
@@ -66,7 +66,6 @@ class bootstrap {
             '_buildLocals',
             '_buildServer',
             '_buildView',
-            '_buildParser',
             '_buildRouter',
             '_buildDaemon',
             '_buildErrorHandler'
@@ -132,7 +131,20 @@ class bootstrap {
         // set port
         this.app.set('port', this.port);
 
-        // set default values
+        // set default uses
+        this.app.use(bodyParser.json());
+        this.app.use(bodyParser.urlencoded({extended: false}));
+        this.app.use(cookieParser(config.session));
+        this.app.use(session({
+            secret            : config.session,
+            resave            : false,
+            saveUninitialized : true,
+            cookie            : {
+                maxAge: (1000 * 60 * 5)
+            }
+        }));
+
+        // set default locals
         this.app.use((req, res, next) => {
             // set headers
             res.header('X-Powered-By', 'EdenFrame');
@@ -187,22 +199,6 @@ class bootstrap {
         this.app.set('views', global.appRoot + '/cache/view');
         this.app.set('view engine', 'hbs');
         this.app.engine('hbs', view);
-    }
-
-    /**
-     * build app parser
-     *
-     * @private
-     */
-    _buildParser() {
-        this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({extended: false}));
-        this.app.use(cookieParser());
-        this.app.use(session({
-            secret            : config.session,
-            resave            : false,
-            saveUninitialized : false
-        }));
     }
 
     /**
