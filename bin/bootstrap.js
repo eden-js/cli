@@ -131,16 +131,25 @@ class bootstrap {
         // set port
         this.app.set('port', this.port);
 
-        // set powered by
-        this.app.use(function(req, res, next){
-            res.setHeader('X-Powered-By', 'EdenFrame');
+        // set default values
+        this.app.use((req, res, next) => {
+            // set headers
+            res.header('X-Powered-By', 'EdenFrame');
+
+            // set variables
+            res.locals.route = req.originalUrl;
+
+            // go to next
             next();
         });
 
         // set CORS on api
-        this.app.all('/api/*', function(req, res, next) {
+        this.app.all('/api/*', (req, res, next) => {
+            // set headers
             res.header('Access-Control-Allow-Origin', '*');
             res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+
+            // go to next
             next();
         });
     }
