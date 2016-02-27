@@ -1,5 +1,5 @@
 /**
- * Created by Awesome on 1/30/2016.
+ * Created by Awesome on 2/17/2016.
  */
 
 // use strict
@@ -19,6 +19,25 @@ class defaultController extends controller {
      */
     constructor(props) {
         super(props);
+
+        // bind methods
+        this.defaultAction = this.defaultAction.bind(this);
+    }
+
+    /**
+     * index action
+     *
+     * @param req
+     * @param res
+     *
+     * @route {get} /
+     * @menu {{"name":"HOME","menu":"MAIN"}} Home
+     */
+    defaultAction(req, res) {
+        res.render('home', {
+            'route' : '/',
+            'title' : 'EdenFrame'
+        });
     }
 }
 
