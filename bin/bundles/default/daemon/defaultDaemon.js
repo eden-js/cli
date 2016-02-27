@@ -30,7 +30,7 @@ class defaultDaemon extends daemon {
      * @private
      */
     _log (text) {
-        console.log ('[docket daemon]: ' + text);
+        console.log ('[daemon]: ' + text);
     }
 }
 
