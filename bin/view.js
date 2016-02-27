@@ -3,7 +3,7 @@
  */
 
 // require dependencies
-var menus  = require(global.appRoot + '/cache/menus.json');
+var config = require(global.appRoot + '/cache/config.json');
 var exphbs = require('express-handlebars');
 var path   = require('path');
 
@@ -57,6 +57,8 @@ module.exports = exphbs({
          * @returns {string}
          */
         menu : function(name, path) {
+            var menus = config.menus;
+
             // check menu by name exists
             if (menus[name]) {
                 // set variables

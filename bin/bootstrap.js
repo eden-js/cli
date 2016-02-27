@@ -18,10 +18,10 @@ var mongorito    = require('mongorito');
 global.appRoot = path.dirname(path.resolve(__dirname));
 
 // require local dependencies
-var config  = require(global.appRoot + '/config');
-var view    = require(global.appRoot + '/bin/view');
-var routes  = require(global.appRoot + '/cache/routes.json');
-var daemons = require(global.appRoot + '/cache/daemons.json');
+var config   = require(global.appRoot + '/config');
+var view     = require(global.appRoot + '/bin/view');
+var compiled = require(global.appRoot + '/cache/config.json');
+var daemons  = require(global.appRoot + '/cache/daemons.json');
 
 /**
  * build bootstrap class
@@ -205,6 +205,10 @@ class bootstrap {
      * @private
      */
     _buildRouter() {
+        // set variables
+        var that   = this;
+        var routes = compiled.routes;
+
         // build router
         this.router = (this.router ? this.router : express.Router());
         // empty controller register
@@ -212,18 +216,23 @@ class bootstrap {
 
         // loop routes
         for (var type in routes) {
-            // loop routes with type
-            for (var route in routes[type]) {
-                // check if controller registered
-                if (!this._ctrl[routes[type][route]['controller']]) {
-                    // require controller
-                    var ctrl = require(global.appRoot + routes[type][route]['controller']);
-                    // register controller
-                    this._ctrl[routes[type][route]['controller']] = new ctrl();
-                }
+            var priorities = Object.keys(routes[type]).sort();
 
-                // assign route to controller function
-                this.router[type](route, this._ctrl[routes[type][route]['controller']][routes[type][route]['action']]);
+            for (var i = 0; i < priorities.length; i ++) {
+                let routeType = routes[type][priorities[i]];
+
+                for (var route in routeType) {
+                    // check if controller registered
+                    if (!that._ctrl[routeType[route]['controller']]) {
+                        // require controller
+                        var ctrl = require(global.appRoot + routeType[route]['controller']);
+                        // register controller
+                        that._ctrl[routeType[route]['controller']] = new ctrl();
+                    }
+
+                    // assign route to controller function
+                    that.router[type](route, that._ctrl[routeType[route]['controller']][routeType[route]['action']]);
+                }
             }
         }
 

@@ -26,9 +26,7 @@ var streamify  = require ('gulp-streamify');
 var uglify     = require ('gulp-uglify');
 
 // import local dependencies
-var routePipe   = require ('./bin/util/gulp.route.pipe');
-var commandPipe = require ('./bin/util/gulp.command.pipe');
-var menuPipe    = require ('./bin/util/gulp.menu.pipe');
+var configPipe = require ('./bin/util/gulp.config.pipe');
 
 /**
  * build gulp builder class
@@ -52,15 +50,7 @@ class gulpBuilder {
                 './bin/bundles/**/*Daemon.js',
                 './app/bundles/**/*Daemon.js'
             ],
-            'command' : [
-                './bin/bundles/**/*Command.js',
-                './bin/bundles/**/*Command.js'
-            ],
-            'route' : [
-                './bin/bundles/**/*Controller.js',
-                './app/bundles/**/*Controller.js'
-            ],
-            'menu' : [
+            'config' : [
                 './bin/bundles/**/*Controller.js',
                 './app/bundles/**/*Controller.js'
             ],
@@ -182,70 +172,29 @@ class gulpBuilder {
     }
 
     /**
-     * command task
-     */
-    command () {
-        // set variables
-        var that = this;
-        var all  = {};
-
-        // get all routes
-        this.gulp.src (
-            this._tasks['command']
-        )
-            .pipe (through.obj (commandPipe))
-            .on ('data', (data) => {
-            that._merge(all, data.routes);
-            }).on ('end', function () {
-                fs.writeFile ('./cache/command.json', JSON.stringify (all), function (err) {
-                    if (err) {
-                        return console.log (err);
-                    }
-                });
-            });
-    }
-
-    /**
      * route task
      */
-    route() {
+    config() {
         // set variables
         var that = this;
         var all  = {};
 
         // get all routes
-        this.gulp.src (
-            this._tasks['route']
-        )
-            .pipe (through.obj (routePipe))
-            .on ('data', (data) => {
-                that._merge(all, data.routes);
-            }).on ('end', function () {
-                fs.writeFile ('./cache/routes.json', JSON.stringify (all), function (err) {
-                    if (err) {
-                        return console.log (err);
-                    }
+        this.gulp
+            .src (this._tasks['config'])
+            .pipe (through.obj (function (chunk, enc, cb) {
+                var pip = this;
+                configPipe.pipe(chunk).then(result => {
+                    pip.push({
+                        'result' : result
+                    });
+                    cb(null, chunk);
                 });
-            });
-    }
-
-    /**
-     * menu task
-     */
-    menu() {
-        // set variables
-        var that = this;
-        var all  = {};
-
-        // get all menus
-        this.gulp.src (
-            this._tasks['menu']
-        )
-            .pipe (through.obj (menuPipe))
-            .on ('data', function (data) {
-                that._merge (all, data.menus);
+            }))
+            .on ('data', (data) => {
+                that._merge(all, data.result);
             }).on ('end', function () {
-                fs.writeFile ('./cache/menus.json', JSON.stringify (all), function (err) {
+                fs.writeFile ('./cache/config.json', JSON.stringify (all), function (err) {
                     if (err) {
                         return console.log (err);
                     }
