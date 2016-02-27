@@ -34,14 +34,11 @@ class userController extends controller {
      * @param req
      * @param res
      *
-     * @route {get} /user/login
+     * @route {get} /login
      * @menu {{"name":"LOGIN","menu":"MAIN","priority":1}} Login
      */
     loginAction(req, res) {
-        res.render('login', {
-            'title' : 'TibiaHunts',
-            'route' : '/user/login'
-        });
+        res.render('login', {});
     }
 
     /**
@@ -49,7 +46,7 @@ class userController extends controller {
      * @param req
      * @param res
      *
-     * @route {post} /user/login
+     * @route {post} /login
      */
     loginFormAction(req, res) {
         co(function * () {
@@ -59,8 +56,6 @@ class userController extends controller {
 
             if (!User) {
                 res.render('login', {
-                    'title' : 'TibiaHunts',
-                    'route' : '/user/login',
                     'error' : 'User not found',
                     'form' : {
                         'old': req.body
