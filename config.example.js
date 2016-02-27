@@ -9,6 +9,10 @@ module.exports = {
     port        : '3007',
     // the environment to run the app in
     environment : 'dev',
+    // secret for crypto
+    secret      : 'SECRET',
+    // secret for session
+    session     : 'SESSION',
     // database information (mongodb)
     database    : {
         dev : {

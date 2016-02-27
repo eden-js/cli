@@ -13,6 +13,7 @@ var express      = require('express');
 var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 var mongorito    = require('mongorito');
+var session      = require('express-session')
 
 // set global variables
 global.appRoot = path.dirname(path.resolve(__dirname));
@@ -197,6 +198,11 @@ class bootstrap {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({extended: false}));
         this.app.use(cookieParser());
+        this.app.use(session({
+            secret            : config.session,
+            resave            : false,
+            saveUninitialized : false
+        }));
     }
 
     /**
@@ -231,7 +237,7 @@ class bootstrap {
                         // require controller
                         var ctrl = require(global.appRoot + routeType[route]['controller']);
                         // register controller
-                        that._ctrl[routeType[route]['controller']] = new ctrl();
+                        that._ctrl[routeType[route]['controller']] = new ctrl(this.app);
                     }
 
                     // assign route to controller function

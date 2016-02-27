@@ -5,11 +5,15 @@
 'use strict';
 
 // require local dependencies
-var controller = require('../../core/controller');
-var user       = require('../model/user');
+var controller = require(global.appRoot + '/bin/bundles/core/controller');
+var user       = require(global.appRoot + '/bin/bundles/user/model/user');
+var config     = require(global.appRoot + '/config');
 
 // require dependencies
-var co = require('co');
+var co       = require('co');
+var crypto   = require('crypto');
+var passport = require('passport');
+var local    = require('passport-local').Strategy;
 
 /**
  * create user controller
@@ -17,15 +21,78 @@ var co = require('co');
 class userController extends controller {
     /**
      * constructor for user controller
-     * @param props
+     *
+     * @param app
      */
-    constructor(props) {
-        super(props);
+    constructor(app) {
+        super(app);
 
         // bind methods
         this.authAction      = this.authAction.bind(this);
         this.loginAction     = this.loginAction.bind(this);
         this.loginFormAction = this.loginFormAction.bind(this);
+
+        // build methods
+        this.build = this.build.bind(this);
+
+        // run
+        this.build(app);
+    }
+
+    /**
+     * builds user controller
+     */
+    build(app) {
+        // initialize passport
+        app.use(passport.initialize());
+        app.use(passport.session());
+
+        // create local strategy
+        passport.use(new local((username, password, done) => {
+            co(function * () {
+                // find user by username
+                var User = yield user.where({
+                    'username' : username
+                }).findOne();
+                
+                // check user exists
+                if (!User) {
+                    return done(null, false, {
+                        message: 'Username not found'
+                    });
+                }
+
+                // compare hash with password
+                var hash  = User.get('hash');
+                var check = crypto.createHmac('sha256', config.secret)
+                    .update(password)
+                    .digest('hex');
+
+                // check if password correct
+                if (check == hash) {
+                    return done(null, false, {
+                        message: 'Incorrect password'
+                    });
+                }
+
+                // password accepted
+                return done(null, User);
+            })
+        }));
+        // serializes user
+        passport.serializeUser(function(user, done) {
+            done(user._id); // the user id that you have in the session
+        });
+        // deserialize user
+        passport.deserializeUser(function(id, done) {
+            co(function * () {
+                var User = yield user.load(id);
+
+                if (User) {
+                    done(User);
+                }
+            });
+        });
     }
 
     /**
@@ -39,12 +106,12 @@ class userController extends controller {
      * @route {all} /*
      */
     authAction(req, res, next) {
-        console.log('working');
         next();
     }
 
     /**
      * login action
+     *
      * @param req
      * @param res
      *
@@ -56,27 +123,22 @@ class userController extends controller {
     }
 
     /**
-     * login Form action
+     * login form action
+     *
      * @param req
      * @param res
      *
      * @route {post} /login
      */
-    loginFormAction(req, res) {
-        co(function * () {
-            let User = yield user.where({
-                'username' : req.body.user
-            }).findOne();
-
-            if (!User) {
-                res.render('login', {
-                    'error' : 'User not found',
-                    'form' : {
-                        'old': req.body
-                    }
+    loginFormAction(req, res, next) {
+        passport.authenticate('local', function(err, user, info) {
+            if (!user) {
+                return res.render('login', {
+                    'error' : info.message
                 });
             }
-        });
+            res.redirect('/');
+        })(req, res, next);
     }
 }
 

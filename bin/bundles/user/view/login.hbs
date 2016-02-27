@@ -13,10 +13,10 @@
                             {{ . }}
                         </div>
                     {{/ error }}
-                    <form accept-charset="UTF-8" role="form" method="post" action="/user/login">
+                    <form accept-charset="UTF-8" role="form" method="post" action="/login">
                         <fieldset>
                             <div class="form-group">
-                                <input class="form-control" placeholder="yourmail@example.com" name="email" type="text" value="{{ form.old.email }}">
+                                <input class="form-control" placeholder="yourmail@example.com" name="username" type="text">
                             </div>
                             <div class="form-group">
                                 <input class="form-control" placeholder="Password" name="password" type="password">
