@@ -60,7 +60,7 @@ module.exports = function (chunk, enc, cb) {
 
                     // set route function
                     routes[tag.type][tag.name] = {
-                        'controller' : '/app/bundles' + chunk.path.split('bundles')[1].replace(/\\/g, '/'),
+                        'controller' : '/' + (chunk.path.indexOf('/app') > -1 ? 'app' : 'bin') + '/bundles' + chunk.path.split('bundles')[1].replace(/\\/g, '/'),
                         'action'     : fn
                     };
                 }

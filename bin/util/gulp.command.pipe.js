@@ -55,7 +55,7 @@ module.exports = function (chunk, enc, cb) {
 
                     // set route function
                     routes[tag.name] = {
-                        'command' : '/app/bundles' + chunk.path.split('bundles')[1].replace(/\\/g, '/'),
+                        'command' : '/' + (chunk.path.indexOf('/app') > -1 ? 'app' : 'bin') + '/bundles' + chunk.path.split('bundles')[1].replace(/\\/g, '/'),
                         'action'  : fn
                     };
                 }
