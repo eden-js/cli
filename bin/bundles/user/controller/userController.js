@@ -54,7 +54,7 @@ class userController extends controller {
                 var User = yield user.where({
                     'username' : username
                 }).findOne();
-                
+
                 // check user exists
                 if (!User) {
                     return done(null, false, {
@@ -131,7 +131,7 @@ class userController extends controller {
      * @route {post} /login
      */
     loginFormAction(req, res, next) {
-        passport.authenticate('local', function(err, user, info) {
+        passport.authenticate('local', (err, user, info) => {
             if (!user) {
                 return res.render('login', {
                     'error' : info.message
