@@ -147,7 +147,6 @@ class userController extends controller {
                 });
             }
             req.login(User, {}, (err) => {
-                console.log('working');
                 res.redirect('/');
             });
         })(req, res, next);

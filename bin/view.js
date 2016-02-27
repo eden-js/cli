@@ -65,18 +65,18 @@ module.exports = exphbs({
                 var menu = menus[name];
                 var rtn  = '<ul class="nav navbar-nav">';
 
-                // check if menu can be shown
-                if (menu.where) {
-                    var where = menu.where;
-                    if (where.indexOf('!') === 0 && !this[where]) {
-                        return '';
-                    } else if (where.indexOf('!') === -1 && this[where]) {
-                        return '';
-                    }
-                }
-
                 // loop menu items
                 for (var key in menu) {
+                    // check if menu can be shown
+                    if (menu[key].when) {
+                        var when = menu[key].when;
+                        if (when.indexOf('!') === 0 && this[when.replace('!', '')]) {
+                            continue;
+                        } else if (when.indexOf('!') === -1 && !this[when]) {
+                            continue;
+                        }
+                    }
+
                     rtn += '<li class="nav-item">';
 
                     // check menu has children
@@ -86,10 +86,11 @@ module.exports = exphbs({
 
                         // loop children
                         for (var sub in menu[key].children) {
-                            var where = menu[key].children[sub].where;
-                            if (where.indexOf('!') === 0 && !this[where]) {
+                            // check if child can be shown
+                            var when = menu[key].children[sub].when;
+                            if (when.indexOf('!') === 0 && this[when.replace('!', '')]) {
                                 continue;
-                            } else if (where.indexOf('!') === -1 && this[where]) {
+                            } else if (when.indexOf('!') === -1 && !this[when]) {
                                 continue;
                             }
 
