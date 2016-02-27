@@ -71,7 +71,7 @@ class userController extends controller {
                     .digest('hex');
 
                 // check if password correct
-                if (check == hash) {
+                if (check !== hash) {
                     return done(null, false, {
                         message: 'Incorrect password'
                     });
