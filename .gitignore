@@ -9,8 +9,8 @@ npm-debug.log
 .idea
 
 # configuration
-/config*
-/nginx*
+/config.js
+/nginx.conf
 
 # ignore custom bundles
 app/bundles/*
