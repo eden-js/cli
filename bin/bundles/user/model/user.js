@@ -20,29 +20,18 @@ class user extends mongorito.Model {
     /**
      * authenticates user
      *
-     * @param user
      * @param pass
      * @returns {Promise}
      */
-    authenticate(user, pass) {
+    authenticate(pass) {
+        var that = this;
+
         return new Promise((resolve, reject) => {
             co(function * () {
-                // find user by username
-                var User = yield this.where({
-                    'username' : user
-                }).findOne();
-
-                // check user exists
-                if (!User) {
-                    return resolve({
-                        'error' : true,
-                        'mess'  : 'Username not found'
-                    });
-                }
-
                 // compare hash with password
-                var hash  = User.get('hash');
-                var check = crypto.createHmac('sha256', config.secret)
+                var hash  = that.get('hash');
+                var check = crypto
+                    .createHmac('sha256', config.secret)
                     .update(pass)
                     .digest('hex');
 
@@ -56,8 +45,7 @@ class user extends mongorito.Model {
 
                 // password accepted
                 resolve({
-                    'error' : false,
-                    'user'  : User
+                    'error' : false
                 });
             })
         });

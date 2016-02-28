@@ -51,12 +51,25 @@ class userController extends controller {
 
         // create local strategy
         passport.use(new local((username, password, done) => {
-            user.authenticate(username, password).then(result => {
-                if (result.error) {
-                    done(null, false, result.mess);
-                } else {
-                    done(null, result.user);
+            co(function * () {
+                // find user
+                var User = yield user.where({
+                    'username' : username
+                }).findOne();
+
+                // check user exists
+                if (!User) {
+                    return done(null, false, 'User not found');
                 }
+
+                // authenticate
+                User.authenticate(password).then(result => {
+                    if (result.error) {
+                        done(null, false, result.mess);
+                    } else {
+                        done(null, User);
+                    }
+                });
             });
         }));
 
