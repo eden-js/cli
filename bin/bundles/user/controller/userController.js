@@ -51,40 +51,20 @@ class userController extends controller {
 
         // create local strategy
         passport.use(new local((username, password, done) => {
-            co(function * () {
-                // find user by username
-                var User = yield user.where({
-                    'username' : username
-                }).findOne();
-
-                // check user exists
-                if (!User) {
-                    return done(null, false, {
-                        message: 'Username not found'
-                    });
+            user.authenticate(username, password).then(result => {
+                if (result.error) {
+                    done(null, false, result.mess);
+                } else {
+                    done(null, result.user);
                 }
-
-                // compare hash with password
-                var hash  = User.get('hash');
-                var check = crypto.createHmac('sha256', config.secret)
-                    .update(password)
-                    .digest('hex');
-
-                // check if password correct
-                if (check !== hash) {
-                    return done(null, false, {
-                        message: 'Incorrect password'
-                    });
-                }
-
-                // password accepted
-                return done(null, User);
-            })
+            });
         }));
+
         // serializes user
         passport.serializeUser(function(User, done) {
             done(null, User.get('_id').toString()); // the user id that you have in the session
         });
+
         // deserialize user
         passport.deserializeUser(function(id, done) {
             co(function * () {
