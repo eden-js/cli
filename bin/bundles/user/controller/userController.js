@@ -2,6 +2,7 @@
  * Created by Awesome on 2/21/2016.
  */
 
+// use strict
 'use strict';
 
 // require local dependencies
@@ -25,6 +26,7 @@ class userController extends controller {
      * @param app
      */
     constructor(app) {
+        // run super
         super(app);
 
         // bind methods
@@ -74,12 +76,12 @@ class userController extends controller {
         }));
 
         // serializes user
-        passport.serializeUser(function(User, done) {
-            done(null, User.get('_id').toString()); // the user id that you have in the session
+        passport.serializeUser((User, done) => {
+            done(null, User.get('_id').toString());
         });
 
         // deserialize user
-        passport.deserializeUser(function(id, done) {
+        passport.deserializeUser((id, done) => {
             co(function * () {
                 var User = yield user.findById(id);
 

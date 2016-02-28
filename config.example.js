@@ -13,6 +13,19 @@ module.exports = {
     secret      : 'SECRET',
     // secret for session
     session     : 'SESSION',
+    // default acl information
+    acl         : {
+        // default acl per user
+        'default' : {
+            name  : 'user',
+            level : 0
+        },
+        // default acl for first user (admin account)
+        'first'   : {
+            name  : 'admin',
+            level : 100
+        }
+    },
     // database information (mongodb)
     database    : {
         dev : {

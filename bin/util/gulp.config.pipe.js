@@ -205,8 +205,11 @@ class configPipe {
             }
 
             // check if function
-            if (lines[line].indexOf('(') > -1 && lines[line].indexOf(')') > -1 && lines[line].indexOf('*') == -1) {
+            if (lines[line].indexOf('(') > -1 && lines[line].indexOf(')') > -1) {
                 isFn = lines[line].split('(')[0].trim();
+                if (isFn.indexOf('*') > -1) {
+                    isFn = isFn.split('*')[1].trim();
+                }
             } else if (lines[line].indexOf('*') === -1) {
                 break;
             }
