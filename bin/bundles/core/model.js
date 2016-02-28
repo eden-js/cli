@@ -6,17 +6,31 @@
 'use strict';
 
 // require dependencies
-var Mongorito = require('mongorito');
+var mongorito = require('mongorito');
 
 /**
- * build model class
+ * build model
  */
-class model extends Mongorito.Model {
-
+class model extends mongorito.Model {
+    /**
+     * check attributes
+     *
+     * @private
+     */
+    _checkAttributes() {
+        for (var key in this.attributes) {
+            var attr = this.attributes[key];
+            if (attr === Object(attr)) {
+                if (attr.entity) {
+                    //this.attributes[key] = require(global.appRoot + attr.entity).findById(attr.id);
+                }
+            }
+        }
+    }
 }
 
 /**
- * export model class
+ * export default model class
  *
  * @type {model}
  */

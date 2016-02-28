@@ -3,9 +3,12 @@
  */
 
 // require dependencies
-var config = require(global.appRoot + '/cache/config.json');
 var exphbs = require('express-handlebars');
 var path   = require('path');
+
+// require local dependencies
+var config = require(global.appRoot + '/cache/config.json');
+var acl    = require(global.appRoot + '/bin/acl');
 
 /**
  * export exhbs constructor
@@ -68,11 +71,8 @@ module.exports = exphbs({
                 // loop menu items
                 for (var key in menu) {
                     // check if menu can be shown
-                    if (menu[key].when) {
-                        var when = menu[key].when;
-                        if (when.indexOf('!') === 0 && this[when.replace('!', '')]) {
-                            continue;
-                        } else if (when.indexOf('!') === -1 && !this[when]) {
+                    if (menu[key].acl) {
+                        if (acl.test(menu[key].acl, this.user, this.acl) !== true) {
                             continue;
                         }
                     }
@@ -87,11 +87,10 @@ module.exports = exphbs({
                         // loop children
                         for (var sub in menu[key].children) {
                             // check if child can be shown
-                            var when = menu[key].children[sub].when;
-                            if (when.indexOf('!') === 0 && this[when.replace('!', '')]) {
-                                continue;
-                            } else if (when.indexOf('!') === -1 && !this[when]) {
-                                continue;
+                            if (menu[key].children[sub].acl) {
+                                if (acl.test(menu[key].children[sub].acl, this.user) !== true) {
+                                    continue;
+                                }
                             }
 
                             rtn += '<a class="dropdown-item" href="' + (menu[key].children[sub].route ? menu[key].children[sub].route : '#!') + '">' + menu[key].children[sub].title + '</a>';

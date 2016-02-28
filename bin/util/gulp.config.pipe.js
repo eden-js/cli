@@ -269,7 +269,7 @@ class configPipe {
 
             // check if priority
             if (tag.tag == 'acl') {
-                return JSON.parse('{' + tag.type + '}');
+                return eval('({' + tag.type + '})');
             }
         }
 

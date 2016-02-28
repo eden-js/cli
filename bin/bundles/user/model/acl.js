@@ -5,13 +5,13 @@
 // use strict
 'use strict';
 
-// require dependencies
-var mongorito = require('mongorito');
+// require local dependencies
+var model= require(global.appRoot + '/bin/bundles/core/model');
 
 /**
  * create user entity
  */
-class acl extends mongorito.Model {
+class acl extends model {
 
 }
 

@@ -8,6 +8,7 @@
 // require local dependencies
 var controller = require(global.appRoot + '/bin/bundles/core/controller');
 var user       = require(global.appRoot + '/bin/bundles/user/model/user');
+var acl        = require(global.appRoot + '/bin/bundles/user/model/acl');
 var config     = require(global.appRoot + '/config');
 
 // require dependencies
@@ -30,7 +31,6 @@ class userController extends controller {
         super(app);
 
         // bind methods
-        this.authAction         = this.authAction.bind(this);
         this.loginAction        = this.loginAction.bind(this);
         this.loginFormAction    = this.loginFormAction.bind(this);
         this.registerAction     = this.registerAction.bind(this);
@@ -88,28 +88,27 @@ class userController extends controller {
                 if (User) {
                     done(null, User);
                 } else {
-                    done(false);
+                    done(null, false);
                 }
             });
         });
-    }
 
-    /**
-     * auth action
-     *
-     * @param req
-     * @param res
-     * @param next
-     *
-     * @priority 1
-     * @route {all} /*
-     */
-    authAction(req, res, next) {
-        // set user locally
-        res.locals.user = req.user;
+        // add user to locals
+        app.use((req, res, next) => {
+            // set user locally
+            res.locals.user = req.user;
 
-        // run next
-        next();
+            // only run if user doesn't exist
+            if (!req.user) {
+                return next();
+            }
+
+            // get acl
+            co(function * () {
+                res.locals.acl = yield acl.findById(req.user.get('acl'));
+                next();
+            });
+        })
     }
 
     /**
@@ -121,7 +120,8 @@ class userController extends controller {
      * @route    {get} /login
      * @menu     {MAIN} Login
      * @name     LOGIN
-     * @priority 1
+     * @acl      {test:false,fail:{redirect:"/"}}
+     * @priority 2
      */
     loginAction(req, res) {
         res.render('login', {});

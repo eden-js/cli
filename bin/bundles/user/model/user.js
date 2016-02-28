@@ -7,16 +7,16 @@
 
 // require dependencies
 var crypto    = require('crypto');
-var mongorito = require('mongorito');
 
 // require local dependencies
 var config = require(global.appRoot + '/config');
+var model  = require(global.appRoot + '/bin/bundles/core/model');
 var acl    = require(global.appRoot + '/bin/bundles/user/model/acl');
 
 /**
  * create user entity
  */
-class user extends mongorito.Model {
+class user extends model {
     /**
      * check ACL before save
      */
@@ -74,7 +74,7 @@ class user extends mongorito.Model {
             yield def.save();
         }
         // set user acl
-        that.set('acl', def);
+        that.set('acl', def.get('_id').toString());
 
         // check first
         var count = yield user.count();
@@ -89,7 +89,7 @@ class user extends mongorito.Model {
                 yield adm.save();
             }
             // set user acl
-            that.set('acl', adm);
+            that.set('acl', adm.get('_id').toString());
         }
 
         // run next
