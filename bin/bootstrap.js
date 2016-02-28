@@ -138,10 +138,7 @@ class bootstrap {
         this.app.use(session({
             secret            : config.session,
             resave            : false,
-            saveUninitialized : true,
-            cookie            : {
-                maxAge: (1000 * 60 * 5)
-            }
+            saveUninitialized : true
         }));
 
         // set default locals
