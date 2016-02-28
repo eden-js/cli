@@ -98,7 +98,8 @@ class configPipe {
                             // add route to array
                             rtn['routes'][priority][routes[x].type][(mounts[y] + routes[x].route).split('//').join('/')] = {
                                 'controller' : '/' + (chunk.path.indexOf('/app') > -1 ? 'app' : 'bin') + '/bundles' + chunk.path.split('bundles')[1].replace(/\\/g, '/'),
-                                'action'     : isFn
+                                'action'     : isFn,
+                                'acl'        : routes[x].acl
                             }
                         }
                     }
@@ -237,22 +238,43 @@ class configPipe {
 
             // check if mount
             if (tag.tag == 'menu') {
-                var menu = JSON.parse(tag.type);
-                if (menu) {
-                    menus.push({
-                        'title'    : tag.name,
-                        'when'     : menu.when ? menu.when : false,
-                        'menu'     : menu.menu,
-                        'name'     : menu.name ? menu.name : tag.name,
-                        'parent'   : menu.parent ? menu.parent : false,
-                        'priority' : menu.priority ? menu.priority : false
-                    });
-                }
+                menus.push({
+                    'title'    : tag.name,
+                    'name'     : this._name(tags, tag.name, i),
+                    'menu'     : tag.type,
+                    'parent'   : this._parent(tags, false, i),
+                    'priority' : this._priority(tags, 10),
+                    'acl'      : this._acl(tags, i)
+                });
             }
         }
 
         // return false
         return menus.length ? menus : false;
+    }
+
+    /**
+     * returns acl array for tag
+     *
+     * @param tags
+     * @param after
+     * @returns {*}
+     * @private
+     */
+    _acl(tags, after) {
+        // loop tags for priority
+        for (var i = after; i < tags.length; i++) {
+            // let tag object
+            let tag = tags[i];
+
+            // check if priority
+            if (tag.tag == 'acl') {
+                return JSON.parse('{' + tag.type + '}');
+            }
+        }
+
+        // return default priority
+        return false;
     }
 
     /**
@@ -279,6 +301,56 @@ class configPipe {
 
         // return false
         return mounts.length ? mounts : false;
+    }
+
+    /**
+     * checks for name
+     *
+     * @param tags
+     * @param def
+     * @param after
+     * @returns {*}
+     * @private
+     */
+    _name(tags, def, after) {
+        // loop tags for priority
+        for (var i = after; i < tags.length; i++) {
+            // let tag object
+            let tag = tags[i];
+
+            // check if priority
+            if (tag.tag == 'name') {
+                return tag.name;
+            }
+        }
+
+        // return default priority
+        return def;
+    }
+
+    /**
+     * checks for parent
+     *
+     * @param tags
+     * @param def
+     * @param after
+     * @returns {*}
+     * @private
+     */
+    _parent(tags, def, after) {
+        // loop tags for priority
+        for (var i = after; i < tags.length; i++) {
+            // let tag object
+            let tag = tags[i];
+
+            // check if priority
+            if (tag.tag == 'parent') {
+                return tag.name;
+            }
+        }
+
+        // return default priority
+        return def;
     }
 
     /**
@@ -325,7 +397,8 @@ class configPipe {
             if (tag.tag == 'route') {
                 routes.push({
                     'type'  : tag.type,
-                    'route' : tag.name
+                    'route' : tag.name,
+                    'acl'   : this._acl(tags, i)
                 });
             }
         }

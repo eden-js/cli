@@ -118,8 +118,10 @@ class userController extends controller {
      * @param req
      * @param res
      *
-     * @route {get} /login
-     * @menu {{"name":"LOGIN","menu":"MAIN","when":"!user","priority":1}} Login
+     * @route    {get} /login
+     * @menu     {MAIN} Login
+     * @name     LOGIN
+     * @priority 1
      */
     loginAction(req, res) {
         res.render('login', {});

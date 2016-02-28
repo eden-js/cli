@@ -30,8 +30,9 @@ class defaultController extends controller {
      * @param req
      * @param res
      *
-     * @route {get} /
-     * @menu {{"name":"HOME","menu":"MAIN"}} Home
+     * @route    {get} /
+     * @menu     {MAIN} Home
+     * @priority 0
      */
     defaultAction(req, res) {
         res.render('home', {
