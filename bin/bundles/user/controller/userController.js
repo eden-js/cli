@@ -9,6 +9,8 @@
 var controller = require(global.appRoot + '/bin/bundles/core/controller');
 var user       = require(global.appRoot + '/bin/bundles/user/model/user');
 var acl        = require(global.appRoot + '/bin/bundles/user/model/acl');
+var aclConfig  = require(global.appRoot + '/cache/config.json').acl;
+var test       = require(global.appRoot + '/bin/acl');
 var config     = require(global.appRoot + '/config');
 
 // require dependencies
@@ -100,15 +102,48 @@ class userController extends controller {
 
             // only run if user doesn't exist
             if (!req.user) {
+                // run next
                 return next();
             }
 
             // get acl
             co(function * () {
                 res.locals.acl = yield acl.findById(req.user.get('acl'));
+
+                // run next
                 next();
             });
-        })
+        });
+
+        // check acl on run
+        app.use((req, res, next) => {
+            var canNext = true;
+
+            // check acl exists
+            if (aclConfig[req.url] && aclConfig[req.url].length) {
+                // loop acl for tests
+                for (var i = 0; i < aclConfig[req.url].length; i++) {
+                    // check acl
+                    var check = test.test(aclConfig[req.url][i], res.locals.user, res.locals.acl);
+
+                    // check if true
+                    if (check !== true) {
+                        // remove ability to next
+                        canNext = false;
+
+                        // check if redirect
+                        if (check.redirect) {
+                            res.redirect(check.redirect);
+                        }
+                    }
+                }
+            }
+
+            // run next
+            if (canNext) {
+                next();
+            }
+        });
     }
 
     /**

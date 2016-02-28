@@ -53,7 +53,8 @@ class configPipe {
         var mounts    = [];
         var rtn       = {
             'routes' : {},
-            'menus'  : {}
+            'menus'  : {},
+            'acl'    : {}
         };
 
         // loop parsed
@@ -95,11 +96,18 @@ class configPipe {
                             if (!rtn['routes'][priority][routes[x].type]) {
                                 rtn['routes'][priority][routes[x].type] = {};
                             }
+                            // ensure flattened acl
+                            if (!rtn['acl'][(mounts[y] + routes[x].route).split('//').join('/')]) {
+                                rtn['acl'][(mounts[y] + routes[x].route).split('//').join('/')] = [];
+                            }
+                            // add acl to acl array
+                            if (routes[x].acl) {
+                                rtn['acl'][(mounts[y] + routes[x].route).split('//').join('/')].push(routes[x].acl);
+                            }
                             // add route to array
                             rtn['routes'][priority][routes[x].type][(mounts[y] + routes[x].route).split('//').join('/')] = {
                                 'controller' : '/' + (chunk.path.indexOf('/app') > -1 ? 'app' : 'bin') + '/bundles' + chunk.path.split('bundles')[1].replace(/\\/g, '/'),
-                                'action'     : isFn,
-                                'acl'        : routes[x].acl
+                                'action'     : isFn
                             }
                         }
                     }
