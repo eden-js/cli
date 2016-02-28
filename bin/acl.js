@@ -39,6 +39,7 @@ class acl {
         if (userAcl === true) {
             return true;
         }
+        // actually check acl
         if (acl && userAcl) {
             for (var i = 0; i < acl.test.length; i++) {
                 if (userAcl.indexOf(acl.test[i]) === -1) {

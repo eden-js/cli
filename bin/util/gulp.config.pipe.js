@@ -50,6 +50,7 @@ class configPipe {
         var that      = this;
         var dPriority = 10;
         var priority  = dPriority;
+        var acl       = false;
         var mounts    = [];
         var rtn       = {
             'routes' : {},
@@ -67,6 +68,7 @@ class configPipe {
             // check for class
             var isClass = that._class(obj.line, lines);
             if (isClass) {
+                acl      = that._acl(tags, 0);
                 mounts   = that._mounts(tags);
                 priority = that._priority(tags, dPriority);
             }
@@ -104,6 +106,9 @@ class configPipe {
                             if (routes[x].acl) {
                                 rtn['acl'][(mounts[y] + routes[x].route).split('//').join('/')].push(routes[x].acl);
                             }
+                            if (acl) {
+                                rtn['acl'][(mounts[y] + routes[x].route).split('//').join('/')].push(acl);
+                            }
                             // add route to array
                             rtn['routes'][priority][routes[x].type][(mounts[y] + routes[x].route).split('//').join('/')] = {
                                 'controller' : '/' + (chunk.path.indexOf('/app') > -1 ? 'app' : 'bin') + '/bundles' + chunk.path.split('bundles')[1].replace(/\\/g, '/'),
@@ -122,6 +127,9 @@ class configPipe {
                             // only use first route
                             isMenu[m].route    = (mounts[0] + routes[0].route).split('//').join('/');
                             isMenu[m].priority = isMenu[m].priority ? isMenu[m].priority : priority;
+                            if (acl.length) {
+                                isMenu[m].acl.push(acl);
+                            }
 
                             // set menu object
                             if (!rtn['menus'][isMenu[m].menu]) {
@@ -246,13 +254,14 @@ class configPipe {
 
             // check if mount
             if (tag.tag == 'menu') {
+                var acl = this._acl(tags);
                 menus.push({
                     'title'    : tag.name,
                     'name'     : this._name(tags, tag.name, i),
                     'menu'     : tag.type,
                     'parent'   : this._parent(tags, false, i),
                     'priority' : this._priority(tags, 10),
-                    'acl'      : this._acl(tags, i)
+                    'acl'      : acl ? [acl] : []
                 });
             }
         }
@@ -265,13 +274,12 @@ class configPipe {
      * returns acl array for tag
      *
      * @param tags
-     * @param after
      * @returns {*}
      * @private
      */
-    _acl(tags, after) {
+    _acl(tags) {
         // loop tags for priority
-        for (var i = after; i < tags.length; i++) {
+        for (var i = 0; i < tags.length; i++) {
             // let tag object
             let tag = tags[i];
 

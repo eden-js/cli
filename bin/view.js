@@ -68,12 +68,14 @@ module.exports = exphbs({
                 var menu = menus[name];
                 var rtn  = '<ul class="nav navbar-nav">';
 
-                // loop menu items
+                menuLoop: // loop menu items
                 for (var key in menu) {
                     // check if menu can be shown
                     if (menu[key].acl) {
-                        if (acl.test(menu[key].acl, this.user, this.acl) !== true) {
-                            continue;
+                        for (var i = 0; i < menu[key].acl.length; i++) {
+                            if (acl.test(menu[key].acl[i], this.user, this.acl) !== true) {
+                                continue menuLoop;
+                            }
                         }
                     }
 
@@ -84,12 +86,14 @@ module.exports = exphbs({
                         rtn += '<a class="nav-link dropdown-toggle' + (path == menu[key].route ? ' active' : '') + '" data-toggle="dropdown" href="' + (menu[key].route ? menu[key].route : '#!') + '" role="button" aria-haspopup="true" aria-expanded="false">' + menu[key].title + '</a>';
                         rtn += '<div class="dropdown-menu">';
 
-                        // loop children
+                        subLoop: // loop children
                         for (var sub in menu[key].children) {
                             // check if child can be shown
                             if (menu[key].children[sub].acl) {
-                                if (acl.test(menu[key].children[sub].acl, this.user) !== true) {
-                                    continue;
+                                for (var i = 0; i < menu[key].children[sub].acl.length; i++) {
+                                    if (acl.test(menu[key].children[sub].acl[i], this.user, this.acl) !== true) {
+                                        continue subLoop;
+                                    }
                                 }
                             }
 
