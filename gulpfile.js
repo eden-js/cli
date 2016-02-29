@@ -97,9 +97,8 @@ class gulpBuilder {
             nodemon({
                 'script' : './app.js',
                 'ext'    : 'js hbs json',
-                'ignore' : [
-                    'app/*',
-                    'bin/*'
+                'watch'  : [
+                    'cache/'
                 ],
                 'env'    : {
                     'NODE_ENV': 'development'
