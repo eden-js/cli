@@ -17,13 +17,13 @@ var source     = require ('vinyl-source-stream');
 // require gulp dependencies
 var rename     = require ('gulp-rename');
 var sass       = require ('gulp-sass');
-var server     = require ('gulp-express');
 var sourcemaps = require ('gulp-sourcemaps');
 var concat     = require ('gulp-concat');
 var riot       = require ('gulp-riot');
 var insert     = require ('gulp-insert');
 var streamify  = require ('gulp-streamify');
 var uglify     = require ('gulp-uglify');
+var nodemon    = require ('gulp-nodemon');
 
 // import local dependencies
 var configPipe = require ('./bin/util/gulp.config.pipe');
@@ -93,9 +93,17 @@ class gulpBuilder {
         this.gulp.task('watch', watch);
         // add dev server task
         this.gulp.task('dev', () => {
-            server.run ([
-                './app.js'
-            ]);
+            nodemon({
+                'script' : './app.js',
+                'ext'    : 'js hbs json',
+                'ignore' : [
+                    'app/*',
+                    'bin/*'
+                ],
+                'env'    : {
+                    'NODE_ENV': 'development'
+                }
+            });
 
             for (var i = 0; i < keys.length; i++) {
                 that.gulp.watch (that._tasks[keys[i]], [keys[i], (event) => {
