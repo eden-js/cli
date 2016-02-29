@@ -93,6 +93,7 @@ class gulpBuilder {
         this.gulp.task('watch', watch);
         // add dev server task
         this.gulp.task('dev', () => {
+            // run nodemon on app.js
             nodemon({
                 'script' : './app.js',
                 'ext'    : 'js hbs json',
@@ -105,6 +106,7 @@ class gulpBuilder {
                 }
             });
 
+            // run gulp watch
             that.gulp.run ('watch');
         });
         // add default task
