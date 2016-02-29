@@ -63,6 +63,7 @@ class user extends model {
      */
     * checkAcl(next) {
         var that = this;
+            that.set('acl', []);
 
         // check default acl
         var def = yield acl.where({
@@ -74,7 +75,7 @@ class user extends model {
             yield def.save();
         }
         // set user acl
-        that.set('acl', def.get('_id').toString());
+        that.set('acl', that.get('acl').push(def));
 
         // check first
         var count = yield user.count();
@@ -89,7 +90,7 @@ class user extends model {
                 yield adm.save();
             }
             // set user acl
-            that.set('acl', adm.get('_id').toString());
+            that.set('acl', that.get('acl').push(adm));
         }
 
         // run next

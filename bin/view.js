@@ -73,7 +73,7 @@ module.exports = exphbs({
                     // check if menu can be shown
                     if (menu[key].acl) {
                         for (var i = 0; i < menu[key].acl.length; i++) {
-                            if (acl.test(menu[key].acl[i], this.user, this.acl) !== true) {
+                            if (acl.test(menu[key].acl[i], this.user) !== true) {
                                 continue menuLoop;
                             }
                         }
@@ -91,7 +91,7 @@ module.exports = exphbs({
                             // check if child can be shown
                             if (menu[key].children[sub].acl) {
                                 for (var i = 0; i < menu[key].children[sub].acl.length; i++) {
-                                    if (acl.test(menu[key].children[sub].acl[i], this.user, this.acl) !== true) {
+                                    if (acl.test(menu[key].children[sub].acl[i], this.user) !== true) {
                                         continue subLoop;
                                     }
                                 }

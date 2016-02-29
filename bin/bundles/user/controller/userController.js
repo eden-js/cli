@@ -105,14 +105,6 @@ class userController extends controller {
                 // run next
                 return next();
             }
-
-            // get acl
-            co(function * () {
-                res.locals.acl = yield acl.findById(req.user.get('acl'));
-
-                // run next
-                next();
-            });
         });
 
         // check acl on run
