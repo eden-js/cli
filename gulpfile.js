@@ -92,8 +92,8 @@ class gulpBuilder {
         // add watch task
         this.gulp.task('watch', watch);
         // add dev server task
-        this.gulp.task('dev', ['watch'], () => {
-            // run nodemon on app.js
+        this.gulp.task('dev', () => {
+            // run nodemon task
             nodemon({
                 'script' : './app.js',
                 'ext'    : 'js hbs json',
@@ -104,9 +104,14 @@ class gulpBuilder {
                     'NODE_ENV': 'development'
                 }
             });
+
+            // loop for watch
+            for (var i = 0; i < keys.length; i++) {
+                that.gulp.watch (that._tasks[keys[i]], [keys[i]]);
+            }
         });
         // add default task
-        this.gulp.task ('default', ['install', 'dev']);
+        this.gulp.task('default', ['install', 'dev']);
     }
 
     /**
