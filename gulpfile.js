@@ -105,15 +105,10 @@ class gulpBuilder {
                 }
             });
 
-            for (var i = 0; i < keys.length; i++) {
-                that.gulp.watch (that._tasks[keys[i]], [keys[i], (event) => {
-                    // check for server
-                    server.notify (event);
-                }]);
-            }
+            that.gulp.run ('watch');
         });
         // add default task
-        this.gulp.task('default', ['install', 'dev']);
+        this.gulp.task ('default', ['install', 'dev']);
     }
 
     /**
