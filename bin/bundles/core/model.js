@@ -26,18 +26,65 @@ class model extends mongorito.Model {
         this.setAttributes = this.setAttributes.bind(this);
 
         // bind model methods
+        this.get     = this.get.bind(this);
         this.isModel = this.isModel.bind(this);
 
         // set model location
         this._modelLocation = module.parent.filename.replace(global.appRoot, '');
         this._loads         = {};
 
-        // run attributes method
-        this.getAttributes();
-
         // set attributes before save
         this.before ('save', 'setAttributes');
-        this.after  ('save', 'getAttributes');
+    }
+
+    /**
+     * gets object
+     *
+     * @param key
+     */
+    * get(key) {
+        let attr = this.attributes[key];
+
+        // check if is object
+        if (attr === Object(attr) && attr.model) {
+            // load model
+            if (!this._loads[attr.model]) {
+                this._loads[attr.model] = require(global.appRoot + attr.model);
+            }
+
+            // yield model
+            let load = yield this._loads[attr.model].findById(attr.id);
+
+            // set model
+            this.set(key, load);
+        } else if (Array.isArray(attr)) {
+            // set array variable
+            var arr = [];
+            // loop object array
+            for (var i = 0; i < attr.length; i++) {
+                // check if is object
+                if (attr[i] === Object(attr[i]) && attr[i].model) {
+                    // load model
+                    if (!this._loads[attr[i].model]) {
+                        this._loads[attr[i].model] = require(global.appRoot + attr[i].model);
+                    }
+
+                    // yield model
+                    let load = yield this._loads[attr[i].model].findById(attr[i].id);
+
+                    // set model
+                    arr.push(load);
+                } else {
+                    arr.push(attr[i]);
+                }
+            }
+
+            // set array
+            this.set(key, arr);
+        }
+
+        // return get
+        return super.get(key);
     }
 
     /**
@@ -49,45 +96,7 @@ class model extends mongorito.Model {
         // loop attributes
         for (var key in this.attributes) {
             // set let attribute
-            let attr = this.attributes[key];
 
-            // check if is object
-            if (attr === Object(attr) && attr.model) {
-                // load model
-                if (!this._loads[attr.model]) {
-                    this._loads[attr.model] = require(global.appRoot + attr.model);
-                }
-
-                // yield model
-                let load = yield this._loads[attr.model].findById(attr.id);
-
-                // set model
-                this.set(key, load);
-            } else if (Array.isArray(attr)) {
-                // set array variable
-                var arr = [];
-                // loop object array
-                for (var i = 0; i < attr.length; i++) {
-                    // check if is object
-                    if (attr[i] === Object(attr[i]) && attr[i].model) {
-                        // load model
-                        if (!this._loads[attr[i].model]) {
-                            this._loads[attr[i].model] = require(global.appRoot + attr[i].model);
-                        }
-
-                        // yield model
-                        let load = yield this._loads[attr[i].model].findById(attr[i].id);
-
-                        // set model
-                        arr.push(load);
-                    } else {
-                        arr.push(attr[i]);
-                    }
-                }
-
-                // set array
-                this.set(key, arr);
-            }
         }
 
         // run next
