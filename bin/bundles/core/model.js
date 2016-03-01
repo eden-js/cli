@@ -21,10 +21,6 @@ class model extends mongorito.Model {
         // run super
         super(props);
 
-        // bind attribute methods
-        this._getAttributes = this._getAttributes.bind(this);
-        this._setAttributes = this._setAttributes.bind(this);
-
         // bind model methods
         this._isModel   = this._isModel.bind(this);
         this._loadModel = this._loadModel.bind(this);
@@ -60,6 +56,7 @@ class model extends mongorito.Model {
                 // loop object array
                 for (var i = 0; i < attr.length; i++) {
                     // check if is object
+                    console.log(attr[i]);
                     if (attr[i] === Object(attr) && attr[i].model) {
                         this._loadModel(key + '.' + i, attr[i]);
                     }
