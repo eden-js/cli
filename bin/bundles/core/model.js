@@ -33,7 +33,7 @@ class model extends mongorito.Model {
         this._loads         = {};
 
         // run attributes method
-        this.getAttributes();
+        // this.getAttributes();
 
         // set attributes before save
         this.before ('save', 'setAttributes');
@@ -62,7 +62,7 @@ class model extends mongorito.Model {
                 let load = yield this._loads[attr.model].findById(attr.id);
 
                 // set model
-                this.attributes[key] = load;
+                this.set(key, load);
             } else if (Array.isArray(attr)) {
                 // set array variable
                 var arr = [];
@@ -86,7 +86,7 @@ class model extends mongorito.Model {
                 }
 
                 // set array
-                this.attributes[key] = arr;
+                this.set(key, arr);
             }
         }
 
