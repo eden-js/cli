@@ -91,8 +91,9 @@ class model extends mongorito.Model {
         }
 
         // run next
-        console.log('next!');
-        yield next;
+        if (next) {
+            yield next;
+        }
     }
 
     /**
