@@ -61,7 +61,7 @@ class model extends mongorito.Model {
                 for (var i = 0; i < attr.length; i++) {
                     // check if is object
                     if (attr[i] === Object(attr) && attr[i].model) {
-                        this._loadModel(key + '.' + i, attr);
+                        this._loadModel(key + '.' + i, attr[i]);
                     }
                 }
             }
@@ -74,6 +74,7 @@ class model extends mongorito.Model {
     /**
      * sets attributes
      *
+     * @param next
      * @private
      */
     * _setAttributes(next) {
@@ -89,6 +90,14 @@ class model extends mongorito.Model {
                     'id'    : attr.get('_id').toString(),
                     'model' : attr._modelLocation
                 });
+            } else if (Array.isArray(attr)) {
+                // loop object array
+                for (var i = 0; i < attr.length; i++) {
+                    // check if is object
+                    if (this._isModel(attr[i])) {
+                        this._loadModel(key + '.' + i, attr[i]);
+                    }
+                }
             }
         }
 
