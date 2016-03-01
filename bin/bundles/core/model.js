@@ -28,7 +28,7 @@ class model extends mongorito.Model {
         // set model location
         this._modelLocation = module.parent.filename.replace(global.appRoot, '');
         this._loads         = {};
-
+        console.log(this._modelLocation);
         // set attributes before save
         this.before ('save', '_setAttributes');
         this.after  ('save', '_getAttributes');
@@ -44,12 +44,11 @@ class model extends mongorito.Model {
      * @private
      */
     * _getAttributes(next) {
+        console.log('working');
         // loop attributes
         for (var key in this.attributes) {
             // set let attribute
             let attr = this.attributes[key];
-
-            console.log(attr);
 
             // check if is object
             if (attr === Object(attr) && attr.model) {
