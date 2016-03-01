@@ -43,7 +43,7 @@ class model extends mongorito.Model {
      * @param key
      * @returns {Promise}
      */
-    * model(key) {
+    model(key) {
         var that = this;
 
         return new Promise((resolve, reject) => {
@@ -60,8 +60,8 @@ class model extends mongorito.Model {
      *
      * @param key
      */
-    * getAttribute(key) {
-        return new Promise((resolve, reject) => {
+    getAttribute(key) {
+        return new Promise(function * (resolve, reject) {
             // set let attribute
             let attr = this.attributes[key];
 
