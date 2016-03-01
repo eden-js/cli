@@ -56,7 +56,15 @@ class model extends mongorito.Model {
             // check if is object
             if (attr === Object(attr) && attr.model) {
                 // load model
-                this.set(key, this.loadModel(attr));
+                if (!this._loads[attr.model]) {
+                    this._loads[attr.model] = require(global.appRoot + attr.model);
+                }
+
+                // yield model
+                let load = yield this._loads[attr.model].findById(attr.id);
+
+                // set model
+                this.set(key, load);
             } else if (Array.isArray(attr)) {
                 // set array variable
                 var arr = [];
@@ -64,8 +72,17 @@ class model extends mongorito.Model {
                 for (var i = 0; i < attr.length; i++) {
                     // check if is object
                     if (attr[i] === Object(attr[i]) && attr[i].model) {
-                        console.log(attr[i]);
-                        arr.push(this.loadModel(attr[i]));
+                        // load model
+                        if (!this._loads[attr[i].model]) {
+                            this._loads[attr[i].model] = require(global.appRoot + attr[i].model);
+                        }
+
+                        // yield model
+                        let load = yield this._loads[attr[i].model].findById(attr[i].id);
+                        console.log(load);
+
+                        // set model
+                        arr.push(load);
                     } else {
                         arr.push(attr[i]);
                     }
@@ -135,24 +152,6 @@ class model extends mongorito.Model {
         if (obj === Object(obj) && obj._modelLocation) {
             return true;
         }
-    }
-
-    /**
-     * loads model
-     *
-     * @param attr
-     */
-    * loadModel(attr) {
-        // check model loaded
-        if (!this._loads[attr.model]) {
-            this._loads[attr.model] = require(global.appRoot + attr.model);
-        }
-        let load = yield this._loads[attr.model].findById(attr.id);
-        console.log(this._loads(attr.model));
-        console.log(load);
-
-        // load by id
-        return load;
     }
 }
 
