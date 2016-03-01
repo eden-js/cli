@@ -7,6 +7,7 @@
 
 // require dependencies
 var mongorito = require('mongorito');
+var co        = require('co');
 
 /**
  * build model
@@ -41,70 +42,68 @@ class model extends mongorito.Model {
      * gets model
      *
      * @param key
-     * @returns {Promise}
      */
-    model(key) {
-        var that = this;
-
-        return new Promise((resolve, reject) => {
-            if (that.attributes[key]) {
-                that.getAttribute(key).then(resolve);
-            } else {
-                resolve (false);
-            }
-        });
+    model (key) {
+        return this.getAttribute(key);
     }
 
     /**
      * gets attribute
      *
      * @param key
+     * @returns {Promise}
      */
     getAttribute(key) {
-        return new Promise(function * (resolve, reject) {
-            // set let attribute
-            let attr = this.attributes[key];
+        // set variables
+        var that = this;
 
-            // check if is object
-            if (attr === Object(attr) && attr.model) {
-                // load model
-                if (!this._loads[attr.model]) {
-                    this._loads[attr.model] = require(global.appRoot + attr.model);
-                }
+        // return promise
+        return new Promise((resolve, reject) => {
+            co(function * () {
+                // set let attribute
+                let attr = that.attributes[key];
 
-                // yield model
-                let load = yield this._loads[attr.model].findById(attr.id);
-
-                // set model
-                this.set(key, load);
-            } else if (Array.isArray(attr)) {
-                // set array variable
-                var arr = [];
-                // loop object array
-                for (var i = 0; i < attr.length; i++) {
-                    // check if is object
-                    if (attr[i] === Object(attr[i]) && attr[i].model) {
-                        // load model
-                        if (!this._loads[attr[i].model]) {
-                            this._loads[attr[i].model] = require(global.appRoot + attr[i].model);
-                        }
-
-                        // yield model
-                        let load = yield this._loads[attr[i].model].findById(attr[i].id);
-
-                        // set model
-                        arr.push(load);
-                    } else {
-                        arr.push(attr[i]);
+                // check if is object
+                if (attr === Object(attr) && attr.model) {
+                    // load model
+                    if (!that._loads[attr.model]) {
+                        that._loads[attr.model] = require(global.appRoot + attr.model);
                     }
+
+                    // yield model
+                    let load = yield that._loads[attr.model].findById(attr.id);
+
+                    // set model
+                    this.set(key, load);
+                } else if (Array.isArray(attr)) {
+                    // set array variable
+                    var arr = [];
+                    // loop object array
+                    for (var i = 0; i < attr.length; i++) {
+                        // check if is object
+                        if (attr[i] === Object(attr[i]) && attr[i].model) {
+                            // load model
+                            if (!that._loads[attr[i].model]) {
+                                that._loads[attr[i].model] = require(global.appRoot + attr[i].model);
+                            }
+
+                            // yield model
+                            let load = yield that._loads[attr[i].model].findById(attr[i].id);
+
+                            // set model
+                            arr.push(load);
+                        } else {
+                            arr.push(attr[i]);
+                        }
+                    }
+
+                    // set array
+                    that.set(key, arr);
                 }
 
-                // set array
-                this.set(key, arr);
-            }
-
-            // resolve
-            resolve(this.get(key));
+                // return
+                resolve(that.get(key));
+            });
         });
     }
 
