@@ -30,11 +30,12 @@ class model extends mongorito.Model {
         this._loads         = {};
 
         // run attributes method
-        this._getAttributes();
+        this.getAttributes();
 
         // set attributes before save
-        this.before ('save', '_setAttributes');
-        this.after  ('save', '_getAttributes');
+        this.before ('save', 'setAttributes');
+        this.after  ('save', 'getAttributes');
+
 
         console.log('working');
     }
@@ -43,26 +44,24 @@ class model extends mongorito.Model {
      * gets models from attributes
      *
      * @param next
-     * @private
      */
-    * _getAttributes(next) {
-        console.log('working');
+    * getAttributes(next) {
         // loop attributes
         for (var key in this.attributes) {
             // set let attribute
             let attr = this.attributes[key];
+            console.log(attr);
 
             // check if is object
             if (attr === Object(attr) && attr.model) {
                 // load model
-                this._loadModel(key, attr);
+                this.loadModel(key, attr);
             } else if (Array.isArray(attr)) {
                 // loop object array
                 for (var i = 0; i < attr.length; i++) {
                     // check if is object
-                    console.log(attr[i]);
                     if (attr[i] === Object(attr) && attr[i].model) {
-                        this._loadModel(key + '.' + i, attr[i]);
+                        this.loadModel(key + '.' + i, attr[i]);
                     }
                 }
             }
@@ -76,16 +75,15 @@ class model extends mongorito.Model {
      * sets attributes
      *
      * @param next
-     * @private
      */
-    * _setAttributes(next) {
+    * setAttributes(next) {
         // loop attributes
         for (var key in this.attributes) {
             // set let attribute
             let attr = this.attributes[key];
 
             // check if entity
-            if (this._isModel(attr)) {
+            if (this.isModel(attr)) {
                 // set array for save
                 this.set(key, {
                     'id'    : attr.get('_id').toString(),
@@ -95,8 +93,8 @@ class model extends mongorito.Model {
                 // loop object array
                 for (var i = 0; i < attr.length; i++) {
                     // check if is object
-                    if (this._isModel(attr[i])) {
-                        this._loadModel(key + '.' + i, attr[i]);
+                    if (this.isModel(attr[i])) {
+                        this.loadModel(key + '.' + i, attr[i]);
                     }
                 }
             }
@@ -113,7 +111,7 @@ class model extends mongorito.Model {
      * @returns {boolean}
      * @private
      */
-    * _isModel(obj) {
+    isModel(obj) {
         // check if model
         if (obj === Object(obj) && obj._modelLocation) {
             return true;
@@ -125,9 +123,8 @@ class model extends mongorito.Model {
      *
      * @param key
      * @param attr
-     * @private
      */
-    * _loadModel(key, attr) {
+    * loadModel(key, attr) {
         // check model loaded
         if (!this._loads[attr.model]) {
             this._loads[attr.model] = require(global.appRoot + attr.model);
