@@ -111,7 +111,6 @@ class userController extends controller {
 
             // check acl exists
             var rt = '/' + req.url.replace(/^\/|\/$/g, '');
-            console.log(rt);
             if (aclConfig[rt] && aclConfig[rt].length) {
                 // loop acl for tests
                 for (var i = 0; i < aclConfig[rt].length; i++) {
