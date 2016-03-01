@@ -56,16 +56,23 @@ class model extends mongorito.Model {
             // check if is object
             if (attr === Object(attr) && attr.model) {
                 // load model
-                this.loadModel(key, attr);
+                this.set(key, this.loadModel(attr));
             } else if (Array.isArray(attr)) {
+                console.log('here');
+                // set array variable
+                var arr = [];
                 // loop object array
                 for (var i = 0; i < attr.length; i++) {
                     // check if is object
                     if (attr[i] === Object(attr[i]) && attr[i].model) {
-                        console.log(attr[i]);
-                        this.loadModel(key + '.' + i, attr[i]);
+                        arr.push(this.loadModel(attr[i]));
+                    } else {
+                        arr.push(attr[i]);
                     }
                 }
+
+                // set array
+                this.set(key, arr);
             }
         }
 
@@ -92,16 +99,23 @@ class model extends mongorito.Model {
                     'model' : attr._modelLocation
                 });
             } else if (Array.isArray(attr)) {
+                // set arr variable
+                var arr = [];
                 // loop object array
                 for (var i = 0; i < attr.length; i++) {
                     // check if is object
                     if (this.isModel(attr[i])) {
-                        this.set(key + '.' + i, {
+                        arr.push({
                             'id'    : attr[i].get('_id').toString(),
                             'model' : attr[i]._modelLocation
                         });
+                    } else {
+                        arr.push(attr[i]);
                     }
                 }
+
+                // set array
+                this.set(key, arr);
             }
         }
 
@@ -126,10 +140,9 @@ class model extends mongorito.Model {
     /**
      * loads model
      *
-     * @param key
      * @param attr
      */
-    * loadModel(key, attr) {
+    * loadModel(attr) {
         // check model loaded
         if (!this._loads[attr.model]) {
             this._loads[attr.model] = require(global.appRoot + attr.model);
@@ -139,7 +152,7 @@ class model extends mongorito.Model {
         console.log(load);
 
         // load by id
-        this.set(key, load);
+        return load;
     }
 }
 
