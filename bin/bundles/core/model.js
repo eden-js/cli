@@ -21,9 +21,13 @@ class model extends mongorito.Model {
         // run super
         super(props);
 
+        // bind set/get methods
+        this.getAttributes = this.getAttributes.bind(this);
+        this.setAttributes = this.setAttributes.bind(this);
+
         // bind model methods
-        this._isModel   = this._isModel.bind(this);
-        this._loadModel = this._loadModel.bind(this);
+        this.isModel   = this.isModel.bind(this);
+        this.loadModel = this.loadModel.bind(this);
 
         // set model location
         this._modelLocation = module.parent.filename.replace(global.appRoot, '');
@@ -77,6 +81,7 @@ class model extends mongorito.Model {
      * @param next
      */
     * setAttributes(next) {
+        console.log('SET ATTRIBUTES');
         // loop attributes
         for (var key in this.attributes) {
             // set let attribute
