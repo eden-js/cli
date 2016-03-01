@@ -39,9 +39,6 @@ class model extends mongorito.Model {
         // set attributes before save
         this.before ('save', 'setAttributes');
         this.after  ('save', 'getAttributes');
-
-
-        console.log('working');
     }
 
     /**
@@ -50,7 +47,6 @@ class model extends mongorito.Model {
      * @param next
      */
     * getAttributes(next) {
-        console.log('GET ATTRIBUTES');
         // loop attributes
         for (var key in this.attributes) {
             // set let attribute
@@ -99,7 +95,10 @@ class model extends mongorito.Model {
                 for (var i = 0; i < attr.length; i++) {
                     // check if is object
                     if (this.isModel(attr[i])) {
-                        this.loadModel(key + '.' + i, attr[i]);
+                        this.set(key + '.' + i, {
+                            'id'    : attr[i].get('_id').toString(),
+                            'model' : attr[i]._modelLocation
+                        });
                     }
                 }
             }
