@@ -110,11 +110,13 @@ class userController extends controller {
             var canNext = true;
 
             // check acl exists
-            if (aclConfig[req.url] && aclConfig[req.url].length) {
+            var rt = '/' + req.url.replace(/^\/|\/$/g, '');
+            console.log(rt);
+            if (aclConfig[rt] && aclConfig[rt].length) {
                 // loop acl for tests
-                for (var i = 0; i < aclConfig[req.url].length; i++) {
+                for (var i = 0; i < aclConfig[rt].length; i++) {
                     // check acl
-                    var check = test.test(aclConfig[req.url][i], res.locals.user, res.locals.acl);
+                    var check = test.test(aclConfig[rt][i], res.locals.user);
 
                     // check if true
                     if (check !== true) {
@@ -123,8 +125,9 @@ class userController extends controller {
 
                         // check if redirect
                         if (check.redirect) {
-                            res.redirect(check.redirect);
+                            return res.redirect(check.redirect);
                         }
+                        return res.redirect('/');
                     }
                 }
             }

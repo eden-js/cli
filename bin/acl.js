@@ -12,6 +12,13 @@ var model = require(global.appRoot + '/bin/bundles/user/model/acl');
  * build acl class
  */
 class acl {
+    /**
+     * tests acl
+     *
+     * @param acl
+     * @param User
+     * @returns {*}
+     */
     test(acl, User) {
         // check if acl required
         if (User == 'undefined' || User == undefined) {
@@ -30,12 +37,17 @@ class acl {
             return acl.fail ? acl.fail : false;
         }
         // check if user
-        if (!User || !userAcl) {
+        if (!User) {
+            return acl.fail ? acl.fail : false;
+        }
+
+        // check get acl
+        var userAcl = User.get('acl');
+        if (!userAcl) {
             return acl.fail ? acl.fail : false;
         }
 
         // check if user
-        var userAcl = User.get('acl');
         var can     = false;
         // loop acl array
         for (var i = 0; i < userAcl.length; i++) {

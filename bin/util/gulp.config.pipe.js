@@ -98,19 +98,21 @@ class configPipe {
                             if (!rtn['routes'][priority][routes[x].type]) {
                                 rtn['routes'][priority][routes[x].type] = {};
                             }
+                            // set acl route
+                            var rt = '/' + (mounts[y] + routes[x].route).split('//').join('/').replace(/^\/|\/$/g, '');
                             // ensure flattened acl
-                            if (!rtn['acl'][(mounts[y] + routes[x].route).split('//').join('/')]) {
-                                rtn['acl'][(mounts[y] + routes[x].route).split('//').join('/')] = [];
+                            if (!rtn['acl'][rt]) {
+                                rtn['acl'][rt] = [];
                             }
                             // add acl to acl array
                             if (routes[x].acl) {
-                                rtn['acl'][(mounts[y] + routes[x].route).split('//').join('/')].push(routes[x].acl);
+                                rtn['acl'][rt].push(routes[x].acl);
                             }
                             if (acl) {
-                                rtn['acl'][(mounts[y] + routes[x].route).split('//').join('/')].push(acl);
+                                rtn['acl'][rt].push(acl);
                             }
                             // add route to array
-                            rtn['routes'][priority][routes[x].type][(mounts[y] + routes[x].route).split('//').join('/')] = {
+                            rtn['routes'][priority][routes[x].type][rt] = {
                                 'controller' : '/' + (chunk.path.indexOf('/app') > -1 ? 'app' : 'bin') + '/bundles' + chunk.path.split('bundles')[1].replace(/\\/g, '/'),
                                 'action'     : isFn
                             }
