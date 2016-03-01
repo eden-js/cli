@@ -26,8 +26,7 @@ class model extends mongorito.Model {
         this.setAttributes = this.setAttributes.bind(this);
 
         // bind model methods
-        this.isModel   = this.isModel.bind(this);
-        this.loadModel = this.loadModel.bind(this);
+        this.isModel = this.isModel.bind(this);
 
         // set model location
         this._modelLocation = module.parent.filename.replace(global.appRoot, '');
