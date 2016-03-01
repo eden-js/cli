@@ -87,7 +87,6 @@ class userController extends controller {
             co(function * () {
                 var User = yield user.findById(id);
                 var Acl  = yield User.model('acl');
-                console.log(Acl);
 
                 if (User) {
                     done(null, User);

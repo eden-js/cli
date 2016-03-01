@@ -13,6 +13,8 @@ var model = require(global.appRoot + '/bin/bundles/user/model/acl');
  */
 class acl {
     test(acl, User) {
+        console.log(User.get('acl'));
+        console.log('working');
         // check if acl required
         if (User == 'undefined' || User == undefined) {
             User = false;
