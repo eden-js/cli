@@ -43,6 +43,8 @@ class model extends mongorito.Model {
      * @param key
      */
     * get(key) {
+        console.log(key);
+        console.log(super.get);
         let attr = this.attributes[key];
 
         // check if is object
