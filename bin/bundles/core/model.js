@@ -37,7 +37,7 @@ class model extends mongorito.Model {
 
         // set attributes before save
         this.before ('save', 'setAttributes');
-        this.after  ('save', 'getAttributes');
+        // this.after  ('save', 'getAttributes');
     }
 
     /**
@@ -46,7 +46,6 @@ class model extends mongorito.Model {
      * @param next
      */
     * getAttributes(next) {
-        console.log('GET ATTRIBUTES');
         // loop attributes
         for (var key in this.attributes) {
             // set let attribute
@@ -78,7 +77,6 @@ class model extends mongorito.Model {
 
                         // yield model
                         let load = yield this._loads[attr[i].model].findById(attr[i].id);
-                        console.log(load);
 
                         // set model
                         arr.push(load);
