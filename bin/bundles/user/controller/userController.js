@@ -86,6 +86,7 @@ class userController extends controller {
         passport.deserializeUser((id, done) => {
             co(function * () {
                 var User = yield user.findById(id);
+                console.log(User);
 
                 if (User) {
                     done(null, User);

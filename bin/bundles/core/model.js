@@ -33,7 +33,7 @@ class model extends mongorito.Model {
         this._loads         = {};
 
         // run attributes method
-        // this.getAttributes();
+        this.getAttributes();
 
         // set attributes before save
         this.before ('save', 'setAttributes');
