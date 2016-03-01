@@ -35,6 +35,8 @@ class model extends mongorito.Model {
         // set attributes before save
         this.before ('save', '_setAttributes');
         this.after  ('save', '_getAttributes');
+
+        console.log('working');
     }
 
     /**
