@@ -85,7 +85,7 @@ class userController extends controller {
         // deserialize user
         passport.deserializeUser((id, done) => {
             var User = user.load(id);
-            User.getAttributes();
+            console.log(User);
 
             if (User) {
                 done(null, User);
