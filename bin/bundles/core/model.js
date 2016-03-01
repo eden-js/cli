@@ -23,10 +23,11 @@ class model extends mongorito.Model {
 
         // bind set/get methods
         this.getAttributes = this.getAttributes.bind(this);
+        this.getAttribute  = this.getAttribute.bind(this);
         this.setAttributes = this.setAttributes.bind(this);
 
         // bind model methods
-        this.get     = this.get.bind(this);
+        this.model   = this.model.bind(this);
         this.isModel = this.isModel.bind(this);
 
         // set model location
@@ -42,11 +43,37 @@ class model extends mongorito.Model {
      *
      * @param key
      */
-    * get(key) {
-        console.log(key);
-        console.log(super.get);
-        let attr = this.attributes[key];
+    * model(key) {
+        this.getAttribute(this.attributes[key]);
 
+        // return get
+        return super.get(key);
+    }
+
+    /**
+     * gets models from attributes
+     *
+     * @param next
+     */
+    * getAttributes(next) {
+        // loop attributes
+        for (var key in this.attributes) {
+            // set let attribute
+            this.getAttribute(this.attributes[key]);
+        }
+
+        // run next
+        if (next) {
+            yield next;
+        }
+    }
+
+    /**
+     * gets attribute by key
+     *
+     * @param attr
+     */
+    * getAttribute(attr) {
         // check if is object
         if (attr === Object(attr) && attr.model) {
             // load model
@@ -83,27 +110,6 @@ class model extends mongorito.Model {
 
             // set array
             this.set(key, arr);
-        }
-
-        // return get
-        return super.get(key);
-    }
-
-    /**
-     * gets models from attributes
-     *
-     * @param next
-     */
-    * getAttributes(next) {
-        // loop attributes
-        for (var key in this.attributes) {
-            // set let attribute
-
-        }
-
-        // run next
-        if (next) {
-            yield next;
         }
     }
 
