@@ -86,7 +86,9 @@ class userController extends controller {
         passport.deserializeUser((id, done) => {
             co(function * () {
                 var User = yield user.findById(id);
-                    console.log(User.model('acl'));
+                User.model('acl').then(acl => {
+                    console.log(acl);
+                });
 
                 if (User) {
                     done(null, User);
@@ -101,15 +103,8 @@ class userController extends controller {
             // set user locally
             res.locals.user = req.user;
 
-            req.user.model('acl').then(acl => {
-                console.log(acl);
-            });
-
-            // only run if user doesn't exist
-            if (!req.user) {
-                // run next
-                return next();
-            }
+            // run next
+            return next();
         });
 
         // check acl on run
