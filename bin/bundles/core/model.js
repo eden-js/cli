@@ -58,9 +58,11 @@ class model extends mongorito.Model {
     /**
      * gets attribute by key
      *
+     * @param key
      * @param attr
      */
     * getAttribute(key, attr) {
+        console.log('GETTING ' + key);
         // check if is object
         if (attr === Object(attr) && attr.model) {
             // load model
@@ -69,7 +71,7 @@ class model extends mongorito.Model {
             }
 
             // yield model
-            let load = yield this._loads[attr.model].findById(attr.id);
+            var load = yield this._loads[attr.model].findById(attr.id);
 
             // set model
             this.attributes[key] = load;
@@ -86,7 +88,7 @@ class model extends mongorito.Model {
                     }
 
                     // yield model
-                    let load = yield this._loads[attr[i].model].findById(attr[i].id);
+                    var load = yield this._loads[attr[i].model].findById(attr[i].id);
 
                     // set model
                     arr.push(load);
