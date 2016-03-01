@@ -101,6 +101,10 @@ class userController extends controller {
             // set user locally
             res.locals.user = req.user;
 
+            req.user.model('acl').then(acl => {
+                console.log(acl);
+            });
+
             // only run if user doesn't exist
             if (!req.user) {
                 // run next
