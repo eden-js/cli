@@ -61,7 +61,8 @@ class model extends mongorito.Model {
                 // loop object array
                 for (var i = 0; i < attr.length; i++) {
                     // check if is object
-                    if (attr[i] === Object(attr) && attr[i].model) {
+                    if (attr[i] === Object(attr[i]) && attr[i].model) {
+                        console.log(attr[i]);
                         this.loadModel(key + '.' + i, attr[i]);
                     }
                 }
