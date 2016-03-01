@@ -15,7 +15,7 @@ class model extends mongorito.Model {
     constructor(props) {
         super(props);
 
-        console.log(__dirname);
+        console.log(module.parent);
     }
     /**
      * check attributes
