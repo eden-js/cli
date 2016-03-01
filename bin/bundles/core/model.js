@@ -17,9 +17,9 @@ class model extends mongorito.Model {
      *
      * @param props
      */
-    constructor(props) {
+    constructor(attrs, options) {
         // run super
-        super(props);
+        super(attrs, options);
 
         // bind set/get methods
         this.getAttributes = this.getAttributes.bind(this);
@@ -37,7 +37,7 @@ class model extends mongorito.Model {
 
         // set attributes before save
         this.before ('save', 'setAttributes');
-        // this.after  ('save', 'getAttributes');
+        this.after  ('save', 'getAttributes');
     }
 
     /**
@@ -62,7 +62,7 @@ class model extends mongorito.Model {
                 let load = yield this._loads[attr.model].findById(attr.id);
 
                 // set model
-                this.set(key, load);
+                this.attributes[key] = load;
             } else if (Array.isArray(attr)) {
                 // set array variable
                 var arr = [];
@@ -86,11 +86,12 @@ class model extends mongorito.Model {
                 }
 
                 // set array
-                this.set(key, arr);
+                this.attributes[key] = arr;
             }
         }
 
         // run next
+        console.log('next!');
         yield next;
     }
 
