@@ -27,6 +27,7 @@ class model extends mongorito.Model {
         this.setAttributes = this.setAttributes.bind(this);
 
         // bind model methods
+        this.load    = this.load.bind(this);
         this.isModel = this.isModel.bind(this);
 
         // set model location
@@ -35,6 +36,23 @@ class model extends mongorito.Model {
 
         // set attributes before save
         this.before ('save', 'setAttributes');
+    }
+
+    /**
+     * load id
+     *
+     * @param id
+     * @returns {model}
+     */
+    * load(id) {
+        // load
+        let load = yield this.findById(id);
+
+        // construct with load
+        this.constructor(load);
+
+        // return this
+        return this;
     }
 
     /**
@@ -71,7 +89,7 @@ class model extends mongorito.Model {
             }
 
             // yield model
-            var load = yield this._loads[attr.model].findById(attr.id);
+            var load = this._loads[attr.model].load(attr.id);
 
             // set model
             this.attributes[key] = load;
@@ -88,7 +106,7 @@ class model extends mongorito.Model {
                     }
 
                     // yield model
-                    var load = yield this._loads[attr[i].model].findById(attr[i].id);
+                    var load = this._loads[attr[i].model].load(attr[i].id);
 
                     // set model
                     arr.push(load);
