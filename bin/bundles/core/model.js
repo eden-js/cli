@@ -22,32 +22,46 @@ class model extends mongorito.Model {
         super(attrs, options);
 
         // bind set/get methods
-        this.getAttributes = this.getAttributes.bind(this);
+        this.getAttribute  = this.getAttribute.bind(this);
         this.setAttributes = this.setAttributes.bind(this);
 
         // bind model methods
+        this.model   = this.model.bind(this);
         this.isModel = this.isModel.bind(this);
 
         // set model location
         this._modelLocation = module.parent.filename.replace(global.appRoot, '');
         this._loads         = {};
 
-        // run attributes method
-        this.getAttributes();
-
         // set attributes before save
         this.before ('save', 'setAttributes');
-        this.after  ('save', 'getAttributes');
     }
 
     /**
-     * gets models from attributes
+     * gets model
      *
-     * @param next
+     * @param key
+     * @returns {Promise}
      */
-    * getAttributes(next) {
-        // loop attributes
-        for (var key in this.attributes) {
+    * model(key) {
+        var that = this;
+
+        return new Promise((resolve, reject) => {
+            if (that.attributes[key]) {
+                that.getAttribute(key).then(resolve);
+            } else {
+                resolve (false);
+            }
+        });
+    }
+
+    /**
+     * gets attribute
+     *
+     * @param key
+     */
+    * getAttribute(key) {
+        return new Promise((resolve, reject) => {
             // set let attribute
             let attr = this.attributes[key];
 
@@ -88,12 +102,10 @@ class model extends mongorito.Model {
                 // set array
                 this.set(key, arr);
             }
-        }
 
-        // run next
-        if (next) {
-            yield next;
-        }
+            // resolve
+            resolve(this.get(key));
+        });
     }
 
     /**
