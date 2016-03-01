@@ -46,7 +46,10 @@ class model extends mongorito.Model {
     * _getAttributes(next) {
         // loop attributes
         for (var key in this.attributes) {
-            var attr = this.attributes[key];
+            // set let attribute
+            let attr = this.attributes[key];
+
+            console.log(attr);
 
             // check if is object
             if (attr === Object(attr) && attr.model) {
