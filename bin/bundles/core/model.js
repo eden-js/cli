@@ -28,13 +28,18 @@ class model extends mongorito.Model {
         // set model location
         this._modelLocation = module.parent.filename.replace(global.appRoot, '');
         this._loads         = {};
-        console.log(this._modelLocation);
-        // set attributes before save
-        this.before ('save', '_setAttributes');
-        this.after  ('save', '_getAttributes');
 
         // run attributes method
         this._getAttributes();
+    }
+
+    /**
+     * configure
+     */
+    configure() {
+        // set attributes before save
+        this.before ('save', '_setAttributes');
+        this.after  ('save', '_getAttributes');
     }
 
     /**
