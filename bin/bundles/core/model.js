@@ -47,6 +47,7 @@ class model extends mongorito.Model {
      * @param next
      */
     * getAttributes(next) {
+        console.log('GET ATTRIBUTES');
         // loop attributes
         for (var key in this.attributes) {
             // set let attribute
@@ -77,7 +78,6 @@ class model extends mongorito.Model {
      * @param next
      */
     * setAttributes(next) {
-        console.log('SET ATTRIBUTES');
         // loop attributes
         for (var key in this.attributes) {
             // set let attribute
@@ -133,9 +133,12 @@ class model extends mongorito.Model {
         if (!this._loads[attr.model]) {
             this._loads[attr.model] = require(global.appRoot + attr.model);
         }
+        let load = yield this._loads[attr.model].findById(attr.id);
+        console.log(this._loads(attr.model));
+        console.log(load);
 
         // load by id
-        this.set(key, yield this._loads[attr.model].findById(attr.id));
+        this.set(key, load);
     }
 }
 
