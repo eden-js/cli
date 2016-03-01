@@ -2,7 +2,7 @@
  * Created by Awesome on 1/30/2016.
  */
 
-// use strict
+    // use strict
 'use strict';
 
 // require dependencies
@@ -23,36 +23,21 @@ class model extends mongorito.Model {
 
         // bind set/get methods
         this.getAttributes = this.getAttributes.bind(this);
-        this.getAttribute  = this.getAttribute.bind(this);
         this.setAttributes = this.setAttributes.bind(this);
 
         // bind model methods
-        this.load    = this.load.bind(this);
         this.isModel = this.isModel.bind(this);
 
         // set model location
         this._modelLocation = module.parent.filename.replace(global.appRoot, '');
         this._loads         = {};
 
+        // run attributes method
+        this.getAttributes();
+
         // set attributes before save
         this.before ('save', 'setAttributes');
-    }
-
-    /**
-     * load id
-     *
-     * @param id
-     * @returns {model}
-     */
-    * load(id) {
-        // load
-        let load = yield this.findById(id);
-
-        // construct with load
-        this.constructor(load);
-
-        // return this
-        return this;
+        this.after  ('save', 'getAttributes');
     }
 
     /**
@@ -64,61 +49,51 @@ class model extends mongorito.Model {
         // loop attributes
         for (var key in this.attributes) {
             // set let attribute
-            this.getAttribute(key, this.attributes[key]);
+            let attr = this.attributes[key];
+
+            // check if is object
+            if (attr === Object(attr) && attr.model) {
+                // load model
+                if (!this._loads[attr.model]) {
+                    this._loads[attr.model] = require(global.appRoot + attr.model);
+                }
+
+                // yield model
+                let load = yield this._loads[attr.model].findById(attr.id);
+
+                // set model
+                this.set(key, load);
+            } else if (Array.isArray(attr)) {
+                // set array variable
+                var arr = [];
+                // loop object array
+                for (var i = 0; i < attr.length; i++) {
+                    // check if is object
+                    if (attr[i] === Object(attr[i]) && attr[i].model) {
+                        // load model
+                        if (!this._loads[attr[i].model]) {
+                            this._loads[attr[i].model] = require(global.appRoot + attr[i].model);
+                        }
+
+                        // yield model
+                        let load = yield this._loads[attr[i].model].findById(attr[i].id);
+
+                        // set model
+                        arr.push(load);
+                    } else {
+                        arr.push(attr[i]);
+                    }
+                }
+
+                // set array
+                this.set(key, arr);
+            }
         }
 
         // run next
         if (next) {
             yield next;
         }
-    }
-
-    /**
-     * gets attribute by key
-     *
-     * @param key
-     * @param attr
-     */
-    * getAttribute(key, attr) {
-        console.log('GETTING ' + key);
-        // check if is object
-        if (attr === Object(attr) && attr.model) {
-            // load model
-            if (!this._loads[attr.model]) {
-                this._loads[attr.model] = require(global.appRoot + attr.model);
-            }
-
-            // yield model
-            var load = this._loads[attr.model].load(attr.id);
-
-            // set model
-            this.attributes[key] = load;
-        } else if (Array.isArray(attr)) {
-            // set array variable
-            var arr = [];
-            // loop object array
-            for (var i = 0; i < attr.length; i++) {
-                // check if is object
-                if (attr[i] === Object(attr[i]) && attr[i].model) {
-                    // load model
-                    if (!this._loads[attr[i].model]) {
-                        this._loads[attr[i].model] = require(global.appRoot + attr[i].model);
-                    }
-
-                    // yield model
-                    var load = this._loads[attr[i].model].load(attr[i].id);
-
-                    // set model
-                    arr.push(load);
-                } else {
-                    arr.push(attr[i]);
-                }
-            }
-
-            // set array
-            this.attributes[key] = arr;
-        }
-        console.log(this.attributes[key]);
     }
 
     /**

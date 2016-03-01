@@ -84,14 +84,15 @@ class userController extends controller {
 
         // deserialize user
         passport.deserializeUser((id, done) => {
-            var User = user.load(id);
-            console.log(User);
+            co(function * () {
+                var User = user.load(id);
 
-            if (User) {
-                done(null, User);
-            } else {
-                done(null, false);
-            }
+                if (User) {
+                    done(null, User);
+                } else {
+                    done(null, false);
+                }
+            });
         });
 
         // add user to locals
