@@ -284,6 +284,12 @@ class bootstrap {
     _buildDaemon () {
         // set that variable
         var that = this;
+        var test = parseInt ((process.env.PORT || config.port), 10);
+
+        // check if first process
+        if (that.port !== test) {
+            return;
+        }
 
         // empty daemon register
         this._daemon = {};
