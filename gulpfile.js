@@ -42,9 +42,8 @@ class gulpBuilder {
         // bind methods
         this._tasks = {
             'sass' : [
-                'node_modules/bootstrap/scss/bootstrap-flex.scss',
-                './bin/bundles/*/resources/scss/bootstrap.scss',
-                './app/bundles/*/resources/scss/bootstrap.scss'
+                './bin/bundles/*/resources/scss/**/*.scss',
+                './app/bundles/*/resources/scss/**/*.scss'
             ],
             'daemon' : [
                 './bin/bundles/**/*Daemon.js',
@@ -124,9 +123,11 @@ class gulpBuilder {
         var all  = '';
 
         // grab gulp source for sass
-        this.gulp.src (
-            this._tasks['sass']
-        ).pipe (through.obj ((chunk, enc, cb) => {
+        this.gulp.src ([
+            'node_modules/bootstrap/scss/bootstrap-flex.scss',
+            './bin/bundles/*/resources/scss/bootstrap.scss',
+            './app/bundles/*/resources/scss/bootstrap.scss'
+        ]).pipe (through.obj ((chunk, enc, cb) => {
                 // add @import to all
                 all += '@import ".' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '"; ';
 
