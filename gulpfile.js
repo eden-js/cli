@@ -127,23 +127,27 @@ class gulpBuilder {
             'node_modules/bootstrap/scss/bootstrap-flex.scss',
             './bin/bundles/*/resources/scss/bootstrap.scss',
             './app/bundles/*/resources/scss/bootstrap.scss'
-        ]).pipe (through.obj ((chunk, enc, cb) => {
-                // add @import to all
-                all += '@import ".' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '"; ';
-
+        ]).pipe (through.obj (function(chunk, enc, cb) {
                 // run through callback
+                this.push ({
+                    'all' : '@import ".' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '"; '
+                });
+
+                // run callback
                 cb (null, chunk);
-            })).on ('end', () => {
+            }))
+            .on ('data', (data) => {
+                if (data.all) {
+                    all += data.all;
+                }
+            })
+            .on ('end', function() {
                 // write temp sass file
                 fs.writeFile ('./tmp.scss', all, (err) => {
                     if (err) {
                         console.log (err);
                         return;
                     }
-
-                    // unlink current files
-                    fs.unlinkSync ('./www/assets/css/app.min.css');
-                    fs.unlinkSync ('./www/assets/css/app.min.css.map');
 
                     // pipe temp sass file for sass function
                     that.gulp.src ('./tmp.scss')
