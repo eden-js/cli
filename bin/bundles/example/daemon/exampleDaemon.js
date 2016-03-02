@@ -5,6 +5,9 @@
 // use strict
 'use strict';
 
+// set app root
+global.appRoot = '../../../..';
+
 // require local dependencies
 var daemon = require (global.appRoot + '/bin/bundles/core/daemon');
 

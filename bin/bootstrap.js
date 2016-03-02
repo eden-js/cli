@@ -9,13 +9,15 @@
 var os           = require ('os');
 var path         = require ('path');
 var http         = require ('http');
+var child        = require ('child_process');
 var debug        = require ('debug');
+var colors       = require ('colors');
 var express      = require ('express');
 var cookieParser = require ('cookie-parser');
 var bodyParser   = require ('body-parser');
 var mongorito    = require ('mongorito');
 var session      = require ('express-session');
-var RedisStore   = require('connect-redis')(session);
+var RedisStore   = require ('connect-redis')(session);
 var portastic    = require ('portastic');
 
 // set global variables
@@ -280,15 +282,22 @@ class bootstrap {
      * @private
      */
     _buildDaemon () {
+        // set that variable
+        var that = this;
+
         // empty daemon register
         this._daemon = {};
 
         // loop daemons
         for (var key in daemons) {
             // require daemon
-            var daemon = require (global.appRoot + daemons[key]);
-            // register daemon
-            // this._daemon[daemons[key]] = new daemon ();
+
+            // run daemon
+            this._daemon[daemons[key]] = child.fork (global.appRoot + daemons[key]);
+            // on message
+            this._daemon[daemons[key]].on('message', m => {
+                that._log(m, 'Daemon');
+            });
         }
     }
 
@@ -328,6 +337,7 @@ class bootstrap {
             throw error;
         }
 
+        // bind check
         var bind = typeof this.port === 'string' ? 'Pipe ' + this.port : 'Port ' + this.port;
 
         // handle specific listen errors with friendly messages
@@ -358,10 +368,31 @@ class bootstrap {
      * console logs
      *
      * @param message
+     * @param type
      * @private
      */
-    _log (message) {
-        console.log('[EdenFrame] ' + message);
+    _log (message, type) {
+        // set date and date padding
+        var d = new Date();
+        var p = '00';
+
+        // set timestamp strings
+        var h = d.getHours() + '';
+            h = (h.substring(0, p.length - h.length) + h);
+        var m = d.getMinutes() + '';
+            m = (m.substring(0, p.length - m.length) + m);
+        var s = d.getSeconds() + '';
+            s = (s.substring(0, p.length - s.length) + s);
+
+        // set time
+        var t = '[' + colors.grey(h + ':' + m + ':' + s) + ']';
+        // set framework stamp
+        var f = '[' + colors.cyan('EdenFrame') + ']';
+        // set type stamp
+        var y = (type ? (' [' + colors.green(type) + ']') : '');
+
+        // actually log
+        console.log(t + ' ' + f + y + ' ' + message);
     }
 }
 
