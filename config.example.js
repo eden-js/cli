@@ -13,6 +13,8 @@ module.exports = {
     secret      : 'SECRET',
     // secret for session
     session     : 'SESSION',
+    // set threads
+    threads     : 10,
     // default acl information
     acl         : {
         // default acl per user

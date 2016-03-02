@@ -10,7 +10,8 @@ global.envrionment = process.env.NODE_ENV || 'dev';
 
 // check if environment
 if (global.environment == 'dev') {
-    require ('./bin/bootstrap');
+    var boot = require ('./bin/bootstrap');
+        boot._log('started development server');
 } else {
     if (cluster.isMaster) {
         // count CPUs
