@@ -38,6 +38,7 @@
     "npm": "^3.6.0",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
+    "portastic": "^1.0.1",
     "riot": "^2.3.15",
     "through2": "^2.0.0",
     "vinyl-source-stream": "^1.1.0"

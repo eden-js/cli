@@ -18,11 +18,13 @@ if (global.environment == 'dev') {
 
         // create new worker per cpu
         for (var i = 0; i < cpuCount; i += 1) {
-            cluster.fork();
+            setTimeout (() => {
+                cluster.fork();
+            }, (i * 1000));
         }
     } else {
-        console.log('[EdenFrame] running new thread');
-        require ('./bin/bootstrap');
+        var boot = require ('./bin/bootstrap');
+            boot._log('running new thread');
     }
 
     // set on exit
