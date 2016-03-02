@@ -155,7 +155,7 @@ class gulpBuilder {
                         .pipe (sass ({
                             outputStyle : 'compressed'
                         })).pipe (rename ('app.min.css'))
-                        .pipe (sourcemaps.write ('./'))
+                        .pipe (sourcemaps.write ('./www/assets/css'))
                         .pipe (that.gulp.dest ('./www/assets/css'))
                         .on ('end', () => {
                             fs.unlinkSync ('./tmp.scss');
