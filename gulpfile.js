@@ -141,6 +141,10 @@ class gulpBuilder {
                         return;
                     }
 
+                    // unlink current files
+                    fs.unlinkSync ('./www/assets/css/app.min.css');
+                    fs.unlinkSync ('./www/assets/css/app.min.css.map');
+
                     // pipe temp sass file for sass function
                     that.gulp.src ('./tmp.scss')
                         .pipe (sourcemaps.init ())
