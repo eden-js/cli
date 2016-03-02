@@ -23,17 +23,7 @@ class exampleDaemon extends daemon {
         super (props);
 
         // bind methods
-        this._log ('exampleDaemon running');
-    }
-
-    /**
-     * logs to console
-     *
-     * @param text
-     * @private
-     */
-    _log (text) {
-        console.log ('[daemon]: ' + text);
+        process.send ('exampleDaemon running');
     }
 }
 
@@ -42,4 +32,4 @@ class exampleDaemon extends daemon {
  *
  * @type {exampleDaemon}
  */
-module.exports = exampleDaemon;
+module.exports = new exampleDaemon();

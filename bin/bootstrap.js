@@ -293,10 +293,16 @@ class bootstrap {
             // require daemon
 
             // run daemon
-            this._daemon[daemons[key]] = child.fork (global.appRoot + daemons[key]);
+            var name   = daemons[key].split(path.sep);
+                name   = name[(name.length - 1)];
+            let daemon = name;
+
+            // set daemon fork
+            this._daemon[daemon] = child.fork (global.appRoot + daemons[key]);
+
             // on message
-            this._daemon[daemons[key]].on('message', m => {
-                that._log(m, 'Daemon');
+            this._daemon[daemon].on('message', m => {
+                that._log(m, daemon);
             });
         }
     }
