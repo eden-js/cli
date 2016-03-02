@@ -56,17 +56,26 @@ module.exports = exphbs({
          * menu helper
          *
          * @param name
-         * @param path
+         * @param className
+         * @param subClass
          * @returns {string}
          */
-        menu : function(name, path) {
+        menu : function(name, className, subClass, options) {
             var menus = config.menus;
+
+            // check for object
+            if (Object(className) === className) {
+                className = false;
+            }
+            if (Object(subClass) === subClass) {
+                subClass = false;
+            }
 
             // check menu by name exists
             if (menus[name]) {
                 // set variables
                 var menu = menus[name];
-                var rtn  = '<ul class="nav navbar-nav">';
+                var rtn  = '<ul class="' + (className ? className : 'nav navbar-nav') + '">';
 
                 menuLoop: // loop menu items
                 for (var key in menu) {
@@ -79,11 +88,11 @@ module.exports = exphbs({
                         }
                     }
 
-                    rtn += '<li class="nav-item">';
+                    rtn += '<li class="' + (subClass ? subClass : 'nav-item') + '">';
 
                     // check menu has children
                     if (menu[key].children.length) {
-                        rtn += '<a class="nav-link dropdown-toggle' + (path == menu[key].route ? ' active' : '') + '" data-toggle="dropdown" href="' + (menu[key].route ? menu[key].route : '#!') + '" role="button" aria-haspopup="true" aria-expanded="false">' + menu[key].title + '</a>';
+                        rtn += '<a class="nav-link dropdown-toggle' + (this.route == menu[key].route ? ' active' : '') + '" data-toggle="dropdown" href="' + (menu[key].route ? menu[key].route : '#!') + '" role="button" aria-haspopup="true" aria-expanded="false">' + menu[key].title + '</a>';
                         rtn += '<div class="dropdown-menu">';
 
                         subLoop: // loop children
@@ -102,7 +111,7 @@ module.exports = exphbs({
 
                         rtn += '</div>';
                     } else {
-                        rtn += '<a class="nav-link' + (path == menu[key].route ? ' active' : '') + '" href="' + (menu[key].route ? menu[key].route : '#!') + '">' + menu[key].title + '</a>';
+                        rtn += '<a class="nav-link' + (this.route == menu[key].route ? ' active' : '') + '" href="' + (menu[key].route ? menu[key].route : '#!') + '">' + menu[key].title + '</a>';
                     }
                     rtn += '</li>';
                 }
