@@ -97,6 +97,7 @@ class gulpBuilder {
             nodemon({
                 'script' : './app.js',
                 'ext'    : 'js hbs json',
+                'delay'  : '1s',
                 'watch'  : [
                     'cache/'
                 ],
