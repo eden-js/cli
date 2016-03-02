@@ -17,11 +17,8 @@ var cookieParser = require ('cookie-parser');
 var bodyParser   = require ('body-parser');
 var mongorito    = require ('mongorito');
 var session      = require ('express-session');
-var RedisStore   = require ('connect-redis')(session);
+var RedisStore   = require ('connect-redis') (session);
 var portastic    = require ('portastic');
-
-// set global variables
-global.appRoot = path.dirname (path.resolve (__dirname));
 
 // require local dependencies
 var config   = require (global.appRoot + '/config');
@@ -74,7 +71,6 @@ class bootstrap {
             '_buildServer',
             '_buildView',
             '_buildRouter',
-            '_buildDaemon',
             '_buildErrorHandler'
         ];
 
@@ -131,8 +127,7 @@ class bootstrap {
         return new Promise ((resolve, reject) => {
             // find port
             portastic.find ({
-                'min' : start,
-                'max' : end
+                'min' : start, 'max' : end
             }).then (ports => {
                 // set port
                 that.port = ports[0];
@@ -141,7 +136,7 @@ class bootstrap {
                 resolve (true);
 
                 // log
-                that._log('Found port ' + that.port);
+                that._log ('using port ' + that.port, 'Bootstrap');
             });
         });
     }
@@ -167,10 +162,7 @@ class bootstrap {
         this.app.use (bodyParser.urlencoded ({extended : false}));
         this.app.use (cookieParser (config.session));
         this.app.use (session ({
-            store             : new RedisStore(),
-            secret            : config.session,
-            resave            : false,
-            saveUninitialized : true
+            store : new RedisStore (), secret : config.session, resave : false, saveUninitialized : true
         }));
 
         // set default locals
@@ -277,50 +269,6 @@ class bootstrap {
     }
 
     /**
-     * build daemon
-     *
-     * @private
-     */
-    _buildDaemon () {
-        // set that variable
-        var that = this;
-        var test = parseInt ((process.env.PORT || config.port), 10);
-
-        // check if first process
-        if (that.port !== test) {
-            return;
-        }
-
-        // empty daemon register
-        this._daemon = {};
-
-        // loop daemons
-        for (var key in daemons) {
-            // run daemon
-            var name   = daemons[key].split(path.sep);
-                name   = name[(name.length - 1)];
-            let daemon = name;
-
-            // log daemon
-            this._log ('starting daemon ' + daemons[key], 'Daemon');
-
-            // set daemon fork
-            this._daemon[daemon] = child.fork (global.appRoot + daemons[key]);
-
-            // on message
-            this._daemon[daemon].on('message', m => {
-                that._log(m, daemon);
-            });
-
-            // on exit
-            this._daemon[daemon].on('close', (code) => {
-                // fork new daemon
-                that._daemon[daemon] = child.fork (global.appRoot + daemons[key]);
-            });
-        }
-    }
-
-    /**
      * builds error handler
      *
      * @private
@@ -390,28 +338,8 @@ class bootstrap {
      * @param type
      * @private
      */
-    _log (message, type) {
-        // set date and date padding
-        var d = new Date();
-        var p = '00';
-
-        // set timestamp strings
-        var h = d.getHours() + '';
-            h = (h.substring(0, p.length - h.length) + h);
-        var m = d.getMinutes() + '';
-            m = (m.substring(0, p.length - m.length) + m);
-        var s = d.getSeconds() + '';
-            s = (s.substring(0, p.length - s.length) + s);
-
-        // set time
-        var t = '[' + colors.grey(h + ':' + m + ':' + s) + ']';
-        // set framework stamp
-        var f = '[' + colors.cyan('EdenFrame') + ']';
-        // set type stamp
-        var y = (type ? (' [' + colors.green(type) + ']') : '');
-
-        // actually log
-        console.log(t + ' ' + f + y + ' ' + message);
+    _log (message, type, error) {
+        return global.log (message, type, error);
     }
 }
 
