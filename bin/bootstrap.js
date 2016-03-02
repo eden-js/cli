@@ -290,12 +290,13 @@ class bootstrap {
 
         // loop daemons
         for (var key in daemons) {
-            // require daemon
-
             // run daemon
             var name   = daemons[key].split(path.sep);
                 name   = name[(name.length - 1)];
             let daemon = name;
+
+            // log daemon
+            this._log ('starting daemon ' + daemons[key], 'Daemon');
 
             // set daemon fork
             this._daemon[daemon] = child.fork (global.appRoot + daemons[key]);
@@ -303,6 +304,12 @@ class bootstrap {
             // on message
             this._daemon[daemon].on('message', m => {
                 that._log(m, daemon);
+            });
+
+            // on exit
+            this._daemon[daemon].on('close', (code) => {
+                // fork new daemon
+                that._daemon[daemon] = child.fork (global.appRoot + daemons[key]);
             });
         }
     }
