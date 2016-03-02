@@ -21,7 +21,7 @@ if (global.environment == 'dev') {
         for (var i = 0; i < cpuCount; i += 1) {
             setTimeout (() => {
                 cluster.fork();
-            }, (i * 1000));
+            }, (i * 500));
         }
     } else {
         var boot = require ('./bin/bootstrap');
