@@ -136,7 +136,7 @@ class bootstrap {
                 resolve (true);
 
                 // log
-                that._log ('using port ' + that.port, 'Bootstrap');
+                that._log ('using port ' + that.port, 'bootstrap');
             });
         });
     }
