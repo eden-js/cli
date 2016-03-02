@@ -15,6 +15,7 @@ var cookieParser = require ('cookie-parser');
 var bodyParser   = require ('body-parser');
 var mongorito    = require ('mongorito');
 var session      = require ('express-session');
+var RedisStore   = require('connect-redis')(session);
 var portastic    = require ('portastic');
 
 // set global variables
@@ -164,7 +165,10 @@ class bootstrap {
         this.app.use (bodyParser.urlencoded ({extended : false}));
         this.app.use (cookieParser (config.session));
         this.app.use (session ({
-            secret : config.session, resave : false, saveUninitialized : true
+            store             : new RedisStore(),
+            secret            : config.session,
+            resave            : false,
+            saveUninitialized : true
         }));
 
         // set default locals
