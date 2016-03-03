@@ -127,8 +127,14 @@ class bootstrap {
         return new Promise ((resolve, reject) => {
             // find port
             portastic.find ({
-                'min' : start, 'max' : end
+                'min' : start,
+                'max' : end
             }).then (ports => {
+                // check if available port or exit
+                if (!ports.length) {
+                    process.exit();
+                }
+
                 // set port
                 that.port = ports[0];
 
