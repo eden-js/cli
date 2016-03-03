@@ -24,9 +24,10 @@ var insert     = require ('gulp-insert');
 var streamify  = require ('gulp-streamify');
 var uglify     = require ('gulp-uglify');
 var nodemon    = require ('gulp-nodemon');
-var chmod      = require('gulp-chmod');
+var chmod      = require ('gulp-chmod');
 
 // import local dependencies
+var config     = require ('./config');
 var configPipe = require ('./bin/util/gulp.config.pipe');
 
 /**
@@ -38,7 +39,7 @@ class gulpBuilder {
      */
     constructor () {
         // wait time
-        this.wait = 500;
+        this.wait = (config.gulpDelay ? parseInt(config.gulpDelay) : 500);
 
         // bind variables
         this.gulp = require ('gulp');
