@@ -43,7 +43,6 @@ class bootstrap {
 
         // bind private variables
         this._ctrl   = {};
-        this._daemon = {};
 
         // bind methods
         this.onError  = this.onError.bind (this);
@@ -139,7 +138,7 @@ class bootstrap {
                 that.port = ports[0];
 
                 // resolve
-                resolve (true);
+                resolve (that.port);
 
                 // log
                 that._log ('using port ' + that.port, 'bootstrap');
