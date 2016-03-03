@@ -6,9 +6,10 @@
 'use strict';
 
 // require dependencies
+var fs         = require ('fs');
+var os         = require ('os');
 var glob       = require ('glob');
 var path       = require ('path');
-var fs         = require ('fs');
 var through    = require ('through2');
 var browserify = require ('browserify');
 var babelify   = require ('babelify');
@@ -51,24 +52,24 @@ class gulpBuilder {
                 './app/bundles/*/resources/scss/**/*.scss'
             ],
             'daemon' : [
-                './bin/bundles/**/*Daemon.js',
-                './app/bundles/**/*Daemon.js'
+                './bin/bundles/*/daemon/**/*Daemon.js',
+                './app/bundles/*/daemon/**/*Daemon.js'
             ],
             'config' : [
-                './bin/bundles/**/*Controller.js',
-                './app/bundles/**/*Controller.js'
+                './bin/bundles/*/controller/**/*Controller.js',
+                './app/bundles/*/controller/**/*Controller.js'
             ],
             'view'   : [
                 './bin/bundles/*/view/**/*.hbs',
                 './app/bundles/*/view/**/*.hbs'
             ],
             'tag'    : [
-                './bin/bundles/*/view/**/*.tag',
-                './app/bundles/*/view/**/*.tag'
+                './bin/bundles/*/view/tag/**/*.tag',
+                './app/bundles/*/view/tag/**/*.tag'
             ],
             'js'     : [
-                './bin/bundles/*/resources/js/bootstrap.js',
-                './app/bundles/*/resources/js/bootstrap.js'
+                './bin/bundles/*/resources/js/**/*.js',
+                './app/bundles/*/resources/js/**/*.js'
             ]
         };
 
@@ -143,7 +144,7 @@ class gulpBuilder {
                 .pipe (through.obj (function (chunk, enc, cb) {
                     // run through callback
                     this.push ({
-                        'all' : '@import ".' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '"; '
+                        'all' : '@import ".' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '";' + os.EOL;
                     });
 
                     // run callback
@@ -287,9 +288,8 @@ class gulpBuilder {
     js () {
         // create javascript array
         var js = [];
-        for (var i = 0; i < this._tasks['js'].length; i ++) {
-            js = js.concat (glob.sync (this._tasks['js'][i]));
-        }
+        js = js.concat (glob.sync ('./bin/bundles/*/resources/js/bootstrap.js'));
+        js = js.concat (glob.sync ('./app/bundles/*/resources/js/bootstrap.js'));
 
         // browserfiy javascript
         // do within setTimeout to remove empty files
