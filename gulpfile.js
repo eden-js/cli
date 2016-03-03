@@ -24,6 +24,7 @@ var insert     = require ('gulp-insert');
 var streamify  = require ('gulp-streamify');
 var uglify     = require ('gulp-uglify');
 var nodemon    = require ('gulp-nodemon');
+var chmod      = require('gulp-chmod');
 
 // import local dependencies
 var configPipe = require ('./bin/util/gulp.config.pipe');
@@ -233,6 +234,7 @@ class gulpBuilder {
                 amended.shift ();
                 filePath.dirname = amended.join (path.sep);
             }))
+            .pipe (chmod(755))
             .pipe (this.gulp.dest ('cache/view'));
     }
 
