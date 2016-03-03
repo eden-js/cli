@@ -96,7 +96,7 @@ class gulpBuilder {
             nodemon({
                 'script' : './app.js',
                 'ext'    : 'js hbs json',
-                'delay'  : 1000,
+                'delay'  : 2000,
                 'watch'  : [
                     'cache/'
                 ],
@@ -223,11 +223,11 @@ class gulpBuilder {
      */
     view() {
         // move views into single folder
-        // @todo bundle prioroty
+        // @todo bundle priority
         this.gulp.src (
             this._tasks['view']
         )
-            .pipe (rename (function (filePath) {
+            .pipe (rename ((filePath) => {
                 var amended = filePath.dirname.split (path.sep);
                 amended.shift ();
                 amended.shift ();

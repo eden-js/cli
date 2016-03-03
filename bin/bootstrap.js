@@ -220,7 +220,6 @@ class bootstrap {
         this.app.set ('views', global.appRoot + '/cache/view');
         this.app.set ('view engine', 'hbs');
         this.app.engine ('hbs', view);
-        this.app.enable ('view cache');
     }
 
     /**
