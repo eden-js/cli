@@ -102,7 +102,7 @@ class gulpBuilder {
             nodemon ({
                 'script' : './app.js',
                 'ext'    : 'js json',
-                'delay'  : 1000,
+                'delay'  : this.wait,
                 'watch'  : [
                     'cache/'
                 ],
@@ -144,7 +144,7 @@ class gulpBuilder {
                 .pipe (through.obj (function (chunk, enc, cb) {
                     // run through callback
                     this.push ({
-                        'all' : '@import ".' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '";' + os.EOL;
+                        'all' : '@import ".' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '";' + os.EOL
                     });
 
                     // run callback
