@@ -29,11 +29,11 @@ class acl {
             return true;
         }
         // check if not user
-        if (!User && acl.test === false) {
+        if (!User && acl.test === false || User && acl.test === true) {
             return true;
         }
         // check if user
-        if (User && acl.test === false) {
+        if (User && acl.test === false || !User && acl.test === true) {
             return acl.fail ? acl.fail : false;
         }
         // check if user
