@@ -307,6 +307,7 @@ class gulpBuilder {
                 .transform (babelify)
                 .bundle ()
                 .pipe (source ('app.min.js'))
+                .pipe (insert.prepend (fs.readFileSync ('./node_modules/jquery-bootgrid/dist/jquery.bootgrid.min.js')))
                 .pipe (insert.prepend (fs.readFileSync ('./node_modules/bootstrap/dist/js/bootstrap.js')))
                 .pipe (insert.prepend (fs.readFileSync ('./node_modules/jquery/dist/jquery.min.js')))
                 .pipe (streamify (uglify ()))
