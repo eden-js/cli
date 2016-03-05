@@ -70,6 +70,10 @@ class gulpBuilder {
             'js'     : [
                 './bin/bundles/*/resources/js/**/*.js',
                 './app/bundles/*/resources/js/**/*.js'
+            ],
+            'image'  : [
+                './bin/bundles/*/resources/image/**/*',
+                './app/bundles/*/resources/image/**/*'
             ]
         };
 
@@ -79,7 +83,7 @@ class gulpBuilder {
         var watch = [];
 
         // bind and add gulp task methods
-        for (var i = 0; i < keys.length; i ++) {
+        for (var i = 0; i < keys.length; i++) {
             // bind method
             this[keys[i]] = this[keys[i]].bind (this);
             // setup task
@@ -112,7 +116,7 @@ class gulpBuilder {
             });
 
             // loop for watch
-            for (var i = 0; i < keys.length; i ++) {
+            for (var i = 0; i < keys.length; i++) {
                 that.gulp.watch (that._tasks[keys[i]], [keys[i]]);
             }
         });
@@ -156,27 +160,27 @@ class gulpBuilder {
                     }
                 })
                 .on ('end', function () {
-                    // write temp sass file
-                    fs.writeFile ('./tmp.scss', all, (err) => {
-                        if (err) {
-                            console.log (err);
-                            return;
-                        }
+                // write temp sass file
+                fs.writeFile ('./tmp.scss', all, (err) => {
+                    if (err) {
+                        console.log (err);
+                        return;
+                    }
 
-                        // pipe temp sass file for sass function
-                        that.gulp.src ('./tmp.scss')
-                            .pipe (sourcemaps.init ())
-                            .pipe (sass ({
-                                outputStyle : 'compressed'
-                            }))
-                            .pipe (rename ('app.min.css'))
-                            .pipe (sourcemaps.write ('./www/assets/css'))
-                            .pipe (that.gulp.dest ('./www/assets/css'))
-                            .on ('end', () => {
-                                fs.unlinkSync ('./tmp.scss');
-                            });
-                    });
+                    // pipe temp sass file for sass function
+                    that.gulp.src ('./tmp.scss')
+                        .pipe (sourcemaps.init ())
+                        .pipe (sass ({
+                            outputStyle : 'compressed'
+                        }))
+                        .pipe (rename ('app.min.css'))
+                        .pipe (sourcemaps.write ('./www/assets/css'))
+                        .pipe (that.gulp.dest ('./www/assets/css'))
+                        .on ('end', () => {
+                            fs.unlinkSync ('./tmp.scss');
+                        });
                 });
+            });
         }, this.wait);
     }
 
@@ -186,7 +190,7 @@ class gulpBuilder {
     daemon () {
         // grab daemon controllers
         var daemons = [];
-        for (var i = 0; i < this._tasks['daemon'].length; i ++) {
+        for (var i = 0; i < this._tasks['daemon'].length; i++) {
             daemons = daemons.concat (glob.sync (this._tasks['daemon'][i]));
         }
 
@@ -214,23 +218,26 @@ class gulpBuilder {
         // get all routes
         // do within setTimeout to remove empty files
         setTimeout (() => {
-            this.gulp.src (this._tasks['config']).pipe (through.obj (function (chunk, enc, cb) {
-                var pip = this;
-                configPipe.pipe (chunk).then (result => {
-                    pip.push ({
-                        'result' : result
+            this.gulp.src (this._tasks['config'])
+                .pipe (through.obj (function (chunk, enc, cb) {
+                    var pip = this;
+                    configPipe.pipe (chunk).then (result => {
+                        pip.push ({
+                            'result' : result
+                        });
+                        cb (null, chunk);
                     });
-                    cb (null, chunk);
+                }))
+                .on ('data', (data) => {
+                    that._merge (all, data.result);
+                })
+                .on ('end', function () {
+                    fs.writeFile ('./cache/config.json', JSON.stringify (all), function (err) {
+                        if (err) {
+                            return console.log (err);
+                        }
+                    });
                 });
-            })).on ('data', (data) => {
-                that._merge (all, data.result);
-            }).on ('end', function () {
-                fs.writeFile ('./cache/config.json', JSON.stringify (all), function (err) {
-                    if (err) {
-                        return console.log (err);
-                    }
-                });
-            });
         }, this.wait);
     }
 
@@ -246,7 +253,7 @@ class gulpBuilder {
                 this._tasks['view']
             )
                 .pipe (rename ((filePath) => {
-                    var amended      = filePath.dirname.split (path.sep);
+                    var amended = filePath.dirname.split (path.sep);
                     amended.shift ();
                     amended.shift ();
                     filePath.dirname = amended.join (path.sep);
@@ -288,8 +295,8 @@ class gulpBuilder {
     js () {
         // create javascript array
         var js = [];
-        js = js.concat (glob.sync ('./bin/bundles/*/resources/js/bootstrap.js'));
-        js = js.concat (glob.sync ('./app/bundles/*/resources/js/bootstrap.js'));
+        js     = js.concat (glob.sync ('./bin/bundles/*/resources/js/bootstrap.js'));
+        js     = js.concat (glob.sync ('./app/bundles/*/resources/js/bootstrap.js'));
 
         // browserfiy javascript
         // do within setTimeout to remove empty files
@@ -304,6 +311,29 @@ class gulpBuilder {
                 .pipe (insert.prepend (fs.readFileSync ('./node_modules/jquery/dist/jquery.min.js')))
                 .pipe (streamify (uglify ()))
                 .pipe (this.gulp.dest ('./www/assets/js'));
+        }, this.wait);
+    }
+
+    /**
+     * image task
+     */
+    image () {
+        // move images into single folder
+        // do within setTimeout to remove empty files
+        // @todo bundle priority
+        setTimeout (() => {
+            this.gulp.src (
+                this._tasks['image']
+            )
+                .pipe (rename ((filePath) => {
+                    var amended = filePath.dirname.split (path.sep);
+                    amended.shift ();
+                    amended.shift ();
+                    amended.shift ();
+                    filePath.dirname = amended.join (path.sep);
+                }))
+                .pipe (chmod (755))
+                .pipe (this.gulp.dest ('www/image'));
         }, this.wait);
     }
 
