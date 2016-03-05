@@ -127,7 +127,7 @@ class configPipe {
 
                         for (var m = 0; m < isMenu.length; m++) {
                             // only use first route
-                            isMenu[m].route    = (mounts[0] + routes[0].route).split('//').join('/');
+                            isMenu[m].route    = '/' + (mounts[0] + routes[0].route).split('//').join('/').replace(/^\/|\/$/g, '');
                             isMenu[m].priority = isMenu[m].priority ? isMenu[m].priority : priority;
                             if (acl.length) {
                                 isMenu[m].acl.push(acl);

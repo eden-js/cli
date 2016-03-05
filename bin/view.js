@@ -60,7 +60,7 @@ hbs.registerHelper('menu', function(name, className, subClass, options) {
 
                 // check menu has children
                 if (menu[key].children.length) {
-                    rtn += '<a class="nav-link dropdown-toggle' + (this.route == menu[key].route ? ' active' : '') + '" data-toggle="dropdown" href="' + (menu[key].route ? menu[key].route : '#!') + '" role="button" aria-haspopup="true" aria-expanded="false">' + menu[key].title + '</a>';
+                    rtn += '<a class="nav-link dropdown-toggle' + (this.route.replace(/^\/|\/$/g, '') == menu[key].route.replace(/^\/|\/$/g, '') ? ' active' : '') + '" data-toggle="dropdown" href="' + (menu[key].route ? menu[key].route : '#!') + '" role="button" aria-haspopup="true" aria-expanded="false">' + menu[key].title + '</a>';
                     rtn += '<div class="dropdown-menu">';
 
                     subLoop: // loop children
@@ -79,7 +79,7 @@ hbs.registerHelper('menu', function(name, className, subClass, options) {
 
                     rtn += '</div>';
                 } else {
-                    rtn += '<a class="nav-link' + (this.route == menu[key].route ? ' active' : '') + '" href="' + (menu[key].route ? menu[key].route : '#!') + '">' + menu[key].title + '</a>';
+                    rtn += '<a class="nav-link' + (this.route.replace(/^\/|\/$/g, '') == menu[key].route.replace(/^\/|\/$/g, '') ? ' active' : '') + '" href="' + (menu[key].route ? menu[key].route : '#!') + '">' + menu[key].title + '</a>';
                 }
                 rtn += '</li>';
             }
