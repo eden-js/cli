@@ -139,9 +139,15 @@ class gulpBuilder {
         // do within setTimeout to remove empty files
         setTimeout (() => {
             this.gulp.src ([
+                // require local variables files
                 './bin/bundles/*/resources/scss/variables.scss',
                 './app/bundles/*/resources/scss/variables.scss',
-                (config.bootstrap ? config.bootstrap : 'node_modules/bootstrap/scss/bootstrap-flex.scss'),
+
+                // require vendor dependencies
+                (config.bootstrap ? config.bootstrap : './node_modules/bootstrap/scss/bootstrap-flex.scss'),
+                './node_modules/tether/src/css/tether.scss',
+
+                    // require local bootstrap files
                 './bin/bundles/*/resources/scss/bootstrap.scss',
                 './app/bundles/*/resources/scss/bootstrap.scss'
             ])
@@ -307,9 +313,11 @@ class gulpBuilder {
                 .transform (babelify)
                 .bundle ()
                 .pipe (source ('app.min.js'))
-                .pipe (insert.prepend (fs.readFileSync ('./node_modules/jquery-bootgrid/dist/jquery.bootgrid.min.js')))
-                .pipe (insert.prepend (fs.readFileSync ('./node_modules/bootstrap/dist/js/bootstrap.js')))
-                .pipe (insert.prepend (fs.readFileSync ('./node_modules/jquery/dist/jquery.min.js')))
+                .pipe (insert.prepend (fs.readFileSync ('./node_modules/bootstrap/dist/js/bootstrap.js', 'utf8')))
+                .pipe (insert.prepend (fs.readFileSync ('./node_modules/jquery-bootgrid/dist/jquery.bootgrid.fa.min.js', 'utf8')))
+                .pipe (insert.prepend (fs.readFileSync ('./node_modules/jquery-bootgrid/dist/jquery.bootgrid.min.js', 'utf8')))
+                .pipe (insert.prepend (fs.readFileSync ('./node_modules/tether/dist/js/tether.min.js', 'utf8')))
+                .pipe (insert.prepend (fs.readFileSync ('./node_modules/jquery/dist/jquery.min.js', 'utf8')))
                 .pipe (streamify (uglify ()))
                 .pipe (this.gulp.dest ('./www/assets/js'));
         }, this.wait);

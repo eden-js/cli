@@ -52,7 +52,7 @@ class adminController extends controller {
      * @param req
      * @param res
      *
-     * @route {get} /grid
+     * @route {post} /grid
      * @param req
      * @param res
      *

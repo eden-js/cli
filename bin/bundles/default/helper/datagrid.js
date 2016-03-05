@@ -34,8 +34,8 @@ class datagrid {
         return new Promise ((resolve, reject) => {
             // set default variables
             var response = {
-                'current'  : (req.query.current ? parseInt (req.query.current) : 1),
-                'rowCount' : (req.query.rowCount ? parseInt (req.query.rowCount) : 10),
+                'current'  : (req.body.current ? parseInt (req.body.current) : 1),
+                'rowCount' : (req.body.rowCount ? parseInt (req.body.rowCount) : 10),
                 'rows'     : [],
                 'total'    : 0
             };
@@ -51,13 +51,13 @@ class datagrid {
             // run coroutine
             co (function * () {
                 // check for search phrase
-                if (req.query.searchPhrase && filter) {
+                if (req.body.searchPhrase && filter) {
                     where[type] = [];
                     for (var i = 0; i < filter.length; i++) {
                         // create push object
                         var push        = {};
                         push[filter[i]] = {
-                            '$regex' : req.query.serchPhrase
+                            '$regex' : req.body.searchPhrase
                         };
 
                         // push into where
@@ -66,10 +66,10 @@ class datagrid {
                 }
 
                 // check for order
-                if (req.query.sort) {
-                    for (var key in req.query.sort) {
+                if (req.body.sort) {
+                    for (var key in req.body.sort) {
                         // set sort order
-                        var dir = (req.query.sort[key] == 'asc' ? 1 : -1);
+                        var dir = (req.body.sort[key] == 'asc' ? 1 : -1);
                         // add to order
                         order[key] = dir;
                     }
