@@ -27,7 +27,7 @@ if (global.environment == 'dev') {
     require (global.appRoot + '/bin/bootstrap');
 
     // run daemon
-    //daemon ();
+    daemon ();
 } else {
     // run in production
     global.log ('running in production environment', 'server');
@@ -47,7 +47,7 @@ if (global.environment == 'dev') {
         }
 
         // run daemon
-        //daemon ();
+        daemon ();
     } else {
         // log forked
         global.log ('forked process', 'server');
