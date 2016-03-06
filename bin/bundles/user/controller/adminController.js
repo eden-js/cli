@@ -36,9 +36,9 @@ class adminController extends controller {
      * @param req
      * @param res
      *
+     * @name     ADMIN_USERS
      * @route    {get} /
      * @menu     {ADMIN} Users
-     * @name     ADMIN.USERS
      * @acl      {test:['admin'],fail:{redirect:"/"}}
      * @priority 11
      */

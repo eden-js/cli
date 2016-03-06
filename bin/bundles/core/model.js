@@ -6,8 +6,8 @@
 'use strict';
 
 // require dependencies
-var mongorito = require('mongorito');
-var co        = require('co');
+var co        = require ('co');
+var mongorito = require ('mongorito');
 
 /**
  * build model
@@ -18,20 +18,20 @@ class model extends mongorito.Model {
      *
      * @param props
      */
-    constructor(attrs, options) {
+    constructor (attrs, options) {
         // run super
-        super(attrs, options);
+        super (attrs, options);
 
         // bind set/get methods
-        this.getAttribute  = this.getAttribute.bind(this);
-        this.setAttributes = this.setAttributes.bind(this);
+        this.getAttribute  = this.getAttribute.bind (this);
+        this.setAttributes = this.setAttributes.bind (this);
 
         // bind model methods
-        this.model   = this.model.bind(this);
-        this.isModel = this.isModel.bind(this);
+        this.model   = this.model.bind (this);
+        this.isModel = this.isModel.bind (this);
 
         // set model location
-        this._modelLocation = module.parent.filename.replace(global.appRoot, '');
+        this._modelLocation = module.parent.filename.replace (global.appRoot, '');
         this._loads         = {};
 
         // set attributes before save
@@ -42,9 +42,10 @@ class model extends mongorito.Model {
      * gets model
      *
      * @param key
+     * @returns {Promise}
      */
     model (key) {
-        return this.getAttribute(key);
+        return this.getAttribute (key);
     }
 
     /**
@@ -53,56 +54,57 @@ class model extends mongorito.Model {
      * @param key
      * @returns {Promise}
      */
-    getAttribute(key) {
+    getAttribute (key) {
         // set variables
         var that = this;
 
         // return promise
-        return new Promise((resolve, reject) => {
-            co(function * () {
+        return new Promise ((resolve, reject) => {
+            co (function * () {
                 // set let attribute
                 let attr = that.attributes[key];
+                var load = false;
 
                 // check if is object
-                if (attr === Object(attr) && attr.model) {
+                if (attr === Object (attr) && attr.model && attr.id) {
                     // load model
                     if (!that._loads[attr.model]) {
-                        that._loads[attr.model] = require(global.appRoot + attr.model);
+                        that._loads[attr.model] = require (global.appRoot + attr.model);
                     }
 
                     // yield model
-                    let load = yield that._loads[attr.model].findById(attr.id);
+                    load = yield that._loads[attr.model].findById (attr.id);
 
                     // set model
-                    this.set(key, load);
-                } else if (Array.isArray(attr)) {
+                    that.set (key, load);
+                } else if (Array.isArray (attr)) {
                     // set array variable
                     var arr = [];
                     // loop object array
                     for (var i = 0; i < attr.length; i++) {
                         // check if is object
-                        if (attr[i] === Object(attr[i]) && attr[i].model) {
+                        if (attr[i] === Object (attr[i]) && attr[i].model && attr[i].id) {
                             // load model
                             if (!that._loads[attr[i].model]) {
-                                that._loads[attr[i].model] = require(global.appRoot + attr[i].model);
+                                that._loads[attr[i].model] = require (global.appRoot + attr[i].model);
                             }
 
                             // yield model
-                            let load = yield that._loads[attr[i].model].findById(attr[i].id);
+                            load = yield that._loads[attr[i].model].findById (attr[i].id);
 
                             // set model
-                            arr.push(load);
+                            arr.push (load);
                         } else {
-                            arr.push(attr[i]);
+                            arr.push (attr[i]);
                         }
                     }
 
                     // set array
-                    that.set(key, arr);
+                    that.set (key, arr);
                 }
 
                 // return
-                resolve(that.get(key));
+                resolve (that.get (key));
             });
         });
     }
@@ -112,37 +114,37 @@ class model extends mongorito.Model {
      *
      * @param next
      */
-    * setAttributes(next) {
+    * setAttributes (next) {
         // loop attributes
         for (var key in this.attributes) {
             // set let attribute
             let attr = this.attributes[key];
 
             // check if entity
-            if (this.isModel(attr)) {
+            if (this.isModel (attr)) {
                 // set array for save
-                this.set(key, {
-                    'id'    : attr.get('_id').toString(),
+                this.set (key, {
+                    'id'    : attr.get ('_id').toString (),
                     'model' : attr._modelLocation
                 });
-            } else if (Array.isArray(attr)) {
+            } else if (Array.isArray (attr)) {
                 // set arr variable
                 var arr = [];
                 // loop object array
                 for (var i = 0; i < attr.length; i++) {
                     // check if is object
-                    if (this.isModel(attr[i])) {
-                        arr.push({
-                            'id'    : attr[i].get('_id').toString(),
+                    if (this.isModel (attr[i])) {
+                        arr.push ({
+                            'id'    : attr[i].get ('_id').toString (),
                             'model' : attr[i]._modelLocation
                         });
                     } else {
-                        arr.push(attr[i]);
+                        arr.push (attr[i]);
                     }
                 }
 
                 // set array
-                this.set(key, arr);
+                this.set (key, arr);
             }
         }
 
@@ -157,9 +159,9 @@ class model extends mongorito.Model {
      * @returns {boolean}
      * @private
      */
-    isModel(obj) {
+    isModel (obj) {
         // check if model
-        if (obj === Object(obj) && obj._modelLocation) {
+        if (obj === Object (obj) && obj._modelLocation) {
             return true;
         }
     }

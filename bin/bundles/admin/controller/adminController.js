@@ -33,10 +33,10 @@ class adminController extends controller {
      * @param req
      * @param res
      *
+     * @name     ADMIN_HOME
      * @route    {get} /
      * @menu     {MAIN}  Admin
      * @menu     {ADMIN} Admin Home
-     * @name     ADMIN
      * @acl      {test:['admin'],fail:{redirect:"/"}}
      * @priority 10
      */

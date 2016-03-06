@@ -2,95 +2,214 @@
  * Created by Awesome on 2/20/2016.
  */
 
+    // use strict
+'use strict';
+
 // require dependencies
-var hbs  = require('express-hbs');
-var path = require('path');
+var hbs  = require ('express-hbs');
+var path = require ('path');
+var co   = require ('co');
 
 // require local dependencies
-var config = require(global.appRoot + '/cache/config.json');
-var acl    = require(global.appRoot + '/bin/acl');
+var config = require (global.appRoot + '/cache/config.json');
+var acl    = require (global.appRoot + '/bin/acl');
 
 /**
- * export exhbs constructor
+ * construct view
  */
-var expressHBS = hbs.express4({
-    // set partials directory
-    partialsDir   : global.appRoot + '/cache/view',
+class view {
+    /**
+     * construct view class
+     */
+    constructor () {
+        // bind variables
+        this.engine  = false;
+        this.helpers = [
+            '_menu'
+        ];
 
-    // set layouts directory
-    layoutsDir    : global.appRoot + '/cache/view/layout',
+        // bind methods
+        this.build = this.build.bind (this);
 
-    // set default layout
-    defaultLayout : global.appRoot + '/cache/view/layout/main.layout.hbs',
-
-    // set hbs extension name
-    extname       : '.hbs'
-});
-
-// register menu helper
-hbs.registerHelper('menu', function(name, className, subClass, options) {
-    var menus = config.menus;
-
-    // check for object
-    if (Object(className) === className) {
-        className = false;
-    }
-    if (Object(subClass) === subClass) {
-        subClass = false;
+        // build
+        this.build ();
     }
 
-    // check menu by name exists
-    if (menus[name]) {
-        // set variables
-        var menu = menus[name];
-        var rtn  = '<ul class="' + (className ? className : 'nav navbar-nav') + '">';
+    /**
+     * build engine
+     */
+    build () {
+        // build engine
+        this.engine = hbs.express4 ({
+            // set partials directory
+            partialsDir : global.appRoot + '/cache/view',
 
-        menuLoop: // loop menu items
-            for (var key in menu) {
-                // check if menu can be shown
-                if (menu[key].acl) {
-                    for (var i = 0; i < menu[key].acl.length; i++) {
-                        if (acl.test(menu[key].acl[i], this.user) !== true) {
-                            continue menuLoop;
-                        }
+            // set layouts directory
+            layoutsDir : global.appRoot + '/cache/view/layout',
+
+            // set default layout
+            defaultLayout : global.appRoot + '/cache/view/layout/main.layout.hbs',
+
+            // set hbs extension name
+            extname : '.hbs'
+        });
+
+        // build helpers
+        for (var i = 0; i < this.helpers.length; i++) {
+            hbs.registerAsyncHelper (this.helpers[i].replace ('_', ''), this[this.helpers[i]]);
+        }
+    }
+
+    /**
+     * tests menu acl
+     *
+     * @param acl
+     * @param user
+     * @returns {Promise}
+     */
+    static testMenuAcl (aclTest, user) {
+        return new Promise ((resolve, reject) => {
+            co (function * () {
+                if (!aclTest) {
+                    return resolve (true);
+                }
+
+                // loop through menu acl
+                for (var i = 0; i < aclTest.length; i++) {
+                    // yield acl test
+                    var test = yield acl.test (aclTest[i], user);
+
+                    // check if acl
+                    if (test !== true) {
+                        // resolve false
+                        return resolve (false);
                     }
                 }
 
-                rtn += '<li class="' + (subClass ? subClass : 'nav-item') + '">';
+                // return true
+                return resolve (true);
+            });
+        });
+    }
+
+    /**
+     * sorts menu by priority
+     *
+     * @param menu
+     * @returns {Array}
+     */
+    static sortMenu (menu) {
+        // set pre sort array
+        var arr = [];
+
+        // loop menu object
+        for (var key in menu) {
+            arr.push (menu[key]);
+        }
+
+        // sort by priority
+        arr.sort (function (a, b) {
+            return (a.priority || 10) > (b.priority || 10);
+        });
+
+        // return array
+        return arr;
+    }
+
+
+    /**
+     * menu helper
+     *
+     * @param name
+     * @param classes
+     * @param cb
+     * @private
+     */
+    _menu (name, classes, cb) {
+        // set menus
+        var menus = config.menus;
+        var that  = this;
+
+        // set default class names
+        var className = false;
+        var subClass  = false;
+
+        // check for class object
+        if (typeof classes === 'function') {
+            cb = classes;
+        } else if (Object (classes) !== classes) {
+            classes   = classes.split (',');
+            className = classes[0];
+            subClass  = (classes.length > 0 ? classes[1] : false);
+        }
+
+        // check menu by name exists
+        if (!menus[name]) {
+            return cb ('');
+        }
+
+        // run coroutine
+        co (function * () {
+            // set variables
+            var menu = view.sortMenu (menus[name]);
+            // open list element
+            var rtn = '<ul class="' + (className || 'nav navbar-nav') + '">';
+
+            // loop menu items
+            for (var i = 0; i < menu.length; i++) {
+                // set item
+                let item = menu[i];
+
+                // check if menu can be shown
+                var test = yield view.testMenuAcl (item.acl, that.user);
+                if (!test) {
+                    continue;
+                }
+
+                // create list element
+                rtn += '<li class="' + (subClass || 'nav-item') + '">';
 
                 // check menu has children
-                if (menu[key].children.length) {
-                    rtn += '<a class="nav-link dropdown-toggle' + (this.route.replace(/^\/|\/$/g, '') == menu[key].route.replace(/^\/|\/$/g, '') ? ' active' : '') + '" data-toggle="dropdown" href="' + (menu[key].route ? menu[key].route : '#!') + '" role="button" aria-haspopup="true" aria-expanded="false">' + menu[key].title + '</a>';
+                if (item.children && item.children.length) {
+                    rtn += '<a class="nav-link dropdown-toggle' + (that.route.replace (/^\/|\/$/g, '') == item.route.replace (/^\/|\/$/g, '') ? ' active' : '') + '" data-toggle="dropdown" href="' + (item.route ? item.route : '#!') + '" role="button" aria-haspopup="true" aria-expanded="false">' + item.title + '</a>';
                     rtn += '<div class="dropdown-menu">';
 
-                    subLoop: // loop children
-                        for (var sub in menu[key].children) {
-                            // check if child can be shown
-                            if (menu[key].children[sub].acl) {
-                                for (var i = 0; i < menu[key].children[sub].acl.length; i++) {
-                                    if (acl.test(menu[key].children[sub].acl[i], this.user) !== true) {
-                                        continue subLoop;
-                                    }
-                                }
-                            }
+                    // loop through menu children
+                    for (var key in item.children) {
+                        // set sub menu
+                        let sub = item.children[key];
 
-                            rtn += '<a class="dropdown-item" href="' + (menu[key].children[sub].route ? menu[key].children[sub].route : '#!') + '">' + menu[key].children[sub].title + '</a>';
+                        // check if acl for child menu
+                        test = yield view.testMenuAcl (sub.acl, that.user);
+                        if (!test) {
+                            continue;
                         }
 
+                        // ad menu link to parent menu
+                        rtn += '<a class="dropdown-item" href="' + (sub.route ? sub.route : '#!') + '">' + sub.title + '</a>';
+                    }
+
+                    // close menu div
                     rtn += '</div>';
                 } else {
-                    rtn += '<a class="nav-link' + (this.route.replace(/^\/|\/$/g, '') == menu[key].route.replace(/^\/|\/$/g, '') ? ' active' : '') + '" href="' + (menu[key].route ? menu[key].route : '#!') + '">' + menu[key].title + '</a>';
+                    // add single link to menu
+                    rtn += '<a class="nav-link' + (that.route.replace (/^\/|\/$/g, '') == item.route.replace (/^\/|\/$/g, '') ? ' active' : '') + '" href="' + (item.route ? item.route : '#!') + '">' + item.title + '</a>';
                 }
+
+                // close div
                 rtn += '</li>';
             }
-        rtn += '</ul>';
 
-        // return menu html
-        return rtn;
+            // close list
+            rtn += '</ul>';
+
+            // return menu html
+            cb (rtn);
+        });
     }
-});
+}
 
 /**
  * export handlebars view
  */
-module.exports = expressHBS;
+module.exports = view;

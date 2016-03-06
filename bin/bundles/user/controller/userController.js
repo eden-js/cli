@@ -86,7 +86,6 @@ class userController extends controller {
         passport.deserializeUser((id, done) => {
             co(function * () {
                 var User = yield user.findById(id);
-                           yield User.model('acl');
 
                 if (User) {
                     done(null, User);
@@ -107,34 +106,29 @@ class userController extends controller {
 
         // check acl on run
         app.use((req, res, next) => {
-            var canNext = true;
+            co(function * () {
+                // check acl exists
+                var rt = '/' + req.url.replace(/^\/|\/$/g, '');
+                if (aclConfig[rt] && aclConfig[rt].length) {
+                    // loop acl for tests
+                    for (var i = 0; i < aclConfig[rt].length; i++) {
+                        // check acl
+                        var check = yield test.test(aclConfig[rt][i], res.locals.user);
 
-            // check acl exists
-            var rt = '/' + req.url.replace(/^\/|\/$/g, '');
-            if (aclConfig[rt] && aclConfig[rt].length) {
-                // loop acl for tests
-                for (var i = 0; i < aclConfig[rt].length; i++) {
-                    // check acl
-                    var check = test.test(aclConfig[rt][i], res.locals.user);
-
-                    // check if true
-                    if (check !== true) {
-                        // remove ability to next
-                        canNext = false;
-
-                        // check if redirect
-                        if (check.redirect) {
-                            return res.redirect(check.redirect);
+                        // check if true
+                        if (check !== true) {
+                            // check if redirect
+                            if (check.redirect) {
+                                return res.redirect(check.redirect);
+                            }
+                            return res.redirect('/');
                         }
-                        return res.redirect('/');
                     }
                 }
-            }
 
-            // run next
-            if (canNext) {
+                // do next
                 next();
-            }
+            });
         });
     }
 
