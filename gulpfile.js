@@ -16,16 +16,17 @@ var babelify   = require ('babelify');
 var source     = require ('vinyl-source-stream');
 
 // require gulp dependencies
-var rename     = require ('gulp-rename');
-var sass       = require ('gulp-sass');
-var sourcemaps = require ('gulp-sourcemaps');
-var concat     = require ('gulp-concat');
 var riot       = require ('gulp-riot');
+var sass       = require ('gulp-sass');
+var chmod      = require ('gulp-chmod');
+var watch      = require ('gulp-watch');
+var concat     = require ('gulp-concat');
 var insert     = require ('gulp-insert');
-var streamify  = require ('gulp-streamify');
+var rename     = require ('gulp-rename');
 var uglify     = require ('gulp-uglify');
 var nodemon    = require ('gulp-nodemon');
-var chmod      = require ('gulp-chmod');
+var streamify  = require ('gulp-streamify');
+var sourcemaps = require ('gulp-sourcemaps');
 
 // import local dependencies
 var config     = require ('./config');
@@ -78,47 +79,58 @@ class gulpBuilder {
         };
 
         // set keys array
-        var that  = this;
-        var keys  = Object.keys (this._tasks);
-        var watch = [];
+        var that     = this;
+        var keys     = Object.keys (this._tasks);
+        var watchers = [];
 
         // bind and add gulp task methods
         for (var i = 0; i < keys.length; i++) {
+            // set task
+            let task = keys[i];
             // bind method
-            this[keys[i]] = this[keys[i]].bind (this);
+            this[task] = this[task].bind (this);
             // setup task
-            this.gulp.task (keys[i], this[keys[i]]);
+            this.gulp.task (task, this[task]);
             // setup watch task
-            this.gulp.task (keys[i] + ':watch', () => {
-                that.gulp.watch (that._tasks[keys[i]], [keys[i]]);
+            this.gulp.task (task + ':watch', () => {
+                watch (that._tasks[task], () => {
+                    that.gulp.start (task);
+                });
             });
             // add watch task to array
-            watch.push (keys[i] + ':watch');
+            watchers.push (task + ':watch');
         }
 
         // add install task
         this.gulp.task ('install', keys);
         // add watch task
-        this.gulp.task ('watch', watch);
+        this.gulp.task ('watch', watchers);
         // add dev server task
         this.gulp.task ('dev', () => {
-            // run nodemon task
-            nodemon ({
-                'script' : './app.js',
-                'ext'    : 'js json',
-                'delay'  : this.wait,
-                'watch'  : [
-                    'cache/'
-                ],
-                'env'    : {
-                    'NODE_ENV' : 'development'
-                }
-            });
+            setTimeout(() => {
+                // run nodemon task
+                nodemon ({
+                    'script' : './app.js',
+                    'ext'    : 'js json',
+                    'delay'  : this.wait,
+                    'watch'  : [
+                        'cache/'
+                    ],
+                    'env'    : {
+                        'NODE_ENV' : 'development'
+                    }
+                });
 
-            // loop for watch
-            for (var i = 0; i < keys.length; i++) {
-                that.gulp.watch (that._tasks[keys[i]], [keys[i]]);
-            }
+                // loop for watch
+                for (var i = 0; i < keys.length; i++) {
+                    // set task
+                    let task = keys[i];
+                    // setup watch task
+                    watch (that._tasks[task], () => {
+                       that.gulp.start (task);
+                    });
+                }
+            }, that.wait * 2);
         });
         // add default task
         this.gulp.task ('default', [
