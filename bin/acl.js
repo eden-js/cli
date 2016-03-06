@@ -42,7 +42,7 @@ class acl {
         }
 
         // check get acl
-        var userAcl = User.get('acl');
+        var userAcl = User.model('acl');
         if (!userAcl) {
             return acl.fail ? acl.fail : false;
         }
