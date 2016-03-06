@@ -34,5 +34,17 @@ module.exports = {
             host : 'localhost',
             db   : 'database'
         }
-    }
+    },
+    // default sass files
+    sass         : [
+        './node_modules/bootstrap/scss/bootstrap-flex.scss',
+        './node_modules/tether/src/css/tether.scss'
+    ],
+    // default javascript files
+    js           : [
+        './node_modules/jquery/dist/jquery.min.js',
+        './node_modules/tether/dist/js/tether.min.js',
+        './node_modules/jquery-bootgrid/dist/jquery.bootgrid.min.js',
+        './node_modules/bootstrap/dist/js/bootstrap.js'
+    ]
 };

@@ -150,19 +150,25 @@ class gulpBuilder {
         // grab gulp source for sass
         // do within setTimeout to remove empty files
         setTimeout (() => {
-            this.gulp.src ([
-                // require local variables files
+            // create local variables array for sass files
+            var sassFiles = [
                 './bin/bundles/*/resources/scss/variables.scss',
-                './app/bundles/*/resources/scss/variables.scss',
+                './app/bundles/*/resources/scss/variables.scss'
+            ];
 
-                // require vendor dependencies
-                (config.bootstrap ? config.bootstrap : './node_modules/bootstrap/scss/bootstrap-flex.scss'),
-                './node_modules/tether/src/css/tether.scss',
+            // loop config sass files
+            if (config.sass && config.sass.length) {
+                for (var i = 0; i < config.sass.length; i ++) {
+                    sassFiles.push(config.sass[i]);
+                }
+            }
 
-                    // require local bootstrap files
-                './bin/bundles/*/resources/scss/bootstrap.scss',
-                './app/bundles/*/resources/scss/bootstrap.scss'
-            ])
+            // push local bootstrap files
+            sassFiles.push('./bin/bundles/*/resources/scss/bootstrap.scss');
+            sassFiles.push('./app/bundles/*/resources/scss/bootstrap.scss');
+
+            // run gulp
+            this.gulp.src (sassFiles)
                 .pipe (through.obj (function (chunk, enc, cb) {
                     // run through callback
                     this.push ({
@@ -316,6 +322,14 @@ class gulpBuilder {
         js     = js.concat (glob.sync ('./bin/bundles/*/resources/js/bootstrap.js'));
         js     = js.concat (glob.sync ('./app/bundles/*/resources/js/bootstrap.js'));
 
+        // build vendor prepend
+        var vendor = '';
+        if (config.js && config.js.length) {
+            for (var i = 0; i < config.js.length; i++) {
+                vendor += fs.readFileSync (config.js[i], 'utf8');
+            }
+        }
+
         // browserfiy javascript
         // do within setTimeout to remove empty files
         setTimeout (() => {
@@ -325,11 +339,7 @@ class gulpBuilder {
                 .transform (babelify)
                 .bundle ()
                 .pipe (source ('app.min.js'))
-                .pipe (insert.prepend (fs.readFileSync ('./node_modules/bootstrap/dist/js/bootstrap.js', 'utf8')))
-                .pipe (insert.prepend (fs.readFileSync ('./node_modules/jquery-bootgrid/dist/jquery.bootgrid.fa.min.js', 'utf8')))
-                .pipe (insert.prepend (fs.readFileSync ('./node_modules/jquery-bootgrid/dist/jquery.bootgrid.min.js', 'utf8')))
-                .pipe (insert.prepend (fs.readFileSync ('./node_modules/tether/dist/js/tether.min.js', 'utf8')))
-                .pipe (insert.prepend (fs.readFileSync ('./node_modules/jquery/dist/jquery.min.js', 'utf8')))
+                .pipe (insert.prepend (vendor))
                 .pipe (streamify (uglify ()))
                 .pipe (this.gulp.dest ('./www/assets/js'));
         }, this.wait);
