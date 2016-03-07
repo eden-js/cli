@@ -165,6 +165,7 @@ class bootstrap {
         this.app.use (bodyParser.json ());
         this.app.use (bodyParser.urlencoded ({extended : true}));
         this.app.use (cookieParser (config.session));
+        this.app.use (express.static('www'));
         this.app.use (session ({
             store : new RedisStore (), secret : config.session, resave : false, saveUninitialized : true
         }));
