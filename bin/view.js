@@ -133,7 +133,9 @@ class view {
 
         // check for removed menus
         if (that.menu && that.menu.remove && that.menu.remove.length) {
-            remove = that.remove;
+            for (var i = 0; i < that.menu.remove.length; i++) {
+                remove.push(that.menu.remove[i].toUpperCase());
+            }
         }
 
         // set default class names
@@ -167,7 +169,7 @@ class view {
                 let item = menu[i];
 
                 // check if menu removed
-                if (remove.indexOf(item.name) > -1) {
+                if (remove.indexOf(item.name.toUpperCase()) > -1) {
                     continue;
                 }
 
@@ -191,7 +193,7 @@ class view {
                         let sub = item.children[key];
 
                         // check if menu removed
-                        if (remove.indexOf(sub.name) > -1) {
+                        if (remove.indexOf(sub.name.toUpperCase()) > -1) {
                             continue;
                         }
 
