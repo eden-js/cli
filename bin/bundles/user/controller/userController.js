@@ -149,6 +149,23 @@ class userController extends controller {
     }
 
     /**
+     * logout action
+     *
+     * @param req
+     * @param res
+     *
+     * @route    {get} /logout
+     * @menu     {MAIN} Logout
+     * @name     LOGOUT
+     * @acl      {test:true,fail:{redirect:"/"}}
+     * @priority 2
+     */
+    logoutAction(req, res) {
+        req.logout ();
+        res.redirect ('/');
+    }
+
+    /**
      * login form action
      *
      * @param req
