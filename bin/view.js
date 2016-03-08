@@ -127,8 +127,14 @@ class view {
      */
     _menu (name, classes, cb) {
         // set menus
-        var menus = config.menus;
-        var that  = this;
+        var menus  = config.menus;
+        var that   = this;
+        var remove = [];
+
+        // check for removed menus
+        if (that.menu && that.menu.remove && that.menu.remove.length) {
+            remove = that.remove;
+        }
 
         // set default class names
         var className = false;
@@ -160,6 +166,11 @@ class view {
                 // set item
                 let item = menu[i];
 
+                // check if menu removed
+                if (remove.indexOf(item.name) > -1) {
+                    continue;
+                }
+
                 // check if menu can be shown
                 var test = yield view.testMenuAcl (item.acl, that.user);
                 if (!test) {
@@ -178,6 +189,11 @@ class view {
                     for (var key in item.children) {
                         // set sub menu
                         let sub = item.children[key];
+
+                        // check if menu removed
+                        if (remove.indexOf(sub.name) > -1) {
+                            continue;
+                        }
 
                         // check if acl for child menu
                         test = yield view.testMenuAcl (sub.acl, that.user);
