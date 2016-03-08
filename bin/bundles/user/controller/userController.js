@@ -2,22 +2,22 @@
  * Created by Awesome on 2/21/2016.
  */
 
-// use strict
+    // use strict
 'use strict';
 
 // require local dependencies
-var controller = require(global.appRoot + '/bin/bundles/core/controller');
-var user       = require(global.appRoot + '/bin/bundles/user/model/user');
-var acl        = require(global.appRoot + '/bin/bundles/user/model/acl');
-var aclConfig  = require(global.appRoot + '/cache/config.json').acl;
-var test       = require(global.appRoot + '/bin/acl');
-var config     = require(global.appRoot + '/config');
+var controller = require (global.appRoot + '/bin/bundles/core/controller');
+var user       = require (global.appRoot + '/bin/bundles/user/model/user');
+var acl        = require (global.appRoot + '/bin/bundles/user/model/acl');
+var aclConfig  = require (global.appRoot + '/cache/config.json').acl;
+var test       = require (global.appRoot + '/bin/acl');
+var config     = require (global.appRoot + '/config');
 
 // require dependencies
-var co       = require('co');
-var crypto   = require('crypto');
-var passport = require('passport');
-var local    = require('passport-local').Strategy;
+var co       = require ('co');
+var crypto   = require ('crypto');
+var passport = require ('passport');
+var local    = require ('passport-local').Strategy;
 
 /**
  * create user controller
@@ -28,106 +28,107 @@ class userController extends controller {
      *
      * @param app
      */
-    constructor(app) {
+    constructor (app) {
         // run super
-        super(app);
+        super (app);
 
         // bind methods
-        this.loginAction        = this.loginAction.bind(this);
-        this.loginFormAction    = this.loginFormAction.bind(this);
-        this.registerAction     = this.registerAction.bind(this);
-        this.registerFormAction = this.registerFormAction.bind(this);
+        this.loginAction        = this.loginAction.bind (this);
+        this.logoutAction       = this.logoutAction.bind (this);
+        this.loginFormAction    = this.loginFormAction.bind (this);
+        this.registerAction     = this.registerAction.bind (this);
+        this.registerFormAction = this.registerFormAction.bind (this);
 
         // build methods
-        this.build = this.build.bind(this);
+        this.build = this.build.bind (this);
 
         // run
-        this.build(app);
+        this.build (app);
     }
 
     /**
      * builds user controller
      */
-    build(app) {
+    build (app) {
         // initialize passport
-        app.use(passport.initialize());
-        app.use(passport.session());
+        app.use (passport.initialize ());
+        app.use (passport.session ());
 
         // create local strategy
-        passport.use(new local((username, password, done) => {
-            co(function * () {
+        passport.use (new local ((username, password, done) => {
+            co (function * () {
                 // find user
-                var User = yield user.where({
+                var User = yield user.where ({
                     'username' : username
-                }).findOne();
+                }).findOne ();
 
                 // check user exists
-                if (!User) {
-                    return done(null, false, 'User not found');
+                if (! User) {
+                    return done (null, false, 'User not found');
                 }
 
                 // authenticate
-                User.authenticate(password).then(result => {
+                User.authenticate (password).then (result => {
                     if (result.error) {
-                        done(null, false, result.mess);
+                        done (null, false, result.mess);
                     } else {
-                        done(null, User);
+                        done (null, User);
                     }
                 });
             });
         }));
 
         // serializes user
-        passport.serializeUser((User, done) => {
-            done(null, User.get('_id').toString());
+        passport.serializeUser ((User, done) => {
+            done (null, User.get ('_id').toString ());
         });
 
         // deserialize user
-        passport.deserializeUser((id, done) => {
-            co(function * () {
-                var User = yield user.findById(id);
+        passport.deserializeUser ((id, done) => {
+            co (function * () {
+                var User = yield user.findById (id);
 
                 if (User) {
-                    done(null, User);
+                    done (null, User);
                 } else {
-                    done(null, false);
+                    done (null, false);
                 }
             });
         });
 
         // add user to locals
-        app.use((req, res, next) => {
+        app.use ((req, res, next) => {
             // set user locally
             res.locals.user = req.user;
 
             // run next
-            return next();
+            return next ();
         });
 
         // check acl on run
-        app.use((req, res, next) => {
-            co(function * () {
+        app.use ((req, res, next) => {
+            co (function * () {
                 // check acl exists
-                var rt = '/' + req.url.replace(/^\/|\/$/g, '');
+                var rt = '/' + req.url.replace (/^\/|\/$/g, '');
                 if (aclConfig[rt] && aclConfig[rt].length) {
                     // loop acl for tests
-                    for (var i = 0; i < aclConfig[rt].length; i++) {
+                    for (var i = 0; i < aclConfig[rt].length; i ++) {
                         // check acl
-                        var check = yield test.test(aclConfig[rt][i], res.locals.user);
+                        var check = yield test.test (aclConfig[rt][i], res.locals.user);
 
                         // check if true
                         if (check !== true) {
                             // check if redirect
                             if (check.redirect) {
-                                return res.redirect(check.redirect);
+                                return res.redirect (check.redirect);
                             }
-                            return res.redirect('/');
+                            return res.redirect ('/');
                         }
                     }
                 }
 
                 // do next
-                next();
+                next ();
             });
         });
     }
@@ -138,31 +139,14 @@ class userController extends controller {
      * @param req
      * @param res
      *
+     * @name     LOGIN
      * @route    {get} /login
      * @menu     {MAIN} Login
-     * @name     LOGIN
      * @acl      {test:false,fail:{redirect:"/"}}
      * @priority 2
      */
-    loginAction(req, res) {
-        res.render('login', {});
-    }
-
-    /**
-     * logout action
-     *
-     * @param req
-     * @param res
-     *
-     * @route    {get} /logout
-     * @menu     {MAIN} Logout
-     * @name     LOGOUT
-     * @acl      {test:true,fail:{redirect:"/"}}
-     * @priority 2
-     */
-    logoutAction(req, res) {
-        req.logout ();
-        res.redirect ('/');
+    loginAction (req, res) {
+        res.render ('login', {});
     }
 
     /**
@@ -173,18 +157,35 @@ class userController extends controller {
      *
      * @route {post} /login
      */
-    loginFormAction(req, res, next) {
-        passport.authenticate('local', (err, User, info) => {
-            if (!User) {
-                return res.render('login', {
+    loginFormAction (req, res, next) {
+        passport.authenticate ('local', (err, User, info) => {
+            if (! User) {
+                return res.render ('login', {
                     'error' : info.message,
                     'old'   : req.body
                 });
             }
-            req.login(User, {}, (err) => {
-                res.redirect('/');
+            req.login (User, {}, (err) => {
+                res.redirect ('/');
             });
-        })(req, res, next);
+        }) (req, res, next);
+    }
+
+    /**
+     * logout action
+     *
+     * @param req
+     * @param res
+     *
+     * @name     LOGOUT
+     * @route    {get} /logout
+     * @menu     {MAIN} Logout
+     * @acl      {test:true,fail:{redirect:"/"}}
+     * @priority 2
+     */
+    logoutAction (req, res) {
+        req.logout ();
+        res.redirect ('/');
     }
 
     /**
@@ -195,8 +196,8 @@ class userController extends controller {
      *
      * @route {get} /register
      */
-    registerAction(req, res) {
-        res.render('register', {});
+    registerAction (req, res) {
+        res.render ('register', {});
     }
 
     /**
@@ -207,32 +208,32 @@ class userController extends controller {
      *
      * @route {post} /register
      */
-    registerFormAction(req, res) {
-        co(function * () {
+    registerFormAction (req, res) {
+        co (function * () {
             // check username
-            if (req.body.username.trim().length < 5) {
-                return res.render('register', {
+            if (req.body.username.trim ().length < 5) {
+                return res.render ('register', {
                     'error' : 'your username must be at least 5 characters long',
                     'old'   : req.body
                 });
             }
 
             // check for user
-            var User = yield user.where({
+            var User = yield user.where ({
                 'username' : req.body.username
-            }).findOne();
+            }).findOne ();
 
             // check if user exists
             if (User) {
-                return res.render('register', {
+                return res.render ('register', {
                     'error' : 'the username "' + req.body.username + '" is already taken',
                     'old'   : req.body
                 });
             }
 
             // check password length
-            if (req.body.password.trim().length < 5) {
-                return res.render('register', {
+            if (req.body.password.trim ().length < 5) {
+                return res.render ('register', {
                     'error' : 'your password must be at least 5 characters long',
                     'old'   : req.body
                 });
@@ -240,29 +241,29 @@ class userController extends controller {
 
             // check passwords match
             if (req.body.password != req.body.passwordb) {
-                return res.render('register', {
+                return res.render ('register', {
                     'error' : 'your passwords do not match',
                     'old'   : req.body
                 });
             }
 
             // everything checks out
-            var hash = crypto.createHmac('sha256', config.secret)
-                .update(req.body.password)
-                .digest('hex');
+            var hash = crypto.createHmac ('sha256', config.secret)
+                .update (req.body.password)
+                .digest ('hex');
 
             // create user
-            User = new user({
+            User = new user ({
                 'username' : req.body.username,
                 'hash'     : hash
             });
 
             // save user
-            yield User.save();
+            yield User.save ();
 
             // log user in
-            req.login(User, (err) => {
-                res.redirect('/');
+            req.login (User, (err) => {
+                res.redirect ('/');
             });
         });
     }
