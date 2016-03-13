@@ -8,6 +8,10 @@ npm-debug.log
 # IDE
 .idea
 
+# logs
+*.log
+*.sentry
+
 # configuration
 /config.js
 /nginx.conf
