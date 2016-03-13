@@ -9,11 +9,11 @@
 var io = require ('socket.io-client');
 
 /**
- * build chat class
+ * build socket class
  */
-class chat {
+class socket {
     /**
-     * construct chat class
+     * construct socket class
      */
     constructor () {
         // bind methods
@@ -29,10 +29,14 @@ class chat {
      */
     build () {
         // run socket
+        // @todo fix this, its pretty insecure
         this.socket = io.connect ('//' + window.eden.domain, {
+            query     : 'json=' + encodeURIComponent(JSON.stringify({
+                'user' : window.eden.user
+            })),
             secure    : true,
             reconnect : true,
-            'path'    : '/socket.io'
+            'path'    : '/ws'
         });
     }
 
@@ -48,8 +52,8 @@ class chat {
 }
 
 /**
- * export chat class
+ * export socket class
  *
- * @type {chat}
+ * @type {socket}
  */
-module.exports = new chat ();
+module.exports = new socket ();
