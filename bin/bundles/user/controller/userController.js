@@ -100,7 +100,11 @@ class userController extends controller {
         app.use ((req, res, next) => {
             // set user locally
             res.locals.user      = req.user;
-            res.locals.eden.user = req.user;
+            res.locals.eden.user = req.user ? {
+                'id'       : req.user.get('_id').toString(),
+                'username' : req.user.get('username'),
+                'avatar'   : req.user.get('avatar')
+            } : false;
 
             // run next
             return next ();

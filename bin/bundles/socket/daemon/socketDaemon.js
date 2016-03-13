@@ -2,7 +2,7 @@
  * Created by Awesome on 3/7/2016.
  */
 
-    // use strict
+// use strict
 'use strict';
 
 // set app root
@@ -11,16 +11,23 @@ global.appRoot = '../../../..';
 // require dependencies
 var app       = require ('express') ();
 var http      = require ('http').Server (app);
-var io        = require ('socket.io') (http);
+var io        = require ('socket.io') (http, {
+    'path' : '/socket'
+});
 var redis     = require ('redis');
 var sub       = redis.createClient ();
-var config    = require (global.appRoot + '/config');
 var portastic = require ('portastic');
 
+// require local dependencies
+var config = require (global.appRoot + '/config');
+
 /**
- * build chat daemon class
+ * build socket daemon class
  */
-class chatDaemon {
+class socketDaemon {
+    /**
+     * construct socket daemon class
+     */
     constructor () {
         // bind variables
         this.users   = {};
@@ -30,6 +37,7 @@ class chatDaemon {
         // bind methods
         this.build  = this.build.bind (this);
         this.listen = this.listen.bind (this);
+        this.socket = this.socket.bind (this);
 
         // build
         this.build ();
@@ -44,11 +52,11 @@ class chatDaemon {
         var that = this;
 
         // set namespace ce
-        var nsp = io.of ('/ws');
+        var nsp = io.of ('/socket');
 
         // listen for connection
-        io.on ('connection', this.socket);
-        nsp.on ('connection', this.socket);
+        io.on ('connection', that.socket);
+        nsp.on ('connection', that.socket);
 
         // listen to redis
         sub.on ('message', (channel, data) => {
@@ -70,16 +78,16 @@ class chatDaemon {
             // check who to send to
             if (data.to === true) {
                 // emit to socketio
-                io.emit ('message', {'type' : data.type, 'data' : data.data});
+                io.emit (data.type, data.data);
                 // emit to namespace
-                nsp.emit ('message', {'type' : data.type, 'data' : data.data});
+                nsp.emit (data.type, data.data);
             } else if (that.users[data.to] && that.users[data.to].length) {
                 // loop all user socket connections
                 for (var i = 0; i < that.users[data.to].length; i++) {
                     // check socket exists
                     if (that.sockets[that.users[data.to]]) {
                         // emit to socket
-                        that.sockets[that.users[data.to]].emit ('message', {'type' : data.type, 'data' : data.data});
+                        that.sockets[that.users[data.to]].emit (data.type, data.data);
                     }
                 }
             }
@@ -99,7 +107,7 @@ class chatDaemon {
         var that = this;
 
         // check for json
-        var json = (socket.handshake.query.json ? JSON.decode(socket.handshake.query.json) : {});
+        var json = (socket.handshake.query.json ? JSON.parse(socket.handshake.query.json) : {});
 
         // set socketid
         let socketid = that.index;
@@ -127,7 +135,7 @@ class chatDaemon {
             process.send ('client ' + socketid + ' disconnected');
 
             // remove socket id from user
-            if (socket.handshake.query.user) {
+            if (json.user) {
                 if (that.users[json.user.id] && that.users[json.user.id].indexOf (socketid) > -1) {
                     that.users[json.user.id].splice (that.users[json.user.id].indexOf (socketid), 1);
                 }
@@ -154,8 +162,8 @@ class chatDaemon {
 }
 
 /**
- * construct chat daemon
+ * construct socket daemon
  *
- * @type {chatDaemon}
+ * @type {socketDaemon}
  */
-module.exports = new chatDaemon ();
+module.exports = new socketDaemon ();

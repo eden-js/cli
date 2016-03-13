@@ -36,7 +36,7 @@ class socket {
             })),
             secure    : true,
             reconnect : true,
-            'path'    : '/ws'
+            path      : '/socket'
         });
     }
 
