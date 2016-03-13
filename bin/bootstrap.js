@@ -176,6 +176,9 @@ class bootstrap {
             res.header ('X-Powered-By', 'EdenFrame');
 
             // set variables
+            res.locals.eden  = {
+                'domain' : config.domain
+            };
             res.locals.route = req.originalUrl;
 
             // go to next

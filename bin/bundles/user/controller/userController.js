@@ -99,16 +99,8 @@ class userController extends controller {
         // add user to locals
         app.use ((req, res, next) => {
             // set user locally
-            res.locals.user = req.user;
-            if (req.user) {
-                res.locals.eden = JSON.stringify({
-                    'user' : {
-                        'username' : req.user.get ('username'),
-                        'avatar'   : req.user.get ('avatar'),
-                        'id'       : req.user.get ('_id').toString ()
-                    }
-                });
-            }
+            res.locals.user      = req.user;
+            res.locals.eden.user = req.user;
 
             // run next
             return next ();

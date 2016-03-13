@@ -2,7 +2,7 @@
  * Created by Awesome on 2/20/2016.
  */
 
-    // use strict
+// use strict
 'use strict';
 
 // require dependencies
@@ -23,9 +23,13 @@ class view {
      */
     constructor () {
         // bind variables
-        this.engine  = false;
-        this.helpers = [
+        this.engine       = false;
+        this.asyncHelpers = [
             '_menu'
+        ];
+        this.syncHelpers  = [
+            '_json',
+            '_eq'
         ];
 
         // bind methods
@@ -55,8 +59,11 @@ class view {
         });
 
         // build helpers
-        for (var i = 0; i < this.helpers.length; i++) {
-            hbs.registerAsyncHelper (this.helpers[i].replace ('_', ''), this[this.helpers[i]]);
+        for (var i = 0; i < this.asyncHelpers.length; i++) {
+            hbs.registerAsyncHelper (this.asyncHelpers[i].replace ('_', ''), this[this.asyncHelpers[i]]);
+        }
+        for (var i = 0; i < this.syncHelpers.length; i++) {
+            hbs.registerHelper (this.syncHelpers[i].replace ('_', ''), this[this.syncHelpers[i]]);
         }
     }
 
@@ -224,6 +231,35 @@ class view {
             // return menu html
             cb (rtn);
         });
+    }
+
+    /**
+     * json helper
+     *
+     * @param obj
+     * @private
+     */
+    _json(obj) {
+        return JSON.stringify(obj);
+    }
+
+    /**
+     * check object equals another
+     *
+     * @param obja
+     * @param objb
+     * @param assert
+     * @returns {*}
+     * @private
+     */
+    _eq (obja, objb, assert) {
+        if (Object(assert) === assert) {
+            assert = false;
+        }
+        if (obja === objb) {
+            return assert || 'true';
+        }
+        return '';
     }
 }
 
