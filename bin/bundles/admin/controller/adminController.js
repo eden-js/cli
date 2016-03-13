@@ -12,6 +12,7 @@ var controller = require(global.appRoot + '/bin/bundles/core/controller');
  * build admin controller
  *
  * @mount /admin
+ * @acl   {test:['admin'],fail:{redirect:"/"}}
  */
 class adminController extends controller {
     /**
@@ -37,7 +38,6 @@ class adminController extends controller {
      * @route    {get} /
      * @menu     {MAIN}  Admin
      * @menu     {ADMIN} Admin Home
-     * @acl      {test:['admin'],fail:{redirect:"/"}}
      * @priority 10
      */
     indexAction(req, res) {
