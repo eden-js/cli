@@ -48,7 +48,6 @@
     "riot": "^2.3.15",
     "socket.io-client": "^1.4.5",
     "socketio": "^1.0.0",
-    "steam": "^1.4.0",
     "tether": "^1.2.0",
     "through2": "^2.0.0",
     "vinyl-source-stream": "^1.1.0"
