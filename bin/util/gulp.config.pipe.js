@@ -68,7 +68,7 @@ class configPipe {
             // check for class
             var isClass = that._class(obj.line, lines);
             if (isClass) {
-                acl      = that._acl(tags, 0);
+                acl      = that._acl(tags);
                 mounts   = that._mounts(tags);
                 priority = that._priority(tags, dPriority);
             }
@@ -129,8 +129,10 @@ class configPipe {
                             // only use first route
                             isMenu[m].route    = '/' + (mounts[0] + routes[0].route).split('//').join('/').replace(/^\/|\/$/g, '');
                             isMenu[m].priority = isMenu[m].priority ? isMenu[m].priority : priority;
-                            if (acl.length) {
-                                isMenu[m].acl.push(acl);
+                            if (acl && acl.test && acl.test.length) {
+                                for (var a = 0; a < acl.test.length; a++) {
+                                    isMenu[m].acl.push (acl.test[a]);
+                                }
                             }
 
                             // set menu object

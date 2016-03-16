@@ -40,7 +40,7 @@ module.exports = () => {
         // on exit
         _daemon[daemon].on ('close', (code) => {
             // fork new daemon
-            _daemon[daemon] = child.fork (global.appRoot + daemons[key]);
+            // _daemon[daemon] = child.fork (global.appRoot + daemons[key]);
         });
     }
 };

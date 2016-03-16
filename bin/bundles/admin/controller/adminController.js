@@ -2,11 +2,11 @@
  * Created by Awesome on 3/1/2016.
  */
 
-// use strict
+    // use strict
 'use strict';
 
 // bind methods
-var controller = require(global.appRoot + '/bin/bundles/core/controller');
+var controller = require (global.appRoot + '/bin/bundles/core/controller');
 
 /**
  * build admin controller
@@ -20,12 +20,12 @@ class adminController extends controller {
      *
      * @param props
      */
-    constructor(props) {
+    constructor (app) {
         // run super
-        super(props);
+        super (app);
 
         // bind methods
-        this.indexAction = this.indexAction.bind(this);
+        this.indexAction = this.indexAction.bind (this);
     }
 
     /**
@@ -40,8 +40,8 @@ class adminController extends controller {
      * @menu     {ADMIN} Admin Home
      * @priority 10
      */
-    indexAction(req, res) {
-        res.render('admin', {
+    indexAction (req, res) {
+        res.render ('admin', {
             'layout' : 'admin.layout.hbs'
         });
     }
