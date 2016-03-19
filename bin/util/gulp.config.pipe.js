@@ -119,19 +119,28 @@ class configPipe {
                         }
                     }
 
+                    // get array of menus in tags
                     var isMenu = that._menus(tags);
+
+                    // chekc if menus exist
                     if (isMenu) {
+                        // check if mounted
                         if (!mounts.length) {
                             mounts = ['/'];
                         }
 
+                        // loop menu
                         for (var m = 0; m < isMenu.length; m++) {
                             // only use first route
                             isMenu[m].route    = '/' + (mounts[0] + routes[0].route).split('//').join('/').replace(/^\/|\/$/g, '');
                             isMenu[m].priority = isMenu[m].priority ? isMenu[m].priority : priority;
-                            if (acl && acl.test && acl.test.length) {
-                                for (var a = 0; a < acl.test.length; a++) {
-                                    isMenu[m].acl.push (acl.test[a]);
+
+                            // check for scoped acl
+                            if (acl) {
+                                if (!isMenu[m].acl || !Array.isArray(isMenu[m].acl.test)) {
+                                  isMenu[m].acl = acl;
+                                } else if (Array.isArray(acl.test)) {
+                                  isMenu[m].acl.test.concat(acl.test, isMenu[m].acl.test);
                                 }
                             }
 
@@ -265,7 +274,7 @@ class configPipe {
                     'menu'     : tag.type,
                     'parent'   : this._parent(tags, false, i),
                     'priority' : this._priority(tags, 10),
-                    'acl'      : acl ? [acl] : []
+                    'acl'      : (acl ? acl : [])
                 });
             }
         }
