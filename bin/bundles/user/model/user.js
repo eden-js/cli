@@ -14,9 +14,22 @@ var model  = require(global.appRoot + '/bin/bundles/core/model');
 var acl    = require(global.appRoot + '/bin/bundles/user/model/acl');
 
 /**
- * create user entity
+ * create user model
  */
 class user extends model {
+    /**
+     * construct example model
+     *
+     * @param a
+     * @param b
+     */
+    constructor(a, b) {
+        super(a, b);
+
+        // set model location
+        this._modelLocation = __filename.replace (global.appRoot, '');
+    }
+
     /**
      * check ACL before save
      */

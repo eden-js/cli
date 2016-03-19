@@ -5,14 +5,25 @@
 // use strict
 'use strict';
 
-// import dependancies
-var mongorito = require('mongorito');
+// import local dependencies
+var model = require (global.appRoot + '/bin/bundles/core/model');
 
 /**
  * create user class
  */
-class example extends mongorito.Model {
+class example extends model {
+    /**
+     * construct example model
+     *
+     * @param a
+     * @param b
+     */
+    constructor(a, b) {
+        super(a, b);
 
+        // set model location
+        this._modelLocation = __filename.replace (global.appRoot, '');
+    }
 }
 
 /**

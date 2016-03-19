@@ -182,7 +182,6 @@ class view {
 
                 // check if menu can be shown
                 var test = yield view.testMenuAcl (item.acl, that.user);
-                console.log(test, item.acl);
                 if (test !== true) {
                     continue;
                 }
@@ -207,7 +206,6 @@ class view {
 
                         // check if acl for child menu
                         test = yield view.testMenuAcl (sub.acl, that.user);
-                        console.log(test, sub.acl);
                         if (test !== true) {
                             continue;
                         }
