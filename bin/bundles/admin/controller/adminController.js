@@ -48,7 +48,7 @@ class adminController extends controller {
 }
 
 /**
- * export admin controller
+ * exports admin controller
  *
  * @type {adminController}
  */
