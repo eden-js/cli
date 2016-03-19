@@ -2,7 +2,7 @@
  * Created by Awesome on 3/1/2016.
  */
 
-    // use strict
+// use strict
 'use strict';
 
 // bind methods
@@ -18,7 +18,7 @@ class adminController extends controller {
     /**
      * construct admin controller
      *
-     * @param props
+     * @param  {express4} app [description]
      */
     constructor (app) {
         // run super
@@ -29,13 +29,13 @@ class adminController extends controller {
     }
 
     /**
-     * index action
+     * admin index action
      *
-     * @param req
-     * @param res
+     * @param  {request}  req Express request
+     * @param  {response} res Express response
      *
      * @name     ADMIN_HOME
-     * @route    {get} /
+     * @route    {get}   /
      * @menu     {MAIN}  Admin
      * @menu     {ADMIN} Admin Home
      * @priority 10
