@@ -14,6 +14,7 @@ var user       = require(global.appRoot + '/bin/bundles/user/model/user');
  * build user admin controller
  *
  * @mount /admin/user
+ * @acl   {test:['admin'],fail:{redirect:"/"}}
  */
 class adminController extends controller {
     /**
@@ -39,7 +40,7 @@ class adminController extends controller {
      * @name     ADMIN_USERS
      * @route    {get} /
      * @menu     {ADMIN} Users
-     * @acl      {test:['admin'],fail:{redirect:"/"}}
+     *
      * @priority 11
      */
     indexAction(req, res) {
@@ -53,10 +54,6 @@ class adminController extends controller {
      * @param res
      *
      * @route {post} /grid
-     * @param req
-     * @param res
-     *
-     * @acl   {test:['admin'],fail:{redirect:"/"}}
      */
     userGridAction(req, res) {
         return datagrid.grid(req, user, (row) => {
