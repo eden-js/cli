@@ -70,10 +70,9 @@ class userController extends controller {
                 // authenticate
                 User.authenticate (password).then (result => {
                     if (result.error) {
-                        done (null, false, result.mess);
-                    } else {
-                        done (null, User);
+                        return done (null, false, result.mess);
                     }
+                    done (null, User);
                 });
             });
         }));
