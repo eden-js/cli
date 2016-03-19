@@ -34,22 +34,22 @@ class acl {
                     return resolve (true);
                 }
                 // check if not user
-                if (!User && acl.test === false || User && acl.test === true) {
+                if ((!User && acl.test === false) || (User && acl.test === true)) {
                     return resolve (true);
                 }
                 // check if user
-                if (User && acl.test === false || !User && acl.test === true) {
-                    return resolve (acl.fail ? acl.fail : false);
+                if ((User && acl.test === false) || (!User && acl.test === true)) {
+                    return resolve (acl.fail || false);
                 }
                 // check if user
                 if (!User) {
-                    return resolve (acl.fail ? acl.fail : false);
+                    return resolve (acl.fail || false);
                 }
 
                 // check get acl
                 var userAcl = yield User.model ('acl');
                 if (!userAcl) {
-                    return resolve (acl.fail ? acl.fail : false);
+                    return resolve (acl.fail || false);
                 }
 
                 // check if user
@@ -78,7 +78,7 @@ class acl {
                 }
 
                 // perform default resolve
-                return resolve (acl.fail ? acl.fail : false);
+                return resolve (acl.fail || false);
             });
         });
     }

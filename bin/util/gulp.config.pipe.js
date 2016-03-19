@@ -274,7 +274,7 @@ class configPipe {
                     'menu'     : tag.type,
                     'parent'   : this._parent(tags, false, i),
                     'priority' : this._priority(tags, 10),
-                    'acl'      : (acl ? acl : [])
+                    'acl'      : (acl ? acl : false)
                 });
             }
         }

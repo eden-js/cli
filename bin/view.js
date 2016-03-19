@@ -81,20 +81,17 @@ class view {
                     return resolve (true);
                 }
 
-                // loop through menu acl
-                for (var i = 0; i < aclTest.length; i++) {
-                    // yield acl test
-                    var test = yield acl.test (aclTest[i], user);
+                // test acl
+                var test = yield acl.test (aclTest, user);
 
-                    // check if acl
-                    if (test !== true) {
-                        // resolve false
-                        return resolve (false);
-                    }
+                // check test
+                if (test === true) {
+                    // resolve false
+                    return resolve (true);
                 }
 
-                // return true
-                return resolve (true);
+                // resolve false
+                return resolve (false);
             });
         });
     }
@@ -182,7 +179,7 @@ class view {
 
                 // check if menu can be shown
                 var test = yield view.testMenuAcl (item.acl, that.user);
-                if (test !== true) {
+                if (!test) {
                     continue;
                 }
 
@@ -206,7 +203,7 @@ class view {
 
                         // check if acl for child menu
                         test = yield view.testMenuAcl (sub.acl, that.user);
-                        if (test !== true) {
+                        if (!test) {
                             continue;
                         }
 
