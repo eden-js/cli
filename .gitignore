@@ -1,5 +1,7 @@
+# Logs
+logs
+
 # Dependency directory
-# https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-
 node_modules
 
 # Debug log from npm
@@ -7,20 +9,17 @@ npm-debug.log
 
 # IDE
 .idea
+.remote-sync.json
 
-# logs
-*.log
-*.sentry
+# EdenFrame config
+config.js
+nginx.conf
 
-# configuration
-/config.js
-/nginx.conf
+# Cache Directory
+cache
 
-# ignore custom bundles
+# Web Directory
+www
+
+# Application bundles
 app/bundles/*
-
-# ignore cache
-cache/*
-
-# ignore web folder
-www/*
