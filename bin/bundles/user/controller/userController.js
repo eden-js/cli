@@ -112,8 +112,10 @@ class userController extends controller {
         // check acl on run
         app.use ((req, res, next) => {
             co (function * () {
-                // check acl exists
+                // do route regex
                 var rt = '/' + req.url.replace (/^\/|\/$/g, '');
+
+                // check route has acl
                 if (aclConfig[rt] && aclConfig[rt].length) {
                     // loop acl for tests
                     for (var i = 0; i < aclConfig[rt].length; i ++) {
@@ -124,8 +126,11 @@ class userController extends controller {
                         if (check !== true) {
                             // check if redirect
                             if (check.redirect) {
+                                // redirect to fail auth redirect
                                 return res.redirect (check.redirect);
                             }
+
+                            // redirect home
                             return res.redirect ('/');
                         }
                     }
