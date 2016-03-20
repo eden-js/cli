@@ -24,6 +24,7 @@ var portastic    = require ('portastic');
 var view     = require (global.appRoot + '/bin/view');
 var config   = require (global.appRoot + '/config');
 var compiled = require (global.appRoot + '/cache/config.json');
+var daemons  = require (global.appRoot + '/cache/daemons.json');
 
 /**
  * build bootstrap class
@@ -42,6 +43,7 @@ class bootstrap {
 
         // bind private variables
         this._ctrl   = {};
+        this._daemon = {};
 
         // bind methods
         this.onError  = this.onError.bind (this);
@@ -69,7 +71,8 @@ class bootstrap {
             '_buildServer',
             '_buildView',
             '_buildRouter',
-            '_buildErrorHandler'
+            '_buildErrorHandler',
+            '_buildDaemons'
         ];
 
         // build app and server
@@ -167,7 +170,7 @@ class bootstrap {
         this.app.use (cookieParser (config.session));
         this.app.use (express.static('www'));
         this.app.use (session ({
-            store : new RedisStore (), secret : config.session, resave : false, saveUninitialized : true
+            store : new RedisStore (), secret : config.session, resave : false, saveUninitialized : true, key : 'eden.session.id'
         }));
 
         // set default locals
@@ -295,6 +298,19 @@ class bootstrap {
                 message : err.message, error : {}
             });
         });
+    }
+
+    /**
+     * builds daemons
+     */
+    _buildDaemons () {
+        for (var i = 0; i < daemons.length; i++) {
+            // require daemon
+            var daemon = require (daemons[i]);
+
+            // run daemon
+            this._daemon[daemons[i]] = new daemon(this.app, this.server);
+        }
     }
 
     /*

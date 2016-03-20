@@ -171,9 +171,18 @@ class gulpBuilder {
             this.gulp.src (sassFiles)
                 .pipe (through.obj (function (chunk, enc, cb) {
                     // run through callback
-                    this.push ({
-                        'all' : '@import ".' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '";' + os.EOL
-                    });
+                    var type = chunk.path.split('.');
+                        type = type[type.length - 1];
+                    if (type == 'css') {
+                        var prepend = fs.readFileSync(chunk.path, 'utf8');
+                        this.push ({
+                            'all' : prepend + os.EOL
+                        })
+                    } else {
+                        this.push ({
+                            'all' : '@import ".' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '";' + os.EOL
+                        });
+                    }
 
                     // run callback
                     cb (null, chunk);

@@ -17,8 +17,9 @@ class socket {
      */
     constructor () {
         // bind methods
-        this.on    = this.on.bind (this);
-        this.build = this.build.bind (this);
+        this.on     = this.on.bind (this);
+        this.build  = this.build.bind (this);
+        this.cookie = this.cookie.bind (this);
 
         // run
         this.build ();
@@ -31,13 +32,25 @@ class socket {
         // run socket
         // @todo fix this, its pretty insecure
         this.socket = io.connect ('//' + window.eden.domain, {
-            query     : 'json=' + encodeURIComponent(JSON.stringify({
-                'user' : window.eden.user
-            })),
+            query     : 'session_id=' + this.cookie ('eden.session.id'),
             secure    : true,
             reconnect : true,
             path      : '/socket'
         });
+    }
+
+    /**
+     * reads cookie
+     *
+     * @param  {String} a cookie name
+     * @param  {String} b unsure
+     *
+     * @return {String}   cookie
+     */
+    cookie(a, b) {
+        b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)');
+
+        return b ? b.pop() : '';
     }
 
     /**

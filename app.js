@@ -16,7 +16,6 @@ global.log = require (global.appRoot + '/bin/util/log');
 
 // require local dependencies
 var config = require (global.appRoot + '/config');
-var daemon = require (global.appRoot + '/bin/util/daemon');
 
 // check if environment
 if (global.environment == 'dev') {
@@ -25,9 +24,6 @@ if (global.environment == 'dev') {
 
     // run single instance
     require (global.appRoot + '/bin/bootstrap');
-
-    // run daemon
-    daemon ();
 } else {
     // run in production
     global.log ('running in production environment', 'server');
@@ -45,9 +41,6 @@ if (global.environment == 'dev') {
                 cluster.fork ();
             }, (i * 500));
         }
-
-        // run daemon
-        daemon ();
     } else {
         // log forked
         global.log ('forked process', 'server');
