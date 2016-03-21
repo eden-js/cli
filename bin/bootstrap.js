@@ -306,7 +306,7 @@ class bootstrap {
     _buildDaemons () {
         for (var i = 0; i < daemons.length; i++) {
             // require daemon
-            var daemon = require (daemons[i]);
+            var daemon = require (global.appRoot + daemons[i]);
 
             // run daemon
             this._daemon[daemons[i]] = new daemon(this.app, this.server);

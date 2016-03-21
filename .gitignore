@@ -11,6 +11,10 @@ npm-debug.log
 .idea
 .remote-sync.json
 
+# Log and Sentry
+*.log
+*.sentry
+
 # EdenFrame config
 config.js
 nginx.conf

@@ -5,9 +5,6 @@
 // use strict
 'use strict';
 
-// set app root
-global.appRoot = '../../../..';
-
 // require local dependencies
 var daemon = require (global.appRoot + '/bin/bundles/core/daemon');
 
@@ -18,12 +15,9 @@ class exampleDaemon extends daemon {
     /**
      * construct example daemon class
      */
-    constructor (props) {
+    constructor (app, server) {
         // run super
-        super (props);
-
-        // bind methods
-        process.send ('exampleDaemon running');
+        super (app, server);
     }
 }
 
@@ -32,4 +26,4 @@ class exampleDaemon extends daemon {
  *
  * @type {exampleDaemon}
  */
-module.exports = new exampleDaemon();
+module.exports = exampleDaemon;

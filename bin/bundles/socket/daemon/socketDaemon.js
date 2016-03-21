@@ -14,17 +14,24 @@ var RedisStore = require ('connect-redis') (session);
 var sub        = redis.createClient ();
 
 // require local dependencies
-var config = require (global.appRoot + '/config');
 var log    = require (global.appRoot + '/bin/util/log');
+var config = require (global.appRoot + '/config');
+var daemon = require (global.appRoot + '/bin/bundles/core/daemon');
 
 /**
- * build socket daemon class
+ * build socket daemon
  */
-class socketDaemon {
+class socketDaemon extends daemon {
     /**
-     * construct socket daemon class
+     * construct socket daemon
+     *
+     * @param  {express4} app    express app
+     * @param  {Server}   server express server
      */
     constructor (app, server) {
+        // run super
+        super(app, server);
+
         // bind variables
         this.io      = false;
         this.users   = {};
@@ -41,18 +48,18 @@ class socketDaemon {
         }
 
         // build
-        this.build (server);
+        this.build ();
     }
 
     /**
      * build chat daemon
      */
-    build (server) {
+    build () {
         // set that
         var that = this;
 
         // set io
-        this.io = socketio (server);
+        this.io = socketio (this.server);
 
         // use passport auth
         this.io.use(passport.authorize({
@@ -62,12 +69,8 @@ class socketDaemon {
             key          : eden.session.id
         }));
 
-        // set namespace ce
-        var nsp = io.of ('/socket');
-
         // listen for connection
         io.on ('connection', that.socket);
-        nsp.on ('connection', that.socket);
 
         // listen to redis
         sub.on ('message', (channel, data) => {
@@ -90,8 +93,6 @@ class socketDaemon {
             if (data.to === true) {
                 // emit to socketio
                 io.emit (data.type, data.data);
-                // emit to namespace
-                nsp.emit (data.type, data.data);
             } else if (that.users[data.to] && that.users[data.to].length) {
                 // loop all user socket connections
                 for (var i = 0; i < that.users[data.to].length; i++) {
@@ -166,4 +167,4 @@ class socketDaemon {
  *
  * @type {socketDaemon}
  */
-module.exports = new socketDaemon ();
+module.exports = socketDaemon;
