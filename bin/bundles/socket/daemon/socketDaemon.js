@@ -6,11 +6,12 @@
 'use strict';
 
 // require dependencies
-var redis      = require ('redis');
-var session    = require ('express-session');
-var passport   = require ('passport.socketio');
-var socketio   = require ('socket.io');
-var RedisStore = require ('connect-redis') (session);
+var redis        = require ('redis');
+var session      = require ('express-session');
+var passport     = require ('passport.socketio');
+var socketio     = require ('socket.io');
+var RedisStore   = require ('connect-redis') (session);
+var cookieParser = require ('cookie-parser');
 var sub        = redis.createClient ();
 
 // require local dependencies
@@ -63,14 +64,14 @@ class socketDaemon extends daemon {
 
         // use passport auth
         this.io.use(passport.authorize({
-            cookieParser : require('cookie-parser'),
+            cookieParser : cookieParser,
             secret       : config.session,
-            store        : RedisStore,
-            key          : eden.session.id
+            store        : new RedisStore(),
+            key          : 'eden.session.id'
         }));
 
         // listen for connection
-        io.on ('connection', that.socket);
+        this.io.on ('connection', this.socket);
 
         // listen to redis
         sub.on ('message', (channel, data) => {
@@ -92,7 +93,7 @@ class socketDaemon extends daemon {
             // check who to send to
             if (data.to === true) {
                 // emit to socketio
-                io.emit (data.type, data.data);
+                this.io.emit (data.type, data.data);
             } else if (that.users[data.to] && that.users[data.to].length) {
                 // loop all user socket connections
                 for (var i = 0; i < that.users[data.to].length; i++) {
@@ -123,6 +124,7 @@ class socketDaemon extends daemon {
         if (socket.handshake.user) {
             user = socket.handshake.user;
         }
+        console.log('user', user);
 
         // set socketid
         let socketid = that.index;
