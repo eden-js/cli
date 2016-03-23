@@ -348,8 +348,8 @@ class gulpBuilder {
                 .transform (babelify)
                 .bundle ()
                 .pipe (source ('app.min.js'))
-                .pipe (header (vendor))
                 .pipe (streamify (uglify ()))
+                .pipe (streamify (header (vendor)))
                 .pipe (this.gulp.dest ('./www/assets/js'));
         }, this.wait);
     }
