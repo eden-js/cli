@@ -261,15 +261,15 @@ class bootstrap {
                 // loop for routes
                 for (var route in routeType) {
                     // check if controller registered
-                    if (! that._ctrl[routeType[route]['controller']]) {
+                    if (! that._ctrl[routeType[route].controller]) {
                         // require controller
-                        var ctrl = require (global.appRoot + routeType[route]['controller']);
+                        var ctrl = require (global.appRoot + routeType[route].controller);
                         // register controller
-                        that._ctrl[routeType[route]['controller']] = new ctrl (this.app);
+                        that._ctrl[routeType[route].controller] = new ctrl (this.app);
                     }
 
                     // assign route to controller function
-                    that.router[type] (route, that._ctrl[routeType[route]['controller']][routeType[route]['action']]);
+                    that.router[type] (route, that._ctrl[routeType[route].controller][routeType[route].action]);
                 }
             }
         }
