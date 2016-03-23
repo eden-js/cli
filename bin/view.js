@@ -25,7 +25,8 @@ class view {
         // bind variables
         this.engine       = false;
         this.asyncHelpers = [
-            '_menu'
+            '_menu',
+            '_acl'
         ];
         this.syncHelpers  = [
             '_json',
@@ -227,6 +228,30 @@ class view {
 
             // return menu html
             cb (rtn);
+        });
+    }
+
+    /**
+     * acl helper
+     *
+     * @param test acl test
+     * @private
+     */
+    _acl(test, block, cb) {
+        // set that
+        var that = this;
+
+        // run coroutine
+        co(function * () {
+            // test acl
+            var test = yield acl.test (test, that.user);
+
+            // check if acl true
+            if (test !== true) {
+                cb(block(this));
+            } else {
+                cb(block.inverse(this));
+            }
         });
     }
 
