@@ -59,11 +59,14 @@ class view {
             extname : '.hbs'
         });
 
+        // set i for helper loops
+        var i = 0;
+
         // build helpers
-        for (var i = 0; i < this.asyncHelpers.length; i++) {
+        for (i = 0; i < this.asyncHelpers.length; i++) {
             hbs.registerAsyncHelper (this.asyncHelpers[i].replace ('_', ''), this[this.asyncHelpers[i]]);
         }
-        for (var i = 0; i < this.syncHelpers.length; i++) {
+        for (i = 0; i < this.syncHelpers.length; i++) {
             hbs.registerHelper (this.syncHelpers[i].replace ('_', ''), this[this.syncHelpers[i]]);
         }
     }

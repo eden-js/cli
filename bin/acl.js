@@ -26,7 +26,7 @@ class acl {
         return new Promise ((resolve, reject) => {
             co (function * () {
                 // check if acl required
-                if (User == 'undefined' || User == undefined) {
+                if (!User || User === undefined) {
                     User = false;
                 }
                 // check for acl
