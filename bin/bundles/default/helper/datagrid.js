@@ -50,10 +50,13 @@ class datagrid {
 
             // run coroutine
             co (function * () {
+                // set i for loops
+                var i = 0;
+
                 // check for search phrase
                 if (req.body.searchPhrase && filter) {
                     where[type] = [];
-                    for (var i = 0; i < filter.length; i++) {
+                    for (i = 0; i < filter.length; i++) {
                         // create push object
                         var push        = {};
                         push[filter[i]] = {
@@ -61,7 +64,7 @@ class datagrid {
                         };
 
                         // push into where
-                        where[type].push (push)
+                        where[type].push (push);
                     }
                 }
 
@@ -83,12 +86,12 @@ class datagrid {
                 var results = yield result.sort (order).limit (response.rowCount).skip (response.rowCount * (response.current - 1)).find ();
 
                 // loop results
-                for (var i = 0; i < results.length; i++) {
-                    response.rows.push(row(results[i]));
+                for (i = 0; i < results.length; i++) {
+                    response.rows.push (row (results[i]));
                 }
 
                 // send response
-                resolve(response);
+                resolve (response);
             });
         });
     }
