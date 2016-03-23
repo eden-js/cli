@@ -109,7 +109,7 @@ class configPipe {
                     }
 
                     // loop routes
-                    var routeLoop = that._loopRoutes (routes, mounts, priority, chunk, isFn);
+                    var routeLoop = that._loopRoutes (routes, mounts, priority, acl, chunk, isFn);
                     rtn.routes    = routeLoop.routes;
                     rtn.acl       = routeLoop.acl;
 
@@ -122,6 +122,8 @@ class configPipe {
                     }
                 }
             }
+
+            // console.log(rtn);
         }
 
         // return rtn
@@ -398,7 +400,7 @@ class configPipe {
     * @returns {*}
     * @private
      */
-    _loopRoutes (routes, mounts, priority, chunk, fn) {
+    _loopRoutes (routes, mounts, priority, scopeAcl, chunk, fn) {
         // create return variable
         var rtn = {};
         var acl = {};
@@ -425,8 +427,8 @@ class configPipe {
                 if (routes[i].acl) {
                     acl[rt].push (routes[i].acl);
                 }
-                if (acl) {
-                    acl[rt].push (acl);
+                if (scopeAcl) {
+                    acl[rt].push (scopeAcl);
                 }
                 // add route to array
                 rtn[priority][(routes[i].type ? routes[i].type : 'get')][rt] = {
@@ -462,17 +464,17 @@ class configPipe {
         for (var m = 0; m < menus.length; m++) {
             // only use first route
             menus[m].route    = this._parseRoute (mounts[0] + routes[0].route);
-            menus[m].priority = menus[m].priority ? menus[m].priority : priority;
+            menus[m].priority = menus[m].priority || priority;
 
             // set acl
             var menuAcl = acl[menus[m].route] || false;
-
-            // check for scoped acl
-            if (menuAcl) {
-                if (!menus[m].acl || !Array.isArray (menus[m].acl.test)) {
-                  menus[m].acl = menuAcl;
-                } else if (Array.isArray (menus[m].acl.test)) {
-                  menus[m].acl.test.concat (menuAcl.test, menus[m].acl.test);
+            if (menuAcl && menuAcl.length) {
+                for (var a = 0; a < menuAcl.length; a++) {
+                    if (! menus[m].acl || ! Array.isArray (menus[m].acl.test)) {
+                      menus[m].acl = menuAcl[a];
+                    } else if (Array.isArray (menus[m].acl.test)) {
+                      menus[m].acl.test.concat (menuAcl[a].test, menus[m].acl.test);
+                    }
                 }
             }
 
