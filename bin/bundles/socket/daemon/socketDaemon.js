@@ -12,12 +12,17 @@ var passport     = require ('passport.socketio');
 var socketio     = require ('socket.io');
 var RedisStore   = require ('connect-redis') (session);
 var cookieParser = require ('cookie-parser');
-//var sub          = redis.createClient ();
 
 // require local dependencies
 var log    = require (global.appRoot + '/bin/util/log');
 var config = require (global.appRoot + '/config');
 var daemon = require (global.appRoot + '/bin/bundles/core/daemon');
+
+// conditionally create sub
+var sub = false;
+if (config.socket) {
+    sub = redis.createClient ();
+}
 
 /**
  * build socket daemon
