@@ -177,7 +177,7 @@ class gulpBuilder {
                         var prepend = fs.readFileSync(chunk.path, 'utf8');
                         this.push ({
                             'all' : prepend + os.EOL
-                        })
+                        });
                     } else {
                         this.push ({
                             'all' : '@import ".' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '";' + os.EOL
@@ -223,8 +223,8 @@ class gulpBuilder {
     daemon () {
         // grab daemon controllers
         var daemons = [];
-        for (var i = 0; i < this._tasks['daemon'].length; i++) {
-            daemons = daemons.concat (glob.sync (this._tasks['daemon'][i]));
+        for (var i = 0; i < this._tasks.daemon.length; i++) {
+            daemons = daemons.concat (glob.sync (this._tasks.daemon[i]));
         }
 
         // loop daemons
@@ -233,11 +233,7 @@ class gulpBuilder {
         }
 
         // write daemons cache file
-        fs.writeFile ('./cache/daemons.json', JSON.stringify (daemons), function (err) {
-            if (err) {
-                return console.log (err);
-            }
-        });
+        this._write ('daemons', daemons);
     }
 
     /**
@@ -251,7 +247,7 @@ class gulpBuilder {
         // get all routes
         // do within setTimeout to remove empty files
         setTimeout (() => {
-            this.gulp.src (this._tasks['config'])
+            this.gulp.src (this._tasks.config)
                 .pipe (through.obj (function (chunk, enc, cb) {
                     var pip = this;
                     configPipe.pipe (chunk).then (result => {
@@ -262,14 +258,12 @@ class gulpBuilder {
                     });
                 }))
                 .on ('data', (data) => {
+                    // merge config object
                     that._merge (all, data.result);
                 })
                 .on ('end', function () {
-                    fs.writeFile ('./cache/config.json', JSON.stringify (all), function (err) {
-                        if (err) {
-                            return console.log (err);
-                        }
-                    });
+                    // write config file
+                    that._write ('config', all);
                 });
         }, this.wait);
     }
@@ -283,7 +277,7 @@ class gulpBuilder {
         // @todo bundle priority
         setTimeout (() => {
             this.gulp.src (
-                this._tasks['view']
+                this._tasks.view
             )
                 .pipe (rename ((filePath) => {
                     var amended = filePath.dirname.split (path.sep);
@@ -304,7 +298,7 @@ class gulpBuilder {
         // do within setTimeout to remove empty files
         setTimeout (() => {
             this.gulp.src (
-                this._tasks['tag']
+                this._tasks.tag
             )
                 .pipe (rename (function (filePath) {
                     var amended = filePath.dirname.split (path.sep);
@@ -363,7 +357,7 @@ class gulpBuilder {
         // @todo bundle priority
         setTimeout (() => {
             this.gulp.src (
-                this._tasks['image']
+                this._tasks.image
             )
                 .pipe (rename ((filePath) => {
                     var amended = filePath.dirname.split (path.sep);
@@ -375,6 +369,20 @@ class gulpBuilder {
                 .pipe (chmod (755))
                 .pipe (this.gulp.dest ('www/image'));
         }, this.wait);
+    }
+
+    /**
+     * writes config file
+     *
+     * @param name
+     * @param obj
+     */
+    _write (name, obj) {
+        fs.writeFile ('./cache/' + name + '.json', JSON.stringify (obj), function (err) {
+            if (err) {
+                return console.log (err);
+            }
+        });
     }
 
     /**
