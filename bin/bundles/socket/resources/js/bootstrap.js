@@ -30,7 +30,6 @@ class socket {
      */
     build () {
         // run socket
-        // @todo fix this, its pretty insecure
         this.socket = io.connect ('//' + window.eden.domain, {
             query     : 'session_id=' + this.cookie ('eden.session.id'),
             secure    : true,
