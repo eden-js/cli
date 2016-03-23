@@ -19,6 +19,9 @@ npm-debug.log
 config.js
 nginx.conf
 
+# EdenFrame etc
+gulp
+
 # Cache Directory
 cache
 
