@@ -12,7 +12,7 @@ var passport     = require ('passport.socketio');
 var socketio     = require ('socket.io');
 var RedisStore   = require ('connect-redis') (session);
 var cookieParser = require ('cookie-parser');
-var sub          = redis.createClient ();
+//var sub          = redis.createClient ();
 
 // require local dependencies
 var log    = require (global.appRoot + '/bin/util/log');

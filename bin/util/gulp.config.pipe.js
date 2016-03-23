@@ -18,7 +18,26 @@ class configPipe {
      */
     constructor() {
         // bind methods
-        this.pipe = this.pipe.bind(this);
+        this.pipe   = this.pipe.bind (this);
+        this.config = this.config.bind (this);
+
+        // bind tag methods
+        this._fn       = this._fn.bind (this);
+        this._acl      = this._acl.bind (this);
+        this._name     = this._name.bind (this);
+        this._class    = this._class.bind (this);
+        this._menus    = this._menus.bind (this);
+        this._routes   = this._routes.bind (this);
+        this._mounts   = this._mounts.bind (this);
+        this._parent   = this._parent.bind (this);
+        this._priority = this._priority.bind (this);
+
+        // bind loop methods
+        this._loopRoutes = this._loopRoutes.bind (this);
+        this._loopMenus  = this._loopMenus.bind (this);
+
+        // bind private methods
+        this._parseRoute = this._parseRoute.bind (this);
     }
 
     /**
@@ -26,15 +45,15 @@ class configPipe {
      *
      * @param chunk
      */
-    pipe(chunk) {
+    pipe (chunk) {
         var that     = this;
-        let content  = chunk.contents.toString();
-        let parsed   = parse(content);
-        let lines    = content.split(os.EOL);
+        let content  = chunk.contents.toString ();
+        let parsed   = parse (content);
+        let lines    = content.split (os.EOL);
 
         // complete pipe loop
-        return new Promise((resolve, reject) => {
-            resolve(that.config(chunk, parsed, lines));
+        return new Promise ((resolve, reject) => {
+            resolve (that.config (chunk, parsed, lines));
         });
     }
 
@@ -46,7 +65,7 @@ class configPipe {
      * @param lines
      * @returns {{}}
      */
-    config(chunk, parsed, lines) {
+    config (chunk, parsed, lines) {
         var that      = this;
         var dPriority = 10;
         var priority  = dPriority;
@@ -66,18 +85,21 @@ class configPipe {
             let tags = parsed[i].tags;
 
             // check for class
-            var isClass = that._class(obj.line, lines);
+            var isClass = that._class (obj.line, lines);
             if (isClass) {
-                acl      = that._acl(tags);
-                mounts   = that._mounts(tags);
-                priority = that._priority(tags, dPriority);
+                acl      = that._acl (tags);
+                mounts   = that._mounts (tags);
+                priority = that._priority (tags, dPriority);
             }
 
             // check for route
-            var isFn = that._fn(obj.line, lines);
+            var isFn = that._fn (obj.line, lines);
+
+            // if is function
             if (isFn) {
-                priority   = that._priority(tags, priority);
-                var routes = that._routes(tags);
+                // get function level priority
+                priority   = that._priority (tags, priority);
+                var routes = that._routes (tags);
 
                 // check if routes length
                 if (routes) {
@@ -87,88 +109,16 @@ class configPipe {
                     }
 
                     // loop routes
-                    for (var x = 0; x < routes.length; x++) {
-                        /// loop mount points
-                        for (var y = 0; y < mounts.length; y++) {
-                            // ensure type object exists
-                            if (!rtn.routes[priority]) {
-                                rtn.routes[priority] = {};
-                            }
-                            // ensure priority object exists
-                            if (!rtn.routes[priority][routes[x].type]) {
-                                rtn.routes[priority][routes[x].type] = {};
-                            }
-                            // set acl route
-                            var rt = '/' + (mounts[y] + routes[x].route).split('//').join('/').replace(/^\/|\/$/g, '');
-                            // ensure flattened acl
-                            if (!rtn.acl[rt]) {
-                                rtn.acl[rt] = [];
-                            }
-                            // add acl to acl array
-                            if (routes[x].acl) {
-                                rtn.acl[rt].push(routes[x].acl);
-                            }
-                            if (acl) {
-                                rtn.acl[rt].push(acl);
-                            }
-                            // add route to array
-                            rtn.routes[priority][(routes[x].type ? routes[x].type : 'get')][rt] = {
-                                'controller' : '/' + (chunk.path.indexOf('/app') > -1 ? 'app' : 'bin') + '/bundles' + chunk.path.split('bundles')[1].replace(/\\/g, '/'),
-                                'action'     : isFn
-                            };
-                        }
-                    }
+                    var routeLoop = that._loopRoutes (routes, mounts, priority)
+                    rtn.routes    = routeLoop.routes;
+                    rtn.acl       = routeLoop.acl;
 
                     // get array of menus in tags
-                    var isMenu = that._menus(tags);
+                    var isMenu = that._menus (tags);
 
                     // chekc if menus exist
                     if (isMenu) {
-                        // check if mounted
-                        if (!mounts.length) {
-                            mounts = ['/'];
-                        }
-
-                        // loop menu
-                        for (var m = 0; m < isMenu.length; m++) {
-                            // only use first route
-                            isMenu[m].route    = '/' + (mounts[0] + routes[0].route).split('//').join('/').replace(/^\/|\/$/g, '');
-                            isMenu[m].priority = isMenu[m].priority ? isMenu[m].priority : priority;
-
-                            // check for scoped acl
-                            if (acl) {
-                                if (!isMenu[m].acl || !Array.isArray(isMenu[m].acl.test)) {
-                                  isMenu[m].acl = acl;
-                                } else if (Array.isArray(acl.test)) {
-                                  isMenu[m].acl.test.concat(acl.test, isMenu[m].acl.test);
-                                }
-                            }
-
-                            // set menu object
-                            if (!rtn.menus[isMenu[m].menu]) {
-                                rtn.menus[isMenu[m].menu] = {};
-                            }
-
-                            // set menu
-                            if (isMenu[m].parent) {
-                                if (!rtn.menus[isMenu[m].menu][isMenu[m].parent]) {
-                                    rtn.menus[isMenu[m].menu][isMenu[m].parent] = {
-                                        'title'    : isMenu[m].parent,
-                                        'children' : []
-                                    };
-                                }
-                                rtn.menus[isMenu[m].menu][isMenu[m].parent].children.push(isMenu[m]);
-                            } else {
-                                if (rtn.menus[isMenu[m].menu][isMenu[m].name]) {
-                                    for (var key in isMenu[m]) {
-                                        rtn.menus[isMenu[m].menu][isMenu[m].name][key] = isMenu[m][key];
-                                    }
-                                } else {
-                                    rtn.menus[isMenu[m].menu][isMenu[m].name] = isMenu[m];
-                                    rtn.menus[isMenu[m].menu][isMenu[m].name].children = [];
-                                }
-                            }
-                        }
+                        rtn.menus = that._loopMenus (isMenu, mounts, priority);
                     }
                 }
             }
@@ -179,6 +129,43 @@ class configPipe {
     }
 
     /**
+     * checks if comment attached to function
+     *
+     * @param line
+     * @param lines
+     * @returns {boolean}
+     * @private
+     */
+    _fn (line, lines) {
+        // set variables
+        var isFn = false;
+
+        // loop check if class
+        while (!isFn) {
+            // add to line
+            line++;
+
+            // check next line exists
+            if (!lines[line]) {
+                break;
+            }
+
+            // check if function
+            if (lines[line].indexOf ('(') > -1 && lines[line].indexOf (')') > -1) {
+                isFn = lines[line].split ('(')[0].trim ();
+                if (isFn.indexOf ('*') > -1) {
+                    isFn = isFn.split ('*')[1].trim ();
+                }
+            } else if (lines[line].indexOf ('*') === -1) {
+                break;
+            }
+        }
+
+        // return class
+        return isFn;
+    }
+
+    /**
      * checks if comment attached to class
      *
      * @param line
@@ -186,7 +173,7 @@ class configPipe {
      * @returns {boolean}
      * @private
      */
-    _class(line, lines) {
+    _class (line, lines) {
         // set variables
         var isClass = false;
 
@@ -213,50 +200,13 @@ class configPipe {
     }
 
     /**
-     * checks if comment attached to function
-     *
-     * @param line
-     * @param lines
-     * @returns {boolean}
-     * @private
-     */
-    _fn(line, lines) {
-        // set variables
-        var isFn = false;
-
-        // loop check if class
-        while (!isFn) {
-            // add to line
-            line++;
-
-            // check next line exists
-            if (!lines[line]) {
-                break;
-            }
-
-            // check if function
-            if (lines[line].indexOf('(') > -1 && lines[line].indexOf(')') > -1) {
-                isFn = lines[line].split('(')[0].trim();
-                if (isFn.indexOf('*') > -1) {
-                    isFn = isFn.split('*')[1].trim();
-                }
-            } else if (lines[line].indexOf('*') === -1) {
-                break;
-            }
-        }
-
-        // return class
-        return isFn;
-    }
-
-    /**
      * checks for menus
      *
      * @param tags
      * @returns {*}
      * @private
      */
-    _menus(tags) {
+    _menus (tags) {
         // set mounts
         var menus = [];
 
@@ -267,14 +217,14 @@ class configPipe {
 
             // check if mount
             if (tag.tag == 'menu') {
-                var acl = this._acl(tags);
+                var acl = this._acl (tags);
                 menus.push({
                     'title'    : tag.name,
-                    'name'     : this._name(tags, tag.name, i),
+                    'name'     : this._name (tags, tag.name, i),
                     'menu'     : tag.type,
-                    'parent'   : this._parent(tags, false, i),
-                    'priority' : this._priority(tags, 10),
-                    'acl'      : (acl ? acl : false)
+                    'parent'   : this._parent (tags, false, i),
+                    'priority' : this._priority (tags, 10),
+                    'acl'      : acl || false
                 });
             }
         }
@@ -290,7 +240,7 @@ class configPipe {
      * @returns {*}
      * @private
      */
-    _acl(tags) {
+    _acl (tags) {
         // loop tags for priority
         for (var i = 0; i < tags.length; i++) {
             // let tag object
@@ -298,7 +248,7 @@ class configPipe {
 
             // check if priority
             if (tag.tag == 'acl') {
-                return eval('({' + tag.type + '})');
+                return eval ('({' + tag.type + '})');
             }
         }
 
@@ -313,7 +263,7 @@ class configPipe {
      * @returns {*}
      * @private
      */
-    _mounts(tags) {
+    _mounts (tags) {
         // set mounts
         var mounts = [];
 
@@ -324,7 +274,7 @@ class configPipe {
 
             // check if mount
             if (tag.tag == 'mount') {
-                mounts.push(tag.name);
+                mounts.push (tag.name);
             }
         }
 
@@ -341,7 +291,7 @@ class configPipe {
      * @returns {*}
      * @private
      */
-    _name(tags, def, after) {
+    _name (tags, def, after) {
         // loop tags for priority
         for (var i = after; i < tags.length; i++) {
             // let tag object
@@ -366,7 +316,7 @@ class configPipe {
      * @returns {*}
      * @private
      */
-    _parent(tags, def, after) {
+    _parent (tags, def, after) {
         // loop tags for priority
         for (var i = after; i < tags.length; i++) {
             // let tag object
@@ -390,7 +340,7 @@ class configPipe {
      * @returns {*}
      * @private
      */
-    _priority(tags, def) {
+    _priority (tags, def) {
         // loop tags for priority
         for (var i = 0; i < tags.length; i++) {
             // let tag object
@@ -398,7 +348,7 @@ class configPipe {
 
             // check if priority
             if (tag.tag == 'priority') {
-                return parseInt(tag.name);
+                return parseInt (tag.name);
             }
         }
 
@@ -413,7 +363,7 @@ class configPipe {
      * @returns {*}
      * @private
      */
-    _routes(tags) {
+    _routes (tags) {
         // set mounts
         var routes = [];
 
@@ -427,13 +377,138 @@ class configPipe {
                 routes.push({
                     'type'  : tag.type,
                     'route' : tag.name,
-                    'acl'   : this._acl(tags, i)
+                    'acl'   : this._acl (tags, i)
                 });
             }
         }
 
         // return false
         return routes.length ? routes : false;
+    }
+
+    /**
+    * loop routes for menu config object
+    *
+    * @param routes
+    * @param mounts
+    * @param priority
+    *
+    * @returns {*}
+    * @private
+     */
+    _loopRoutes (routes, mounts, priority) {
+        // create return variable
+        var rtn = {};
+        var acl = {};
+
+        // loop routes
+        for (var i = 0; i < routes.length; i++) {
+            /// loop mount points
+            for (var y = 0; y < mounts.length; y++) {
+                // ensure type object exists
+                if (!rtn[priority]) {
+                    rtn[priority] = {};
+                }
+                // ensure priority object exists
+                if (!rtn[priority][routes[i].type]) {
+                    rtn[priority][routes[i].type] = {};
+                }
+                // set acl route
+                var rt = this._parseRoute (mounts[y] + routes[i].route);
+                // ensure flattened acl
+                if (!acl[rt]) {
+                    acl[rt] = [];
+                }
+                // add acl to acl array
+                if (routes[x].acl) {
+                    acl[rt].push (routes[i].acl);
+                }
+                if (acl) {
+                    acl[rt].push (acl);
+                }
+                // add route to array
+                rtn[priority][(routes[i].type ? routes[i].type : 'get')][rt] = {
+                    'controller' : '/' + (chunk.path.indexOf ('/app') > -1 ? 'app' : 'bin') + '/bundles' + chunk.path.split ('bundles')[1].replace (/\\/g, '/'),
+                    'action'     : isFn
+                };
+            }
+        }
+
+        // return object
+        return {
+            'routes' : rtn,
+            'acl'    : acl
+        };
+    }
+
+    /**
+    * loop menus for menu config object
+    *
+    * @param menus
+    * @param mounts
+    * @param priority
+    *
+    * @returns {*}
+    * @private
+     */
+    _loopMenus (menus, mounts, priority) {
+        var rtn = {};
+
+        // loop menus
+        for (var m = 0; m < menus.length; m++) {
+            // only use first route
+            menus[m].route    = this._parseRoute (mounts[0] + routes[0].route);
+            menus[m].priority = menus[m].priority ? menus[m].priority : priority;
+
+            // check for scoped acl
+            if (acl) {
+                if (!menus[m].acl || !Array.isArray (menus[m].acl.test)) {
+                  menus[m].acl = acl;
+                } else if (Array.isArray (acl.test)) {
+                  menus[m].acl.test.concat (acl.test, menus[m].acl.test);
+                }
+            }
+
+            // set menu object
+            if (!rtn[menus[m].menu]) {
+                rtn[menus[m].menu] = {};
+            }
+
+            // set menu
+            if (menus[m].parent) {
+                if (!rtn[menus[m].menu][menus[m].parent]) {
+                    rtn[menus[m].menu][menus[m].parent] = {
+                        'title'    : menus[m].parent,
+                        'children' : []
+                    };
+                }
+                rtn[menus[m].menu][menus[m].parent].children.push (menus[m]);
+            } else {
+                if (rtn[menus[m].menu][menus[m].name]) {
+                    for (var key in menus[m]) {
+                        rtn[menus[m].menu][menus[m].name][key] = menus[m][key];
+                    }
+                } else {
+                    rtn[menus[m].menu][menus[m].name] = menus[m];
+                    rtn[menus[m].menu][menus[m].name].children = [];
+                }
+            }
+        }
+
+        // return object
+        return rtn;
+    }
+
+    /**
+    * Returns parsed route string
+    *
+    * @param route
+    *
+    * @returns {String}
+    * @private
+     */
+    _parseRoute (route) {
+        return '/' + route.split ('//').join ('/').replace (/^\/|\/$/g, '');
     }
 }
 
