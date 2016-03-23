@@ -6,7 +6,7 @@
 'use strict';
 
 // require local dependencies
-var model= require(global.appRoot + '/bin/bundles/core/model');
+var model = require (global.appRoot + '/bin/bundles/core/model');
 
 /**
  * create acl model

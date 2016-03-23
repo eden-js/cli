@@ -294,6 +294,9 @@ class gulpBuilder {
      * tag task
      */
     tag () {
+        // set that
+        var that = this;
+
         // move tags into javascript compiled file (riotjs)
         // do within setTimeout to remove empty files
         setTimeout (() => {
@@ -312,7 +315,10 @@ class gulpBuilder {
                 }))
                 .pipe (concat ('tags.min.js'))
                 .pipe (header ('var riot = require(\'riot\');'))
-                .pipe (this.gulp.dest ('./cache/tag'));
+                .pipe (this.gulp.dest ('./cache/tag'))
+                .on ('end', () => {
+                    that.gulp.start ('js');
+                });
         }, this.wait);
     }
 

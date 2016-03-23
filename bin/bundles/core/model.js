@@ -114,42 +114,48 @@ class model extends mongorito.Model {
      *
      * @param next
      */
-    * setAttributes (next) {
-        // loop attributes
-        for (var key in this.attributes) {
-            // set let attribute
-            let attr = this.attributes[key];
+    setAttributes (next) {
+        // run that
+        var that = this;
 
-            // check if entity
-            if (this.isModel (attr)) {
-                // set array for save
-                this.set (key, {
-                    'id'    : attr.get ('_id').toString (),
-                    'model' : attr._modelLocation
-                });
-            } else if (Array.isArray (attr)) {
-                // set arr variable
-                var arr = [];
-                // loop object array
-                for (var i = 0; i < attr.length; i++) {
-                    // check if is object
-                    if (this.isModel (attr[i])) {
-                        arr.push ({
-                            'id'    : attr[i].get ('_id').toString (),
-                            'model' : attr[i]._modelLocation
-                        });
-                    } else {
-                        arr.push (attr[i]);
+        // run coroutine
+        co(function * () {
+            // loop attributes
+            for (var key in that.attributes) {
+                // set let attribute
+                let attr = that.attributes[key];
+
+                // check if entity
+                if (that.isModel (attr)) {
+                    // set array for save
+                    that.attributes[key] = {
+                        'id'    : attr.get ('_id').toString (),
+                        'model' : attr._modelLocation
+                    };
+                } else if (Array.isArray (attr)) {
+                    // set arr variable
+                    var arr = [];
+                    // loop object array
+                    for (var i = 0; i < attr.length; i++) {
+                        // check if is object
+                        if (that.isModel (attr[i])) {
+                            arr.push ({
+                                'id'    : attr[i].get ('_id').toString (),
+                                'model' : attr[i]._modelLocation
+                            });
+                        } else {
+                            arr.push (attr[i]);
+                        }
                     }
+
+                    // set array
+                    that.attributes[key] = arr;
                 }
-
-                // set array
-                this.set (key, arr);
             }
-        }
 
-        // run next
-        yield next;
+            // run next
+            yield next;
+        });
     }
 
     /**
@@ -161,7 +167,7 @@ class model extends mongorito.Model {
      */
     isModel (obj) {
         // check if model
-        if (obj === Object (obj) && obj._modelLocation) {
+        if (obj.attributes && obj.isModel && obj._modelLocation) {
             return true;
         }
     }
