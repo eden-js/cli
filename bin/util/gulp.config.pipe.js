@@ -109,7 +109,7 @@ class configPipe {
                     }
 
                     // loop routes
-                    var routeLoop = that._loopRoutes (routes, mounts, priority)
+                    var routeLoop = that._loopRoutes (routes, mounts, priority, chunk, isFn);
                     rtn.routes    = routeLoop.routes;
                     rtn.acl       = routeLoop.acl;
 
@@ -118,7 +118,7 @@ class configPipe {
 
                     // chekc if menus exist
                     if (isMenu) {
-                        rtn.menus = that._loopMenus (isMenu, mounts, priority);
+                        rtn.menus = that._loopMenus (isMenu, mounts, priority, routes, rtn.acl);
                     }
                 }
             }
@@ -392,11 +392,13 @@ class configPipe {
     * @param routes
     * @param mounts
     * @param priority
+    * @param chunk
+    * @param fn
     *
     * @returns {*}
     * @private
      */
-    _loopRoutes (routes, mounts, priority) {
+    _loopRoutes (routes, mounts, priority, chunk, fn) {
         // create return variable
         var rtn = {};
         var acl = {};
@@ -420,7 +422,7 @@ class configPipe {
                     acl[rt] = [];
                 }
                 // add acl to acl array
-                if (routes[x].acl) {
+                if (routes[i].acl) {
                     acl[rt].push (routes[i].acl);
                 }
                 if (acl) {
@@ -429,7 +431,7 @@ class configPipe {
                 // add route to array
                 rtn[priority][(routes[i].type ? routes[i].type : 'get')][rt] = {
                     'controller' : '/' + (chunk.path.indexOf ('/app') > -1 ? 'app' : 'bin') + '/bundles' + chunk.path.split ('bundles')[1].replace (/\\/g, '/'),
-                    'action'     : isFn
+                    'action'     : fn
                 };
             }
         }
@@ -447,11 +449,13 @@ class configPipe {
     * @param menus
     * @param mounts
     * @param priority
+    * @param routes
+    * @param acl
     *
     * @returns {*}
     * @private
      */
-    _loopMenus (menus, mounts, priority) {
+    _loopMenus (menus, mounts, priority, routes, acl) {
         var rtn = {};
 
         // loop menus
@@ -460,12 +464,15 @@ class configPipe {
             menus[m].route    = this._parseRoute (mounts[0] + routes[0].route);
             menus[m].priority = menus[m].priority ? menus[m].priority : priority;
 
+            // set acl
+            var menuAcl = acl[menus[m].route] || false;
+
             // check for scoped acl
-            if (acl) {
+            if (menuAcl) {
                 if (!menus[m].acl || !Array.isArray (menus[m].acl.test)) {
-                  menus[m].acl = acl;
-                } else if (Array.isArray (acl.test)) {
-                  menus[m].acl.test.concat (acl.test, menus[m].acl.test);
+                  menus[m].acl = menuAcl;
+                } else if (Array.isArray (menus[m].acl.test)) {
+                  menus[m].acl.test.concat (menuAcl.test, menus[m].acl.test);
                 }
             }
 
