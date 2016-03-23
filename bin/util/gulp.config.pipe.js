@@ -91,28 +91,28 @@ class configPipe {
                         /// loop mount points
                         for (var y = 0; y < mounts.length; y++) {
                             // ensure type object exists
-                            if (!rtn['routes'][priority]) {
-                                rtn['routes'][priority] = {};
+                            if (!rtn.routes[priority]) {
+                                rtn.routes[priority] = {};
                             }
                             // ensure priority object exists
-                            if (!rtn['routes'][priority][routes[x].type]) {
-                                rtn['routes'][priority][routes[x].type] = {};
+                            if (!rtn.routes[priority][routes[x].type]) {
+                                rtn.routes[priority][routes[x].type] = {};
                             }
                             // set acl route
                             var rt = '/' + (mounts[y] + routes[x].route).split('//').join('/').replace(/^\/|\/$/g, '');
                             // ensure flattened acl
-                            if (!rtn['acl'][rt]) {
-                                rtn['acl'][rt] = [];
+                            if (!rtn.acl[rt]) {
+                                rtn.acl[rt] = [];
                             }
                             // add acl to acl array
                             if (routes[x].acl) {
-                                rtn['acl'][rt].push(routes[x].acl);
+                                rtn.acl[rt].push(routes[x].acl);
                             }
                             if (acl) {
-                                rtn['acl'][rt].push(acl);
+                                rtn.acl[rt].push(acl);
                             }
                             // add route to array
-                            rtn['routes'][priority][(routes[x].type ? routes[x].type : 'get')][rt] = {
+                            rtn.routes[priority][(routes[x].type ? routes[x].type : 'get')][rt] = {
                                 'controller' : '/' + (chunk.path.indexOf('/app') > -1 ? 'app' : 'bin') + '/bundles' + chunk.path.split('bundles')[1].replace(/\\/g, '/'),
                                 'action'     : isFn
                             }
@@ -145,27 +145,27 @@ class configPipe {
                             }
 
                             // set menu object
-                            if (!rtn['menus'][isMenu[m].menu]) {
-                                rtn['menus'][isMenu[m].menu] = {};
+                            if (!rtn.menus[isMenu[m].menu]) {
+                                rtn.menus[isMenu[m].menu] = {};
                             }
 
                             // set menu
                             if (isMenu[m].parent) {
-                                if (!rtn['menus'][isMenu[m].menu][isMenu[m].parent]) {
-                                    rtn['menus'][isMenu[m].menu][isMenu[m].parent] = {
+                                if (!rtn.menus[isMenu[m].menu][isMenu[m].parent]) {
+                                    rtn.menus[isMenu[m].menu][isMenu[m].parent] = {
                                         'title'    : isMenu[m].parent,
                                         'children' : []
                                     };
                                 }
-                                rtn['menus'][isMenu[m].menu][isMenu[m].parent].children.push(isMenu[m]);
+                                rtn.menus[isMenu[m].menu][isMenu[m].parent].children.push(isMenu[m]);
                             } else {
-                                if (rtn['menus'][isMenu[m].menu][isMenu[m].name]) {
+                                if (rtn.menus[isMenu[m].menu][isMenu[m].name]) {
                                     for (var key in isMenu[m]) {
-                                        rtn['menus'][isMenu[m].menu][isMenu[m].name][key] = isMenu[m][key];
+                                        rtn.menus[isMenu[m].menu][isMenu[m].name][key] = isMenu[m][key];
                                     }
                                 } else {
-                                    rtn['menus'][isMenu[m].menu][isMenu[m].name] = isMenu[m];
-                                    rtn['menus'][isMenu[m].menu][isMenu[m].name].children = [];
+                                    rtn.menus[isMenu[m].menu][isMenu[m].name] = isMenu[m];
+                                    rtn.menus[isMenu[m].menu][isMenu[m].name].children = [];
                                 }
                             }
                         }
