@@ -16,6 +16,14 @@ var model = require (global.appRoot + '/bin/bundles/user/model/acl');
  */
 class acl {
     /**
+     * construct acl class
+     */
+    constructor() {
+        // bind methods
+        this.test = this.test.bind (this);
+    }
+
+    /**
      * tests acl
      *
      * @param acl
@@ -25,7 +33,7 @@ class acl {
     test (acl, User) {
         return new Promise ((resolve, reject) => {
             co (function * () {
-                // check if acl required
+                // reset user if undefined
                 if (!User || User === undefined) {
                     User = false;
                 }
@@ -33,20 +41,16 @@ class acl {
                 if (!acl) {
                     return resolve (true);
                 }
-                // check if not user
+                // check logged in specific acl
                 if ((!User && acl.test === false) || (User && acl.test === true)) {
                     return resolve (true);
-                }
-                // check if user
-                if ((User && acl.test === false) || (!User && acl.test === true)) {
+                } else if ((User && acl.test === false) || (!User && acl.test === true)) {
                     return resolve (acl.fail || false);
-                }
-                // check if user
-                if (!User) {
+                } else if (!User) {
                     return resolve (acl.fail || false);
                 }
 
-                // check get acl
+                // check and get user acl
                 var userAcl = yield User.model ('acl');
                 if (!userAcl) {
                     return resolve (acl.fail || false);
