@@ -21,7 +21,7 @@ var sass       = require ('gulp-sass');
 var chmod      = require ('gulp-chmod');
 var watch      = require ('gulp-watch');
 var concat     = require ('gulp-concat');
-var insert     = require ('gulp-insert');
+var header     = require ('gulp-header');
 var rename     = require ('gulp-rename');
 var uglify     = require ('gulp-uglify');
 var nodemon    = require ('gulp-nodemon');
@@ -317,7 +317,7 @@ class gulpBuilder {
                     compact : true
                 }))
                 .pipe (concat ('tags.min.js'))
-                .pipe (insert.prepend ('var riot = require(\'riot\');'))
+                .pipe (header ('var riot = require(\'riot\');'))
                 .pipe (this.gulp.dest ('./cache/tag'));
         }, this.wait);
     }
@@ -348,7 +348,7 @@ class gulpBuilder {
                 .transform (babelify)
                 .bundle ()
                 .pipe (source ('app.min.js'))
-                .pipe (insert.prepend (vendor))
+                .pipe (header (vendor))
                 .pipe (streamify (uglify ()))
                 .pipe (this.gulp.dest ('./www/assets/js'));
         }, this.wait);
