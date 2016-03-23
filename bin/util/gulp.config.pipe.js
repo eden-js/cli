@@ -115,7 +115,7 @@ class configPipe {
                             rtn.routes[priority][(routes[x].type ? routes[x].type : 'get')][rt] = {
                                 'controller' : '/' + (chunk.path.indexOf('/app') > -1 ? 'app' : 'bin') + '/bundles' + chunk.path.split('bundles')[1].replace(/\\/g, '/'),
                                 'action'     : isFn
-                            }
+                            };
                         }
                     }
 
