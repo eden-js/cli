@@ -165,6 +165,7 @@ class userController extends controller {
      * @param res
      *
      * @route {post} /login
+     * @acl   {test:false,fail:{redirect:"/"}}
      */
     loginFormAction (req, res, next) {
         passport.authenticate ('local', (err, User, info) => {
@@ -204,6 +205,7 @@ class userController extends controller {
      * @param res
      *
      * @route {get} /register
+     * @acl   {test:false,fail:{redirect:"/"}}
      */
     registerAction (req, res) {
         res.render ('register', {});
@@ -216,6 +218,7 @@ class userController extends controller {
      * @param res
      *
      * @route {post} /register
+     * @acl   {test:false,fail:{redirect:"/"}}
      */
     registerFormAction (req, res) {
         co (function * () {

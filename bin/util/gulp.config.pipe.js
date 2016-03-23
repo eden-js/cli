@@ -37,6 +37,7 @@ class configPipe {
         this._loopMenus  = this._loopMenus.bind (this);
 
         // bind private methods
+        this._merge      = this._merge.bind (this);
         this._parseRoute = this._parseRoute.bind (this);
     }
 
@@ -80,7 +81,6 @@ class configPipe {
         // loop parsed
         for (var i = 0; i < parsed.length; i++) {
             // set scoped variables
-            priority = dPriority;
             let obj  = parsed[i];
             let tags = parsed[i].tags;
 
@@ -110,20 +110,18 @@ class configPipe {
 
                     // loop routes
                     var routeLoop = that._loopRoutes (routes, mounts, priority, acl, chunk, isFn);
-                    rtn.routes    = routeLoop.routes;
-                    rtn.acl       = routeLoop.acl;
+                    rtn.routes    = that._merge (rtn.routes, routeLoop.routes);
+                    rtn.acl       = that._merge (rtn.acl, routeLoop.acl);
 
                     // get array of menus in tags
                     var isMenu = that._menus (tags);
 
                     // chekc if menus exist
                     if (isMenu) {
-                        rtn.menus = that._loopMenus (isMenu, mounts, priority, routes, rtn.acl);
+                        rtn.menus = that._merge (rtn.menus, that._loopMenus (isMenu, mounts, priority, routes, rtn.acl));
                     }
                 }
             }
-
-            // console.log(rtn);
         }
 
         // return rtn
@@ -413,12 +411,15 @@ class configPipe {
                 if (!rtn[priority]) {
                     rtn[priority] = {};
                 }
+
                 // ensure priority object exists
                 if (!rtn[priority][routes[i].type]) {
                     rtn[priority][routes[i].type] = {};
                 }
+
                 // set acl route
                 var rt = this._parseRoute (mounts[y] + routes[i].route);
+
                 // ensure flattened acl
                 if (!acl[rt]) {
                     acl[rt] = [];
@@ -427,9 +428,16 @@ class configPipe {
                 if (routes[i].acl) {
                     acl[rt].push (routes[i].acl);
                 }
+                // check for scope acl
                 if (scopeAcl) {
                     acl[rt].push (scopeAcl);
                 }
+
+                // remove acl if required
+                if (!acl[rt].length) {
+                    delete acl[rt];
+                }
+
                 // add route to array
                 rtn[priority][(routes[i].type ? routes[i].type : 'get')][rt] = {
                     'controller' : '/' + (chunk.path.indexOf ('/app') > -1 ? 'app' : 'bin') + '/bundles' + chunk.path.split ('bundles')[1].replace (/\\/g, '/'),
@@ -518,6 +526,32 @@ class configPipe {
      */
     _parseRoute (route) {
         return '/' + route.split ('//').join ('/').replace (/^\/|\/$/g, '');
+    }
+
+    /**
+     * merges two objects
+     *
+     * @param obj1
+     * @param obj2
+     * @returns {*}
+     * @private
+     */
+    _merge (obj1, obj2) {
+        for (var p in obj2) {
+            try {
+                // Property in destination object set; update its value.
+                if (obj2[p].constructor == Object) {
+                    obj1[p] = this._merge (obj1[p], obj2[p]);
+                } else {
+                    obj1[p] = obj2[p];
+                }
+            } catch (e) {
+                // Property in destination object not set; create it and set its value.
+                obj1[p] = obj2[p];
+            }
+        }
+
+        return obj1;
     }
 }
 
