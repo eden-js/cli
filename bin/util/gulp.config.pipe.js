@@ -6,8 +6,9 @@
 'use strict';
 
 // require dependencies
-var parse = require('comment-parser');
-var os    = require('os');
+var os       = require ('os');
+var parse    = require ('comment-parser');
+var safeEval = require ('safe-eval');
 
 /**
  * build config pipe
@@ -248,7 +249,7 @@ class configPipe {
 
             // check if priority
             if (tag.tag == 'acl') {
-                return eval ('({' + tag.type + '})');
+                return safeEval ('({' + tag.type + '})');
             }
         }
 
