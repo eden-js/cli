@@ -21,7 +21,7 @@ var RedisStore   = require ('connect-redis') (session);
 var portastic    = require ('portastic');
 
 // require local dependencies
-var view     = require (global.appRoot + '/bin/view');
+var view     = require (global.appRoot + '/bin/util/view');
 var config   = require (global.appRoot + '/config');
 var compiled = require (global.appRoot + '/cache/config.json');
 var daemons  = require (global.appRoot + '/cache/daemons.json');
