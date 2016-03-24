@@ -12,7 +12,7 @@ var co   = require ('co');
 
 // require local dependencies
 var config = require (global.appRoot + '/cache/config.json');
-var acl    = require (global.appRoot + '/bin/acl');
+var acl    = require (global.appRoot + '/bin/util/acl');
 
 /**
  * construct view

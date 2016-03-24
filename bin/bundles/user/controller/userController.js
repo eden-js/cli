@@ -10,7 +10,7 @@ var controller = require (global.appRoot + '/bin/bundles/core/controller');
 var user       = require (global.appRoot + '/bin/bundles/user/model/user');
 var acl        = require (global.appRoot + '/bin/bundles/user/model/acl');
 var aclConfig  = require (global.appRoot + '/cache/config.json').acl;
-var test       = require (global.appRoot + '/bin/acl');
+var test       = require (global.appRoot + '/bin/util/acl');
 var config     = require (global.appRoot + '/config');
 
 // require dependencies
