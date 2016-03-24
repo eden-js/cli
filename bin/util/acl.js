@@ -86,9 +86,15 @@ class acl {
         // check logged in specific acl
         if ((!User && acl.test === false) || (User && acl.test === true)) {
             return true;
-        } else if ((User && acl.test === false) || (!User && acl.test === true)) {
+        }
+
+        // Check logged out for specific acl
+        if ((User && acl.test === false) || (!User && acl.test === true)) {
             return false;
-        } else if (!User) {
+        }
+
+        // check if User
+        if (!User) {
             return false;
         }
 
