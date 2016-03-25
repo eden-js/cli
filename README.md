@@ -26,13 +26,13 @@ Installation
 
 The entire framework has been written to be built and compiled with gulp. To install and run the boilerplate is as simple as:
 
-```js
-    // development
-    npm install; gulp;
+```
+// development
+npm install; gulp;
 
-    // install (for production)
-    gulp install;
+// install (for production)
+gulp install;
 
-    // run in production
-    node app;
+// run in production
+node app;
 ```
