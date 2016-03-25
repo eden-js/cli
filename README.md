@@ -21,6 +21,11 @@ This framework has been built with a few required dependencies of the server:
 - Redis
 - Nginx _or any other webserver, however configuration needs to be converted_
 
+Configuration
+--------
+
+All base configuration information is found in `config.js` and example configuration in `config.example.js` in the root of the project. Please update this with MongoDB/bootstrap/other information before installing
+
 Installation
 --------
 
