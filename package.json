@@ -1,11 +1,12 @@
 {
   "name": "EdenFrame",
   "version": "0.0.0",
-  "private": true,
+  "license": "(MIT OR Apache-2.0)",
   "scripts": {
-    "start-dev": "babel-node ./bin/server.js",
-    "start": "node ./cache/app.js"
+    "start-dev": "gulp",
+    "start": "node ./app.js"
   },
+  "main":"app.js",
   "dependencies": {
     "babel-preset-es2015": "^6.3.13",
     "babelify": "^7.2.0",
