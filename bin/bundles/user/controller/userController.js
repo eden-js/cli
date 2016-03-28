@@ -15,6 +15,7 @@ var config     = require (global.appRoot + '/config');
 
 // require dependencies
 var co       = require ('co');
+var url      = require ('url');
 var crypto   = require ('crypto');
 var passport = require ('passport');
 var local    = require ('passport-local').Strategy;
@@ -113,7 +114,7 @@ class userController extends controller {
         app.use ((req, res, next) => {
             co (function * () {
                 // do route regex
-                var rt = '/' + req.url.replace (/^\/|\/$/g, '');
+                var rt = '/' + res.locals.route.replace (/^\/|\/$/g, '');
 
                 // check route has acl
                 if (aclConfig[rt] && aclConfig[rt].length) {

@@ -182,7 +182,6 @@ class bootstrap {
             res.locals.eden  = {
                 'domain' : config.domain
             };
-            res.locals.route = req.originalUrl;
 
             // go to next
             next ();
@@ -259,7 +258,10 @@ class bootstrap {
                 let routeType = types[type];
 
                 // loop for routes
-                for (var route in routeType) {
+                for (var key in routeType) {
+                    // let route
+                    let route = key;
+
                     // check if controller registered
                     if (! that._ctrl[routeType[route].controller]) {
                         // require controller
@@ -267,6 +269,15 @@ class bootstrap {
                         // register controller
                         that._ctrl[routeType[route].controller] = new ctrl (this.app);
                     }
+
+                    // assign local route variable to route
+                    that.app.use (route, (req, res, next) => {
+                        // add pre-rendered route to locals
+                        res.locals.route = route;
+
+                        // run next
+                        next();
+                    });
 
                     // assign route to controller function
                     that.router[type] (route, that._ctrl[routeType[route].controller][routeType[route].action]);
