@@ -170,7 +170,15 @@ class bootstrap {
         this.app.use (cookieParser (config.session));
         this.app.use (express.static('www'));
         this.app.use (session ({
-            store : new RedisStore (), secret : config.session, resave : false, saveUninitialized : true, key : 'eden.session.id'
+            store             : new RedisStore (),
+            secret            : config.session,
+            resave            : false,
+            saveUninitialized : true,
+            key               : 'eden.session.id',
+            cookie            : {
+                httpOnly : false,
+                secure   : false
+            }
         }));
 
         // set default locals
@@ -182,6 +190,7 @@ class bootstrap {
             res.locals.eden  = {
                 'domain' : config.domain
             };
+            res.locals.route = req.originalUrl;
 
             // go to next
             next ();
@@ -258,10 +267,7 @@ class bootstrap {
                 let routeType = types[type];
 
                 // loop for routes
-                for (var key in routeType) {
-                    // let route
-                    let route = key;
-
+                for (var route in routeType) {
                     // check if controller registered
                     if (! that._ctrl[routeType[route].controller]) {
                         // require controller
@@ -269,15 +275,6 @@ class bootstrap {
                         // register controller
                         that._ctrl[routeType[route].controller] = new ctrl (this.app);
                     }
-
-                    // assign local route variable to route
-                    that.app.use (route, (req, res, next) => {
-                        // add pre-rendered route to locals
-                        res.locals.route = route;
-
-                        // run next
-                        next();
-                    });
 
                     // assign route to controller function
                     that.router[type] (route, that._ctrl[routeType[route].controller][routeType[route].action]);
@@ -316,11 +313,17 @@ class bootstrap {
      */
     _buildDaemons () {
         for (var i = 0; i < daemons.length; i++) {
+            // log daemon
+            this._log ('requiring', daemons[i].split(path.sep)[daemons[i].split(path.sep).length - 1]);
+
             // require daemon
-            var daemon = require (global.appRoot + daemons[i]);
+            let loadDaemon = require (global.appRoot + daemons[i]);
+
+            // log daemon
+            this._log ('running', daemons[i].split(path.sep)[daemons[i].split(path.sep).length - 1]);
 
             // run daemon
-            this._daemon[daemons[i]] = new daemon(this.app, this.server);
+            this._daemon[daemons[i]] = new loadDaemon(this.app, this.server);
         }
     }
 

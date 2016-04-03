@@ -29,9 +29,10 @@ class socket {
      * build chat class
      */
     build () {
+        console.log ('cookie', this.cookie ('eden.session.id'));
+
         // run socket
         this.socket = io.connect ('//' + window.eden.domain, {
-            query     : 'session_id=' + this.cookie ('eden.session.id'),
             secure    : true,
             reconnect : true
         });
@@ -40,15 +41,19 @@ class socket {
     /**
      * reads cookie
      *
-     * @param  {String} a cookie name
-     * @param  {String} b unsure
+     * @param  {String} cname
      *
-     * @return {String}   cookie
+     * @return {String} cookie
      */
-    cookie(a, b) {
-        b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)');
-
-        return b ? b.pop() : '';
+    cookie(cname) {
+        var name = cname + "=";
+        var ca   = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1);
+            if (c.indexOf(name) === 0) return c.substring(name.length,c.length);
+        }
+        return "";
     }
 
     /**

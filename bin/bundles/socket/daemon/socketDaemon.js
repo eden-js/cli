@@ -125,11 +125,7 @@ class socketDaemon extends daemon {
         var that = this;
 
         // check for user
-        var user = false;
-        if (socket.handshake.user) {
-            user = socket.handshake.user;
-        }
-        console.log('user', user);
+        var user = socket.request.user || false;
 
         // set socketid
         let socketid = that.index;

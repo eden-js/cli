@@ -19,7 +19,8 @@ class socketHelper {
      * construct socket helper class
      */
     constructor () {
-        this.emit = this.emit.bind (this);
+        this.emit  = this.emit.bind (this);
+        this.alert = this.alert.bind (this);
     }
 
     /**
@@ -27,15 +28,30 @@ class socketHelper {
      *
      * @param type
      * @param data
-     * @param user
+     * @param User
      */
-    emit (type, data, user) {
+    emit (type, data, User) {
         // publish information to redis pub/sub to send to socket daemon
         pub.publish (config.title + ':socket', JSON.stringify ({
-            'to'   : (user ? user.get ('_id').toString () : true),
+            'to'   : (User ? User.get ('_id').toString () : true),
             'type' : type,
             'data' : data
         }));
+    }
+
+    /**
+     * create socketio alert
+     *
+     * @param  {User}   User
+     * @param  {String} message
+     * @param  {String} type
+     */
+    alert (User, message, type) {
+        // emit to redis
+        this.emit ('alert', {
+            'type'    : type,
+            'message' : message
+        }, User);
     }
 }
 
