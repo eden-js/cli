@@ -6,7 +6,7 @@
     "start-dev": "gulp",
     "start": "node ./app.js"
   },
-  "main":"app.js",
+  "main": "app.js",
   "dependencies": {
     "babel-preset-es2015": "^6.3.13",
     "babelify": "^7.2.0",
@@ -52,6 +52,7 @@
     "socketio": "^1.0.0",
     "tether": "^1.2.0",
     "through2": "^2.0.0",
+    "toastr": "^2.1.2",
     "vinyl-source-stream": "^1.1.0"
   },
   "devDependencies": {
