@@ -335,7 +335,7 @@ class gulpBuilder {
         var vendor = '';
         if (config.js && config.js.length) {
             for (var i = 0; i < config.js.length; i++) {
-                vendor += fs.readFileSync (config.js[i], 'utf8');
+                vendor += fs.readFileSync (config.js[i], 'utf8') + os.EOL;
             }
         }
 

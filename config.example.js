@@ -47,6 +47,6 @@ module.exports = {
         './node_modules/tether/dist/js/tether.min.js',
         './node_modules/jquery-bootgrid/dist/jquery.bootgrid.min.js',
         './node_modules/bootstrap/dist/js/bootstrap.js',
-        './node_modules/toastr/toastr.js'
+        './node_modules/toastr/build/toastr.min.js'
     ]
 };

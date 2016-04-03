@@ -103,9 +103,9 @@ class socketDaemon extends daemon {
                 // loop all user socket connections
                 for (var i = 0; i < that.users[data.to].length; i++) {
                     // check socket exists
-                    if (that.sockets[that.users[data.to]]) {
+                    if (that.sockets[that.users[data.to][i]]) {
                         // emit to socket
-                        that.sockets[that.users[data.to]].emit (data.type, data.data);
+                        that.sockets[that.users[data.to][i]].emit (data.type, data.data);
                     }
                 }
             }

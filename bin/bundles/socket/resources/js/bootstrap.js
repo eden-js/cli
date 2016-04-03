@@ -17,9 +17,12 @@ class socket {
      */
     constructor () {
         // bind methods
-        this.on     = this.on.bind (this);
-        this.build  = this.build.bind (this);
+        this.on     = this.on.bind     (this);
+        this.build  = this.build.bind  (this);
         this.cookie = this.cookie.bind (this);
+
+        // bind private methods
+        this._defaultToastr = this._defaultToastr.bind (this);
 
         // run
         this.build ();
@@ -29,12 +32,32 @@ class socket {
      * build chat class
      */
     build () {
-        console.log ('cookie', this.cookie ('eden.session.id'));
+        // set that
+        var that = this;
 
         // run socket
         this.socket = io.connect ('//' + window.eden.domain, {
             secure    : true,
             reconnect : true
+        });
+
+        // on alert function
+        this.socket.on('alert', alert => {
+            console.log (alert);
+            // set default toastr options
+            that._defaultToastr ();
+
+            // check for toastr options
+            if (alert.options) {
+                for (var key in alert.options) {
+                    window.toastr.options[key] = alert.options[key];
+                }
+            }
+
+            // run toastr alert
+            if (window.toastr[alert.type]) {
+                window.toastr[alert.type](alert.message);
+            }
         });
     }
 
@@ -64,6 +87,32 @@ class socket {
      */
     on (type, fn) {
         this.socket.on (type, fn);
+    }
+
+    /**
+     * default toast options
+     *
+     * @private
+     */
+    _defaultToastr () {
+        // set default options
+        window.toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-full-width",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
     }
 }
 
