@@ -7,12 +7,13 @@
 
 // require dependencies
 var co     = require ('co');
-var crypto = require('crypto');
+var crypto = require ('crypto');
 
 // require local dependencies
-var config = require(global.appRoot + '/config');
-var model  = require(global.appRoot + '/bin/bundles/core/model');
-var acl    = require(global.appRoot + '/bin/bundles/user/model/acl');
+var acl    = require (global.appRoot + '/bin/bundles/user/model/acl');
+var model  = require (global.appRoot + '/bin/bundles/core/model');
+var config = require (global.appRoot + '/config');
+var socket = require (global.appRoot + '/bin/bundles/socket/helper/socket');
 
 /**
  * create user model
@@ -24,8 +25,16 @@ class user extends model {
      * @param a
      * @param b
      */
-    constructor(a, b) {
-        super(a, b);
+    constructor (a, b) {
+        // run super
+        super (a, b);
+
+        // bind auth methods
+        this.authenticate = this.authenticate.bind (this);
+
+        // bind socket methods
+        this.emit  = this.emit.bind (this);
+        this.alert = this.alert.bind (this);
 
         // set model location
         this._modelLocation = __filename.replace (global.appRoot, '');
@@ -35,7 +44,8 @@ class user extends model {
      * check ACL before save
      */
     configure() {
-        this.before('create', 'checkAcl');
+        // before creation, check acl
+        this.before ('create', 'checkAcl');
     }
 
     /**
@@ -47,17 +57,18 @@ class user extends model {
     authenticate(pass) {
         var that = this;
 
-        return new Promise((resolve, reject) => {
+        // return promise
+        return new Promise ((resolve, reject) => {
             // compare hash with password
-            var hash  = that.get('hash');
+            var hash  = that.get ('hash');
             var check = crypto
-                .createHmac('sha256', config.secret)
-                .update(pass)
-                .digest('hex');
+                .createHmac ('sha256', config.secret)
+                .update (pass)
+                .digest ('hex');
 
             // check if password correct
             if (check !== hash) {
-                return resolve({
+                return resolve ({
                     'error' : true,
                     'mess'  : 'Incorrect password'
                 });
@@ -71,46 +82,75 @@ class user extends model {
     }
 
     /**
+     * emits to socketio
+     *
+     * @param  {String} type
+     * @param  {Object} data
+     *
+     * @return {*}
+     */
+    emit (type, data) {
+        // return socket emission
+        return socket.user (this, type, data);
+    }
+
+    /**
+     * alerts user
+     *
+     * @param  {String} message
+     * @param  {String} type
+     * @param  {Object} options
+     *
+     * @return {*}
+     */
+    alert (message, type, options) {
+        // return socket emission
+        return socket.alert (this, message, type, options);
+    }
+
+    /**
      * check ACL
      *
      * @param next
      */
-    checkAcl(next) {
+    checkAcl (next) {
+        // set that
         var that = this;
-        
+
+        // run coroutine
         co(function * () {
             var arr  = [];
 
             // check default acl
-            var def = yield acl.where({
+            var def = yield acl.where ({
                 'name' : config.acl.default.name
-            }).findOne();
+            }).findOne ();
             // check default acl exists
             if (!def) {
-                def = new acl(config.acl.default);
-                yield def.save();
+                def = new acl (config.acl.default);
+                yield def.save ();
             }
             // set user acl
-            arr.push(def);
+            arr.push (def);
 
             // check first
-            var count = yield user.count();
+            var count = yield user.count ();
             if (!count) {
                 // check first acl
-                var adm = yield acl.where({
+                var adm = yield acl.where ({
                     'name' : config.acl.first.name
-                }).findOne();
+                }).findOne ();
                 // check first acl exists
                 if (!adm) {
-                    adm = new acl(config.acl.first);
-                    yield adm.save();
+                    adm = new acl (config.acl.first);
+                    yield adm.save ();
                 }
                 // set user acl
-                arr.push(adm);
+                arr.push (adm);
             }
 
             // set acl
-            that.set('acl', arr);
+            that.set ('acl', arr);
 
             // run next
             yield next;
@@ -124,10 +164,10 @@ class user extends model {
      */
     sanitise () {
         return {
-            'id'       : this.get('_id').toString(),
-            'balance'  : this.get('balance') || 0,
-            'username' : this.get('username'),
-            'avatar'   : this.get('avatar')
+            'id'       : this.get ('_id').toString (),
+            'balance'  : this.get ('balance') || 0,
+            'username' : this.get ('username'),
+            'avatar'   : this.get ('avatar')
         };
     }
 }
