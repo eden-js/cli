@@ -46,12 +46,20 @@ class socketHelper {
      * @param  {String} message
      * @param  {String} type
      */
-    alert (User, message, type) {
-        // emit to redis
-        this.emit ('alert', {
+    alert (User, message, type, options) {
+        // create alert object
+        var alert = {
             'type'    : type,
             'message' : message
-        }, User);
+        };
+
+        // set variables
+        if (options) {
+            alert.options = options;
+        }
+
+        // emit to redis
+        this.emit ('alert', alert, User);
     }
 }
 

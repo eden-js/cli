@@ -29,7 +29,7 @@ class edenFrame {
      * @private
      */
     _renderFrontendRenderer () {
-        riot.mount ('*');
+        // riot.mount ('*');
     }
 }
 

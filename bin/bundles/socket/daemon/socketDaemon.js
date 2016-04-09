@@ -20,8 +20,10 @@ var daemon = require (global.appRoot + '/bin/bundles/core/daemon');
 
 // conditionally create sub
 var sub = false;
+var pub = false;
 if (config.socket) {
     sub = redis.createClient ();
+    pub = redis.createClient ();
 }
 
 /**
@@ -161,6 +163,12 @@ class socketDaemon extends daemon {
 
             // delete socket
             delete that.sockets[socketid];
+        });
+
+        // on socket data
+        socket.on ('data', data => {
+            // publish to socket client
+            pub.publish (config.title + ':socket-client', JSON.stringify(data));
         });
     }
 }

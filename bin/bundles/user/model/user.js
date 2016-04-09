@@ -6,7 +6,8 @@
 'use strict';
 
 // require dependencies
-var crypto    = require('crypto');
+var co     = require ('co');
+var crypto = require('crypto');
 
 // require local dependencies
 var config = require(global.appRoot + '/config');
@@ -74,43 +75,60 @@ class user extends model {
      *
      * @param next
      */
-    * checkAcl(next) {
+    checkAcl(next) {
         var that = this;
-        var arr  = [];
+        
+        co(function * () {
+            var arr  = [];
 
-        // check default acl
-        var def = yield acl.where({
-            'name' : config.acl.default.name
-        }).findOne();
-        // check default acl exists
-        if (!def) {
-            def = new acl(config.acl.default);
-            yield def.save();
-        }
-        // set user acl
-        arr.push(def);
-
-        // check first
-        var count = yield user.count();
-        if (!count) {
-            // check first acl
-            var adm = yield acl.where({
-                'name' : config.acl.first.name
+            // check default acl
+            var def = yield acl.where({
+                'name' : config.acl.default.name
             }).findOne();
-            // check first acl exists
-            if (!adm) {
-                adm = new acl(config.acl.first);
-                yield adm.save();
+            // check default acl exists
+            if (!def) {
+                def = new acl(config.acl.default);
+                yield def.save();
             }
             // set user acl
-            arr.push(adm);
-        }
+            arr.push(def);
 
-        // set acl
-        that.set('acl', arr);
+            // check first
+            var count = yield user.count();
+            if (!count) {
+                // check first acl
+                var adm = yield acl.where({
+                    'name' : config.acl.first.name
+                }).findOne();
+                // check first acl exists
+                if (!adm) {
+                    adm = new acl(config.acl.first);
+                    yield adm.save();
+                }
+                // set user acl
+                arr.push(adm);
+            }
 
-        // run next
-        yield next;
+            // set acl
+            that.set('acl', arr);
+
+            // run next
+            yield next;
+        });
+    }
+
+    /**
+     * sanitises user
+     *
+     * @return {*}
+     */
+    sanitise () {
+        return {
+            'id'       : this.get('_id').toString(),
+            'balance'  : this.get('balance') || 0,
+            'username' : this.get('username'),
+            'avatar'   : this.get('avatar')
+        };
     }
 }
 

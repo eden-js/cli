@@ -116,9 +116,12 @@ class socket {
     }
 }
 
+// build socket class
+var builtSocket = new socket ();
+
 /**
  * export socket class
  *
  * @type {socket}
  */
-module.exports = new socket ();
+module.exports  = builtSocket;
