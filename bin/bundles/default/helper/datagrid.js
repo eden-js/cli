@@ -39,6 +39,10 @@ class datagrid {
                 'rows'     : [],
                 'total'    : 0
             };
+            // set row count to all when 1
+            if (response.rowCount === -1) {
+                response.rowCount = 10^10;
+            }
             // set default where object
             var where = {};
             // set default order
@@ -60,7 +64,7 @@ class datagrid {
                         // create push object
                         var push        = {};
                         push[filter[i]] = {
-                            '$regex' : req.body.searchPhrase
+                            '$regex' : new RegExp('^' + req.body.searchPhrase.toLowerCase(), 'i')
                         };
 
                         // push into where
