@@ -6,15 +6,21 @@
 'use strict';
 
 // require dependencies
-var io    = require ('socket.io-emitter')({ host: '127.0.0.1', port: 6379 });
-var redis = require ('redis');
+var emitter = require ('socket.io-emitter');
+var redis   = require ('redis');
 
 // require local dependencies
 var config = require (global.appRoot + '/config');
 
 // check if socket
+var io  = false;
 var pub = false;
 if (config.socket) {
+    io  = emitter ({
+        host : '127.0.0.1',
+        port : 6379,
+        key  : config.domain
+    });
     pub = redis.createClient ();
 }
 
@@ -42,7 +48,7 @@ class socketHelper {
      */
     room (name, type, data) {
         // send to io room
-        //io.to (name).emit (type, data);
+        io.to (name).emit (type, data);
     }
 
     /**
@@ -70,7 +76,7 @@ class socketHelper {
      */
     emit (type, data) {
         // send everywhere
-        //io.emit (type, data);
+        io.emit (type, data);
     }
 
     /**

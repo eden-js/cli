@@ -15,7 +15,9 @@ var redisLocal   = require ('redis');
 var cookieParser = require ('cookie-parser');
 
 // require local dependencies
+var acl    = require (global.appRoot + '/bin/util/acl');
 var log    = require (global.appRoot + '/bin/util/log');
+var cache  = require (global.appRoot + '/cache/config.json');
 var config = require (global.appRoot + '/config');
 var daemon = require (global.appRoot + '/bin/bundles/core/daemon');
 
@@ -35,7 +37,7 @@ class socketDaemon extends daemon {
      * @param  {express4} app    express app
      * @param  {Server}   server express server
      */
-    constructor (app, server) {
+    constructor (app, server, ctrl) {
         // run super
         super (app, server);
 
@@ -44,6 +46,9 @@ class socketDaemon extends daemon {
         this.users   = {};
         this.sockets = {};
         this.index   = 0;
+
+        // bind private variables
+        this._ctrl = ctrl;
 
         // bind methods
         this.build  = this.build.bind (this);
@@ -127,7 +132,7 @@ class socketDaemon extends daemon {
          var that = this;
 
          // check for user
-         var user = socket.request.user || false;
+         let User = socket.request.user || false;
 
          // set socketid
          let socketid = that.index;
@@ -140,13 +145,13 @@ class socketDaemon extends daemon {
          that.sockets[socketid] = socket;
 
          // check if user on handshake
-         if (user) {
+         if (User) {
              // create users object
-             if (!that.users[user.get ('_id').toString ()]) {
-                 that.users[user.get ('_id').toString ()] = [];
+             if (!that.users[User.get ('_id').toString ()]) {
+                 that.users[User.get ('_id').toString ()] = [];
              }
              // add i to users object
-             that.users[user.get ('_id').toString ()].push (socketid);
+             that.users[User.get ('_id').toString ()].push (socketid);
          }
 
          // disconnect socket
@@ -155,14 +160,52 @@ class socketDaemon extends daemon {
              log ('client ' + socketid + ' disconnected');
 
              // remove socket id from user
-             if (user) {
-                 if (that.users[user.get ('_id').toString ()] && that.users[user.get ('_id').toString ()].indexOf (socketid) > -1) {
-                     that.users[user.get ('_id').toString ()].splice (that.users[user.get ('_id').toString ()].indexOf (socketid), 1);
+             if (User) {
+                 if (that.users[User.get ('_id').toString ()] && that.users[User.get ('_id').toString ()].indexOf (socketid) > -1) {
+                     that.users[User.get ('_id').toString ()].splice (that.users[User.get ('_id').toString ()].indexOf (socketid), 1);
                  }
              }
 
              // delete socket
              delete that.sockets[socketid];
+         });
+
+         // create functions for cached config
+         for (var type in cache.sockets) {
+             // create listener
+             this._createListener (cache.sockets[type], socket, User);
+         }
+     }
+
+     /**
+      * creates listener by route
+      *
+      * @param  {Object} route
+      * @param  {socket} socket
+      * @param  {user}   User
+      */
+     _createListener (route, socket, User) {
+         // set that
+         var that = this;
+
+         // create socket listener
+         socket.on (route.type, data => {
+             // check if user can acl
+             acl.test (route.acl, User).then (can => {
+                 // check acl returned true
+                 if (can === true) {
+                     // check controller exists
+                     if (!that._ctrl[route.controller]) {
+                         // require controller
+                         var ctrl = require (global.appRoot + route.controller);
+                         // register controller
+                         that._ctrl[route.controller] = new ctrl (that.app);
+                     }
+
+                     // run function
+                     that._ctrl[route.controller][route.socket] (socket, data, User);
+                 }
+             });
          });
      }
 }

@@ -323,7 +323,7 @@ class bootstrap {
             this._log ('running', daemons[i].split(path.sep)[daemons[i].split(path.sep).length - 1]);
 
             // run daemon
-            this._daemon[daemons[i]] = new loadDaemon(this.app, this.server);
+            this._daemon[daemons[i]] = new loadDaemon(this.app, this.server, this._ctrl);
         }
     }
 

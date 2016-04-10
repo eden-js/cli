@@ -17,9 +17,9 @@ class socket {
      */
     constructor () {
         // bind methods
-        this.on     = this.on.bind     (this);
-        this.build  = this.build.bind  (this);
-        this.cookie = this.cookie.bind (this);
+        this.on     = this.on.bind (this);
+        this.build  = this.build.bind (this);
+        this.alerts = this.alerts.bind (this);
 
         // bind private methods
         this._defaultToastr = this._defaultToastr.bind (this);
@@ -41,9 +41,19 @@ class socket {
             reconnect : true
         });
 
+        // build alerts
+        this.alerts();
+    }
+
+    /**
+     * builds default toastr alerts
+     */
+    alerts () {
+        // set that
+        var that = this;
+
         // on alert function
         this.socket.on('alert', alert => {
-            console.log (alert);
             // set default toastr options
             that._defaultToastr ();
 
@@ -59,24 +69,6 @@ class socket {
                 window.toastr[alert.type](alert.message);
             }
         });
-    }
-
-    /**
-     * reads cookie
-     *
-     * @param  {String} cname
-     *
-     * @return {String} cookie
-     */
-    cookie(cname) {
-        var name = cname + "=";
-        var ca   = document.cookie.split(';');
-        for(var i=0; i<ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0)==' ') c = c.substring(1);
-            if (c.indexOf(name) === 0) return c.substring(name.length,c.length);
-        }
-        return "";
     }
 
     /**

@@ -31,6 +31,7 @@ class configPipe {
         this._routes   = this._routes.bind (this);
         this._mounts   = this._mounts.bind (this);
         this._parent   = this._parent.bind (this);
+        this._sockets  = this._sockets.bind (this);
         this._priority = this._priority.bind (this);
 
         // bind loop methods
@@ -74,9 +75,10 @@ class configPipe {
         var acl       = false;
         var mounts    = [];
         var rtn       = {
-            'routes' : {},
-            'menus'  : {},
-            'acl'    : {}
+            'sockets' : {},
+            'routes'  : {},
+            'menus'   : {},
+            'acl'     : {}
         };
 
         // loop parsed
@@ -121,6 +123,14 @@ class configPipe {
                     if (isMenu) {
                         rtn.menus = that._merge (rtn.menus, that._loopMenus (isMenu, mounts, priority, routes, rtn.acl));
                     }
+                }
+
+                // get array of sockets in tags
+                var isSocket = that._sockets (tags);
+
+                // chekc if menus exist
+                if (isSocket) {
+                    rtn.sockets = that._merge (rtn.sockets, that._loopSockets (isSocket, priority, acl, chunk, isFn));
                 }
             }
         }
@@ -232,6 +242,37 @@ class configPipe {
 
         // return false
         return menus.length ? menus : false;
+    }
+
+    /**
+     * checks for sockets
+     *
+     * @param tags
+     * @returns {*}
+     * @private
+     */
+    _sockets(tags) {
+        // set mounts
+        var sockets = [];
+
+        // loop tags for mount
+        for (var i = 0; i < tags.length; i++) {
+            // let tag object
+            let tag = tags[i];
+
+            // check if mount
+            if (tag.tag == 'socket') {
+                var acl = this._acl(tags);
+                sockets.push({
+                    'type'     : tag.type,
+                    'priority' : this._priority(tags, 10),
+                    'acl'      : (acl ? acl : false)
+                });
+            }
+        }
+
+        // return false
+        return sockets.length ? sockets : false;
     }
 
     /**
@@ -514,6 +555,45 @@ class configPipe {
         }
 
         // return object
+        return rtn;
+    }
+
+    /**
+    * loop sockets for socket config object
+    *
+    * @param sockets
+    * @param priority
+    * @param acl
+    * @param chunk
+    * @param fn
+    *
+    * @returns {*}
+    * @private
+     */
+    _loopSockets (sockets, priority, acl, chunk, fn) {
+        var rtn = {};
+
+        // loop menu
+        for (var s = 0; s < sockets.length; s++) {
+            sockets[s].priority = sockets[s].priority ? sockets[s].priority : priority;
+
+            // check for scoped acl
+            if (acl) {
+                if (!sockets[s].acl || !Array.isArray(sockets[s].acl.test)) {
+                  sockets[s].acl = acl;
+                } else if (Array.isArray(acl.test)) {
+                  sockets[s].acl.test.concat(acl.test, sockets[s].acl.test);
+                }
+            }
+
+            sockets[s].controller = '/' + (chunk.path.indexOf ('/app') > -1 ? 'app' : 'bin') + '/bundles' + chunk.path.split ('bundles')[1].replace (/\\/g, '/');
+            sockets[s].socket     = fn;
+
+            // set in return object
+            rtn[sockets[s].type] = sockets[s];
+        }
+
+        // return sockets
         return rtn;
     }
 
