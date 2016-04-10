@@ -79,11 +79,17 @@ class socketDaemon extends daemon {
         }));
 
         // use passport auth
-        this.io.use(passport.authorize ({
+        this.io.use (passport.authorize ({
             cookieParser : cookieParser,
             secret       : config.session,
             store        : new redisStore (),
-            key          : 'eden.session.id'
+            key          : 'eden.session.id',
+            success      : (data, accept) => {
+                accept(null, true);
+            },
+            fail         : (data, message, critical, accept) => {
+                accept(null, true);
+            }
         }));
 
         // listen for connection
@@ -132,7 +138,7 @@ class socketDaemon extends daemon {
          var that = this;
 
          // check for user
-         let User = socket.request.user || false;
+         let User = socket.request.user && socket.request.user.logged_in !== false ? socket.request.user : false;
 
          // set socketid
          let socketid = that.index;
