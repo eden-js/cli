@@ -79,17 +79,11 @@ class socketDaemon extends daemon {
         }));
 
         // use passport auth
-        this.io.use (passport.authorize ({
+        this.io.use(passport.authorize ({
             cookieParser : cookieParser,
             secret       : config.session,
             store        : new redisStore (),
-            key          : 'eden.session.id',
-            success      : (data, accept) => {
-                accept(null, true);
-            },
-            fail         : (data, message, critical, accept) => {
-                accept(null, true);
-            }
+            key          : 'eden.session.id'
         }));
 
         // listen for connection
@@ -101,7 +95,7 @@ class socketDaemon extends daemon {
         }
 
         // listen to local redis
-        sub.on (config.domain + ':socket-message', (channel, data) => {
+        sub.on ('message', (channel, data) => {
             // parse data
             data = JSON.parse (data);
 
@@ -125,7 +119,7 @@ class socketDaemon extends daemon {
             }
         });
         // subscribe to local redis
-        sub.subscribe (config.title + ':socket-message');
+        sub.subscribe (config.domain + ':socket-message');
     }
 
     /**
@@ -138,7 +132,7 @@ class socketDaemon extends daemon {
          var that = this;
 
          // check for user
-         let User = socket.request.user && socket.request.user.logged_in !== false ? socket.request.user : false;
+         let User = socket.request.user || false;
 
          // set socketid
          let socketid = that.index;

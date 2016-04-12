@@ -6,8 +6,8 @@
 'use strict';
 
 // require dependencies
-var emitter = require ('socket.io-emitter');
 var redis   = require ('redis');
+var emitter = require ('socket.io-emitter');
 
 // require local dependencies
 var config = require (global.appRoot + '/config');
