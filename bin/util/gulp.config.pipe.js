@@ -230,7 +230,7 @@ class configPipe {
             if (tag.tag == 'menu') {
                 var acl = this._acl (tags);
                 menus.push({
-                    'title'    : tag.name,
+                    'title'    : (tag.name + ' ' + tag.description).trim (),
                     'name'     : this._name (tags, tag.name, i),
                     'menu'     : tag.type,
                     'parent'   : this._parent (tags, false, i),
