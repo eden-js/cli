@@ -48,39 +48,68 @@ class gulpBuilder {
 
         // bind methods
         this._tasks = {
-            'sass'   : [
-                './bin/bundles/*/resources/scss/**/*.scss',
-                './app/bundles/*/resources/scss/**/*.scss'
-            ],
-            'daemon' : [
-                './bin/bundles/*/daemon/**/*Daemon.js',
-                './app/bundles/*/daemon/**/*Daemon.js'
-            ],
-            'config' : [
-                './bin/bundles/*/controller/**/*Controller.js',
-                './app/bundles/*/controller/**/*Controller.js'
-            ],
-            'view'   : [
-                './bin/bundles/*/view/**/*.hbs',
-                './app/bundles/*/view/**/*.hbs'
-            ],
-            'tag'    : [
-                './bin/bundles/*/view/tag/**/*.tag',
-                './app/bundles/*/view/tag/**/*.tag'
-            ],
-            'js'     : [
-                './bin/bundles/*/resources/js/**/*.js',
-                './app/bundles/*/resources/js/**/*.js'
-            ],
-            'image'  : [
-                './bin/bundles/*/resources/image/**/*',
-                './app/bundles/*/resources/image/**/*'
-            ]
+            'tmp'    : {
+                'files' : [
+                    './bin/bundles/*/resources/scss/**/*.scss',
+                    './app/bundles/*/resources/scss/**/*.scss'
+                ],
+                'skip' : true
+            },
+            'sass'   : {
+                'files' : [
+                    './bin/bundles/*/resources/scss/**/*.scss',
+                    './app/bundles/*/resources/scss/**/*.scss'
+                ],
+                'dependencies' : [
+                    'tmp'
+                ]
+            },
+            'daemon' : {
+                'files' : [
+                    './bin/bundles/*/daemon/**/*Daemon.js',
+                    './app/bundles/*/daemon/**/*Daemon.js'
+                ],
+            },
+            'config' : {
+                'files' : [
+                    './bin/bundles/*/controller/**/*Controller.js',
+                    './app/bundles/*/controller/**/*Controller.js'
+                ],
+            },
+            'view'   : {
+                'files' : [
+                    './bin/bundles/*/view/**/*.hbs',
+                    './app/bundles/*/view/**/*.hbs'
+                ],
+            },
+            'tag'    : {
+                'files' : [
+                    './bin/bundles/*/view/tag/**/*.tag',
+                    './app/bundles/*/view/tag/**/*.tag'
+                ],
+                'skip' : true
+            },
+            'js'     : {
+                'files' : [
+                    './bin/bundles/*/resources/js/**/*.js',
+                    './app/bundles/*/resources/js/**/*.js'
+                ],
+                'dependencies' : [
+                    'tag'
+                ]
+            },
+            'image'  : {
+                'files' : [
+                    './bin/bundles/*/resources/image/**/*',
+                    './app/bundles/*/resources/image/**/*'
+                ]
+            }
         };
 
         // set keys array
         var that     = this;
         var keys     = Object.keys (this._tasks);
+        var install  = [];
         var watchers = [];
 
         // bind and add gulp task methods
@@ -90,19 +119,29 @@ class gulpBuilder {
             // bind method
             this[task] = this[task].bind (this);
             // setup task
-            this.gulp.task (task, this[task]);
+            if (this._tasks[task].dependencies) {
+                this.gulp.task (task, this._tasks[task].dependencies, this[task]);
+            } else {
+                this.gulp.task (task, this[task]);
+            }
+            // check for skip
+            if (this._tasks[task].skip) {
+                continue;
+            }
             // setup watch task
             this.gulp.task (task + ':watch', () => {
-                watch (that._tasks[task], () => {
+                watch (that._tasks[task].files, () => {
                     that.gulp.start (task);
                 });
             });
+            // push to install
+            install.push (task);
             // add watch task to array
             watchers.push (task + ':watch');
         }
 
         // add install task
-        this.gulp.task ('install', keys);
+        this.gulp.task ('install', install);
         // add watch task
         this.gulp.task ('watch', watchers);
         // add dev server task
@@ -123,101 +162,110 @@ class gulpBuilder {
                         'NODE_ENV' : 'development'
                     }
                 });
-
-                // loop for watch
-                for (var i = 0; i < keys.length; i++) {
-                    // set task
-                    let task = keys[i];
-                    // setup watch task
-                    watch (that._tasks[task], () => {
-                       that.gulp.start (task);
-                    });
-                }
             }, that.wait * 2);
         });
         // add default task
         this.gulp.task ('default', [
             'install',
+            'watch',
             'dev'
         ]);
+    }
+
+    /**
+     * creates temporary sass file
+     *
+     * @return {gulp}
+     */
+    tmp () {
+        // set variables
+        var that = this;
+        var all  = '';
+
+        // set running
+        if (this._sassRunning) {
+            return;
+        }
+        this._sassRunning = true;
+
+        // grab gulp source for sass
+        // create local variables array for sass files
+        var sassFiles = [
+            './bin/bundles/*/resources/scss/variables.scss',
+            './app/bundles/*/resources/scss/variables.scss'
+        ];
+
+        // loop config sass files
+        if (config.sass && config.sass.length) {
+            for (var i = 0; i < config.sass.length; i ++) {
+                sassFiles.push(config.sass[i]);
+            }
+        }
+
+        // push local bootstrap files
+        sassFiles.push('./bin/bundles/*/resources/scss/bootstrap.scss');
+        sassFiles.push('./app/bundles/*/resources/scss/bootstrap.scss');
+
+        // run gulp
+        return this.gulp.src (sassFiles)
+            .pipe (through.obj (function (chunk, enc, cb) {
+                // run through callback
+                var type = chunk.path.split('.');
+                    type = type[type.length - 1];
+                if (type == 'css') {
+                    var prepend = fs.readFileSync(chunk.path, 'utf8');
+                    this.push ({
+                        'all' : prepend + os.EOL
+                    });
+                } else {
+                    this.push ({
+                        'all' : '@import ".' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '";' + os.EOL
+                    });
+                }
+
+                // run callback
+                cb (null, chunk);
+            }))
+            .on ('data', (data) => {
+                if (data.all) {
+                    all += data.all;
+                }
+            })
+            .on ('end', function () {
+                // write temp sass file
+                fs.writeFileSync ('./tmp.scss', all);
+            });
     }
 
     /**
      * sass task
      */
     sass () {
-        // set variables
+        // set that
         var that = this;
-        var all  = '';
 
-        // grab gulp source for sass
-        // do within setTimeout to remove empty files
-        setTimeout (() => {
-            // create local variables array for sass files
-            var sassFiles = [
-                './bin/bundles/*/resources/scss/variables.scss',
-                './app/bundles/*/resources/scss/variables.scss'
-            ];
+        // check running
+        if (this._sassRunning) {
+            return;
+        }
+        this._sassRunning = true;
 
-            // loop config sass files
-            if (config.sass && config.sass.length) {
-                for (var i = 0; i < config.sass.length; i ++) {
-                    sassFiles.push(config.sass[i]);
-                }
-            }
+        // run gulp task
+        return this.gulp.src ('./tmp.scss')
+            .pipe (sourcemaps.init ())
+            .pipe (sass ({
+                outputStyle : 'compressed'
+            }))
+            .pipe (rename ('app.min.css'))
+            .pipe (sourcemaps.write ('./www/assets/css'))
+            .pipe (that.gulp.dest ('./www/assets/css'))
+            .on ('end', () => {
+                // unlink temp sass file
+                fs.unlinkSync ('./tmp.scss');
 
-            // push local bootstrap files
-            sassFiles.push('./bin/bundles/*/resources/scss/bootstrap.scss');
-            sassFiles.push('./app/bundles/*/resources/scss/bootstrap.scss');
-
-            // run gulp
-            this.gulp.src (sassFiles)
-                .pipe (through.obj (function (chunk, enc, cb) {
-                    // run through callback
-                    var type = chunk.path.split('.');
-                        type = type[type.length - 1];
-                    if (type == 'css') {
-                        var prepend = fs.readFileSync(chunk.path, 'utf8');
-                        this.push ({
-                            'all' : prepend + os.EOL
-                        });
-                    } else {
-                        this.push ({
-                            'all' : '@import ".' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '";' + os.EOL
-                        });
-                    }
-
-                    // run callback
-                    cb (null, chunk);
-                }))
-                .on ('data', (data) => {
-                    if (data.all) {
-                        all += data.all;
-                    }
-                })
-                .on ('end', function () {
-                // write temp sass file
-                fs.writeFile ('./tmp.scss', all, (err) => {
-                    if (err) {
-                        console.log (err);
-                        return;
-                    }
-
-                    // pipe temp sass file for sass function
-                    that.gulp.src ('./tmp.scss')
-                        .pipe (sourcemaps.init ())
-                        .pipe (sass ({
-                            outputStyle : 'compressed'
-                        }))
-                        .pipe (rename ('app.min.css'))
-                        .pipe (sourcemaps.write ('./www/assets/css'))
-                        .pipe (that.gulp.dest ('./www/assets/css'))
-                        .on ('end', () => {
-                            fs.unlinkSync ('./tmp.scss');
-                        });
-                });
+                // reset running
+                that._sassRunning = false;
             });
-        }, this.wait);
     }
 
     /**
@@ -226,8 +274,8 @@ class gulpBuilder {
     daemon () {
         // grab daemon controllers
         var daemons = [];
-        for (var i = 0; i < this._tasks.daemon.length; i++) {
-            daemons = daemons.concat (glob.sync (this._tasks.daemon[i]));
+        for (var i = 0; i < this._tasks.daemon.files.length; i++) {
+            daemons = daemons.concat (glob.sync (this._tasks.daemon.files[i]));
         }
 
         // loop daemons
@@ -247,50 +295,66 @@ class gulpBuilder {
         var that = this;
         var all  = {};
 
+        // set running
+        if (this._configRunning) {
+            return;
+        }
+        this._configRunning = true;
+
         // get all routes
         // do within setTimeout to remove empty files
-        setTimeout (() => {
-            this.gulp.src (this._tasks.config)
-                .pipe (through.obj (function (chunk, enc, cb) {
-                    var pip = this;
-                    configPipe.pipe (chunk).then (result => {
-                        pip.push ({
-                            'result' : result
-                        });
-                        cb (null, chunk);
+        return this.gulp.src (this._tasks.config.files)
+            .pipe (through.obj (function (chunk, enc, cb) {
+                var pip = this;
+                configPipe.pipe (chunk).then (result => {
+                    pip.push ({
+                        'result' : result
                     });
-                }))
-                .on ('data', (data) => {
-                    // merge config object
-                    that._merge (all, data.result);
-                })
-                .on ('end', function () {
-                    // write config file
-                    that._write ('config', all);
+                    cb (null, chunk);
                 });
-        }, this.wait);
+            }))
+            .on ('data', (data) => {
+                // merge config object
+                that._merge (all, data.result);
+            })
+            .on ('end', function () {
+                // write config file
+                that._write ('config', all);
+
+                // reset running tag
+                that._configRunning = false;
+            });
     }
 
     /**
      * view task
      */
     view () {
+        // set that
+        var that = this;
+
+        // ensure running only once
+        if (this._viewRunning) {
+            return;
+        }
+        this._viewRunning = true;
+
         // move views into single folder
         // do within setTimeout to remove empty files
         // @todo bundle priority
-        setTimeout (() => {
-            this.gulp.src (
-                this._tasks.view
-            )
-                .pipe (rename ((filePath) => {
-                    var amended = filePath.dirname.split (path.sep);
-                    amended.shift ();
-                    amended.shift ();
-                    filePath.dirname = amended.join (path.sep);
-                }))
-                .pipe (chmod (755))
-                .pipe (this.gulp.dest ('cache/view'));
-        }, this.wait);
+        return this.gulp.src (this._tasks.view.files)
+            .pipe (rename ((filePath) => {
+                var amended = filePath.dirname.split (path.sep);
+                amended.shift ();
+                amended.shift ();
+                filePath.dirname = amended.join (path.sep);
+            }))
+            .pipe (chmod (755))
+            .pipe (this.gulp.dest ('cache/view'))
+            .on('end', () => {
+                // reset view running
+                that._viewRunning = false;
+            });
     }
 
     /**
@@ -300,35 +364,49 @@ class gulpBuilder {
         // set that
         var that = this;
 
+        // ensure running only once
+        if (this._tagRunning || this._jsRunning) {
+            return;
+        }
+        this._tagRunning = true;
+
         // move tags into javascript compiled file (riotjs)
-        // do within setTimeout to remove empty files
-        setTimeout (() => {
-            this.gulp.src (
-                this._tasks.tag
-            )
-                .pipe (rename (function (filePath) {
-                    var amended = filePath.dirname.split (path.sep);
-                    amended.shift ();
-                    amended.shift ();
-                    amended.shift ();
-                    filePath.dirname = amended.join (path.sep);
-                }))
-                .pipe (riot ({
-                    compact : true
-                }))
-                .pipe (concat ('tags.min.js'))
-                .pipe (header ('var riot = require(\'riot\');'))
-                .pipe (this.gulp.dest ('./cache/tag'))
-                .on ('end', () => {
-                    that.gulp.start ('js');
-                });
-        }, this.wait);
+        return this.gulp.src (this._tasks.tag.files)
+            .pipe (rename (function (filePath) {
+                var amended = filePath.dirname.split (path.sep);
+                amended.shift ();
+                amended.shift ();
+                amended.shift ();
+                filePath.dirname = amended.join (path.sep);
+            }))
+            .pipe (riot ({
+                compact : true
+            }))
+            .pipe (concat ('tags.min.js'))
+            .pipe (header ('var riot = require(\'riot\');'))
+            .pipe (this.gulp.dest ('./cache/tag'))
+            .on ('end', () => {
+                // start js task
+                that.gulp.start ('js');
+
+                // reset running flag
+                that._tagRunning = false;
+            });
     }
 
     /**
      * javascript task
      */
     js () {
+        // set that
+        var that = this;
+
+        // ensure running only once
+        if (this._jsRunning) {
+            return;
+        }
+        this._jsRunning = true;
+
         // create javascript array
         var js = [];
         js     = js.concat (glob.sync ('./bin/bundles/*/resources/js/bootstrap.js'));
@@ -344,17 +422,19 @@ class gulpBuilder {
 
         // browserfiy javascript
         // do within setTimeout to remove empty files
-        setTimeout (() => {
-            browserify ({
-                entries : js
-            })
-                .transform (babelify)
-                .bundle ()
-                .pipe (source ('app.min.js'))
-                .pipe (streamify (uglify ()))
-                .pipe (streamify (header (vendor)))
-                .pipe (this.gulp.dest ('./www/assets/js'));
-        }, this.wait);
+        return browserify ({
+            entries : js
+        })
+            .transform (babelify)
+            .bundle ()
+            .pipe (source ('app.min.js'))
+            .pipe (streamify (uglify ()))
+            .pipe (streamify (header (vendor)))
+            .pipe (this.gulp.dest ('./www/assets/js'))
+            .on ('end', () => {
+                // reset running flag
+                that._jsRunning = false;
+            });
     }
 
     /**
@@ -365,9 +445,7 @@ class gulpBuilder {
         // do within setTimeout to remove empty files
         // @todo bundle priority
         setTimeout (() => {
-            this.gulp.src (
-                this._tasks.image
-            )
+            this.gulp.src (this._tasks.image.files)
                 .pipe (rename ((filePath) => {
                     var amended = filePath.dirname.split (path.sep);
                     amended.shift ();
