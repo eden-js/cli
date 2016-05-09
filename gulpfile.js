@@ -112,6 +112,9 @@ class gulpBuilder {
                 nodemon ({
                     'script' : './app.js',
                     'ext'    : 'js json',
+                    'ignore' : [
+                        'tags.min.js'
+                    ],
                     'delay'  : this.wait,
                     'watch'  : [
                         'cache/'
