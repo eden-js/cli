@@ -222,7 +222,7 @@ class gulpBuilder {
                     });
                 } else {
                     this.push ({
-                        'all' : '@import ".' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '";' + os.EOL
+                        'all' : '@import "..' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '";' + os.EOL
                     });
                 }
 
@@ -236,7 +236,7 @@ class gulpBuilder {
             })
             .on ('end', function () {
                 // write temp sass file
-                fs.writeFileSync ('./tmp.scss', all);
+                fs.writeFileSync ('./cache/tmp.scss', all);
 
                 // reset running
                 that._tmpRunning = false;
@@ -257,7 +257,7 @@ class gulpBuilder {
         this._sassRunning = true;
 
         // run gulp task
-        return this.gulp.src ('./tmp.scss')
+        return this.gulp.src ('./cache/tmp.scss')
             .pipe (sourcemaps.init ())
             .pipe (sass ({
                 outputStyle : 'compressed'
@@ -266,9 +266,6 @@ class gulpBuilder {
             .pipe (sourcemaps.write ('./www/assets/css'))
             .pipe (that.gulp.dest ('./www/assets/css'))
             .on ('end', () => {
-                // unlink temp sass file
-                fs.unlinkSync ('./tmp.scss');
-
                 // reset running
                 that._sassRunning = false;
             });
