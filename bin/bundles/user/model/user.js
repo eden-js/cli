@@ -33,8 +33,9 @@ class user extends model {
         this.authenticate = this.authenticate.bind (this);
 
         // bind socket methods
-        this.emit  = this.emit.bind (this);
-        this.alert = this.alert.bind (this);
+        this.emit     = this.emit.bind (this);
+        this.alert    = this.alert.bind (this);
+        this.sanitise = this.sanitise.bind (this);
 
         // set model location
         this._modelLocation = __filename.replace (global.appRoot, '');
