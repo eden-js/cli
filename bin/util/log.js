@@ -14,15 +14,14 @@ var colors = require ('colors');
 module.exports = (message, type, error) => {
     // set date and date padding
     var d = new Date();
-    var p = '00';
 
     // set timestamp strings
-    var h = d.getHours() + '';
-        h = (h.substring(0, p.length - h.length) + h);
+    var h = d.getHours()   + '';
+        h = h.length == 1 ? '0' + h : h;
     var m = d.getMinutes() + '';
-        m = (m.substring(0, p.length - m.length) + m);
+        m = m.length == 1 ? '0' + m : m;
     var s = d.getSeconds() + '';
-        s = (s.substring(0, p.length - s.length) + s);
+        s = s.length == 1 ? '0' + s : s;
 
     // set time
     var t = '[' + colors.grey(h + ':' + m + ':' + s) + ']';
