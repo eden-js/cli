@@ -77,7 +77,9 @@ class gulpBuilder {
             'config' : {
                 'files' : [
                     './bin/bundles/*/controller/**/*Controller.js',
-                    './app/bundles/*/controller/**/*Controller.js'
+                    './app/bundles/*/controller/**/*Controller.js',
+                    './bin/bundles/*/helper/**/*Helper.js',
+                    './app/bundles/*/helper/**/*Helper.js'
                 ],
             },
             'view'   : {
@@ -308,11 +310,14 @@ class gulpBuilder {
         // do within setTimeout to remove empty files
         return this.gulp.src (this._tasks.config.files)
             .pipe (through.obj (function (chunk, enc, cb) {
-                var pip = this;
+                var pipe = this;
                 configPipe.pipe (chunk).then (result => {
-                    pip.push ({
+                    // push to pipe
+                    pipe.push ({
                         'result' : result
                     });
+
+                    // run callback
                     cb (null, chunk);
                 });
             }))
