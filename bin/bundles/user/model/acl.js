@@ -24,6 +24,18 @@ class acl extends model {
         // set model location
         this._modelLocation = __filename.replace (global.appRoot, '');
     }
+
+    /**
+     * sanitises acl class
+     *
+     * @return {*}
+     */
+    sanitise () {
+        return {
+            'name'  : this.get ('name'),
+            'value' : this.get ('value')
+        };
+    }
 }
 
 /**
