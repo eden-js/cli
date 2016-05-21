@@ -6,19 +6,20 @@
 'use strict';
 
 // require dependencies
+var co           = require ('co');
 var os           = require ('os');
 var path         = require ('path');
 var http         = require ('http');
 var child        = require ('child_process');
-var debug        = require ('debug');
 var colors       = require ('colors');
-var express      = require ('express');
-var cookieParser = require ('cookie-parser');
-var bodyParser   = require ('body-parser');
-var mongorito    = require ('mongorito');
 var session      = require ('express-session');
-var RedisStore   = require ('connect-redis') (session);
+var express      = require ('express');
 var portastic    = require ('portastic');
+var mongorito    = require ('mongorito');
+var bodyParser   = require ('body-parser');
+var redisStore   = require ('connect-redis') (session);
+var prettyError  = require ('pretty-error');
+var cookieParser = require ('cookie-parser');
 
 // require local dependencies
 var view     = require (global.appRoot + '/bin/util/view');
@@ -35,11 +36,10 @@ class bootstrap {
      */
     constructor () {
         // bind variables
-        this.app      = false;
-        this.debugger = false;
-        this.port     = false;
-        this.server   = false;
-        this.router   = false;
+        this.app    = false;
+        this.port   = false;
+        this.server = false;
+        this.router = false;
 
         // bind private variables
         this._ctrl   = {};
@@ -50,11 +50,11 @@ class bootstrap {
         this.onListen = this.onListen.bind (this);
 
         // bind private methods
+        this._require = this._require.bind (this);
         this._getPort = this._getPort.bind (this);
 
         // bind registration methods
         this._register = [
-            '_registerDebugger',
             '_registerDatabase'
         ];
 
@@ -77,29 +77,25 @@ class bootstrap {
 
         // build app and server
         this._getPort ().then (() => {
+            // loop build to bind build methods
             for (var i = 0; i < this._build.length; i ++) {
+                // bind build method
                 this[this._build[i]] = this[this._build[i]].bind (this);
+                // execute build method
                 this[this._build[i]] ();
             }
 
             // server events
-            this.server.on ('error', this.onError);
+            this.server.on ('error',     this.onError);
             this.server.on ('listening', this.onListen);
         });
     }
 
-    /*
-     * REGISTER FUNCTIONS
-     */
-
-    /**
-     * registers server debugger
-     *
-     * @private
-     */
-    _registerDebugger () {
-        this.debugger = debug ('EdenFrame:server');
-    }
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    //  REGISTER FUNCTIONS
+    //
+    ////////////////////////////////////////////////////////////////////////////
 
     /**
      * registers mongodb database
@@ -110,47 +106,11 @@ class bootstrap {
         this.database = mongorito.connect (config.database[config.environment].host + '/' + config.database[config.environment].db);
     }
 
-    /*
-     * GET FUNCTIONS
-     */
-
-    /**
-     * registers port
-     *
-     * @private
-     */
-    _getPort () {
-        var that   = this;
-        var length = config.threads ? config.threads : os.cpus ().length;
-        var start  = parseInt ((process.env.PORT || config.port), 10);
-        var end    = start + (length - 1);
-
-        return new Promise ((resolve, reject) => {
-            // find port
-            portastic.find ({
-                'min' : start,
-                'max' : end
-            }).then (ports => {
-                // check if available port or exit
-                if (!ports.length) {
-                    process.exit();
-                }
-
-                // set port
-                that.port = ports[0];
-
-                // resolve
-                resolve (that.port);
-
-                // log
-                that._log ('using port ' + that.port, 'bootstrap');
-            });
-        });
-    }
-
-    /*
-     * BUILD FUNCTIONS
-     */
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    //  BUILD FUNCTIONS
+    //
+    ////////////////////////////////////////////////////////////////////////////
 
     /**
      * builds app
@@ -170,7 +130,7 @@ class bootstrap {
         this.app.use (cookieParser (config.session));
         this.app.use (express.static('www'));
         this.app.use (session ({
-            store             : new RedisStore (),
+            store             : new redisStore (),
             secret            : config.session,
             resave            : false,
             saveUninitialized : true,
@@ -199,7 +159,7 @@ class bootstrap {
         // set CORS on api
         this.app.all ('/api/*', (req, res, next) => {
             // set headers
-            res.header ('Access-Control-Allow-Origin', '*');
+            res.header ('Access-Control-Allow-Origin',  '*');
             res.header ('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 
             // go to next
@@ -213,7 +173,8 @@ class bootstrap {
      * @private
      */
     _buildLocals () {
-        this.app.locals.title = config.title;
+        // set locals
+        this.app.locals.title  = config.title;
     }
 
     /**
@@ -238,7 +199,7 @@ class bootstrap {
         // build view engine
         this.app.set ('views', global.appRoot + '/cache/view');
         this.app.set ('view engine', 'hbs');
-        this.app.engine ('hbs', new view().engine);
+        this.app.engine ('hbs', new view ().engine);
     }
 
     /**
@@ -259,31 +220,37 @@ class bootstrap {
         // sort priorities
         var priorities = Object.keys (routes).sort ();
 
-        // loop priorities
-        for (var i = 0; i < priorities.length; i ++) {
-            let types = routes[priorities[i]];
+        // run generator
+        co (function * () {
+            // loop priorities
+            for (var i = 0; i < priorities.length; i ++) {
+                // let types
+                let types = routes[priorities[i]];
 
-            for (var type in types) {
-                let routeType = types[type];
+                for (var type in types) {
+                    // let route type
+                    let routeType = types[type];
 
-                // loop for routes
-                for (var route in routeType) {
-                    // check if controller registered
-                    if (! that._ctrl[routeType[route].controller]) {
-                        // require controller
-                        var ctrl = require (global.appRoot + routeType[route].controller);
-                        // register controller
-                        that._ctrl[routeType[route].controller] = new ctrl (this.app);
+                    // loop for routes
+                    for (var route in routeType) {
+                        // check if controller registered
+                        if (! that._ctrl[routeType[route].controller]) {
+                            // require controller
+                            var ctrl = yield that._require (global.appRoot + routeType[route].controller);
+
+                            // register controller
+                            that._ctrl[routeType[route].controller] = new ctrl (that.app);
+                        }
+
+                        // assign route to controller function
+                        that.router[type] (route, that._ctrl[routeType[route].controller][routeType[route].action]);
                     }
-
-                    // assign route to controller function
-                    that.router[type] (route, that._ctrl[routeType[route].controller][routeType[route].action]);
                 }
             }
-        }
 
-        // set routes to app
-        this.app.use ('/', this.router);
+            // set routes to app
+            that.app.use ('/', that.router);
+        });
     }
 
     /**
@@ -293,15 +260,21 @@ class bootstrap {
      */
     _buildErrorHandler () {
         // 404 error handler
-        this.app.use (function (req, res, next) {
+        this.app.use ((req, res, next) => {
+            // create error
             var err    = new Error ('Not Found');
+            // set status
             err.status = 404;
+            // next route
             next (err);
         });
 
         // 500 error handler
-        this.app.use (function (err, req, res, next) {
+        this.app.use ((err, req, res, next) => {
+            // set status
             res.status (err.status || 500);
+
+            // render error page
             res.render ('error', {
                 message : err.message, error : {}
             });
@@ -312,24 +285,70 @@ class bootstrap {
      * builds daemons
      */
     _buildDaemons () {
-        for (var i = 0; i < daemons.length; i++) {
-            // log daemon
-            this._log ('requiring', daemons[i].split(path.sep)[daemons[i].split(path.sep).length - 1]);
+        // set that
+        var that = this;
 
-            // require daemon
-            let loadDaemon = require (global.appRoot + daemons[i]);
+        // run generator
+        co (function * () {
+            for (var i = 0; i < daemons.length; i++) {
+                // require daemon
+                var daemon = yield that._require (global.appRoot + daemons[i]);
 
-            // log daemon
-            this._log ('running', daemons[i].split(path.sep)[daemons[i].split(path.sep).length - 1]);
+                // run daemon
+                that._daemon[daemons[i]] = new daemon (that.app, that.server, that._ctrl);
 
-            // run daemon
-            this._daemon[daemons[i]] = new loadDaemon(this.app, this.server, this._ctrl);
-        }
+                // log daemon
+                that._log ('running', that._daemon[daemons[i]].constructor.name);
+            }
+        });
     }
 
-    /*
-     * EVENT FUNCTIONS
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    //  Getters and Setters
+    //
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * registers port
+     *
+     * @private
      */
+    _getPort () {
+        // set variables
+        var length = config.threads ? config.threads : os.cpus ().length;
+        var start  = parseInt ((process.env.PORT || config.port), 10);
+        var end    = start + (length - 1);
+
+        // return promise
+        return new Promise ((resolve, reject) => {
+            // find port
+            portastic.find ({
+                'min' : start,
+                'max' : end
+            }).then (ports => {
+                // check if available port or exit
+                if (!ports.length) {
+                    process.exit();
+                }
+
+                // set port
+                this.port = ports[0];
+
+                // log port
+                this._log ('using port ' + this.port, 'bootstrap');
+
+                // resolve
+                resolve (this.port);
+            });
+        });
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    //  Event Functions
+    //
+    ////////////////////////////////////////////////////////////////////////////
 
     /**
      * on error function
@@ -363,9 +382,47 @@ class bootstrap {
      * on listen function
      */
     onListen () {
+        // get server address
         var addr = this.server.address ();
+
+        // check if string
         var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-        this.debugger ('Listening on ' + bind);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    //  Misc Fucntions
+    //
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * require file
+     *
+     * @param  {String} file
+     *
+     * @private
+     * @return {Promise}
+     */
+    _require (file) {
+        // return Promise
+        return new Promise ((resolve, reject) => {
+            // try catch
+            try {
+                // try require
+                var req = require (file);
+
+                // resolve
+                resolve (req);
+            } catch (e) {
+                // log error
+                var pe = new prettyError ();
+                // log error
+                console.log (pe.render (e));
+
+                // exit process
+                process.exit ();
+            }
+        });
     }
 
     /**
