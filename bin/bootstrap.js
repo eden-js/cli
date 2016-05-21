@@ -234,7 +234,7 @@ class bootstrap {
                     // loop for routes
                     for (var route in routeType) {
                         // check if controller registered
-                        if (! that._ctrl[routeType[route].controller]) {
+                        if (!that._ctrl[routeType[route].controller]) {
                             // require controller
                             var ctrl = yield that._require (global.appRoot + routeType[route].controller);
 
@@ -250,6 +250,16 @@ class bootstrap {
 
             // set routes to app
             that.app.use ('/', that.router);
+
+            // use 404 handler
+            this.app.use ((req, res, next) => {
+                // create error
+                var err    = new Error ('Not Found');
+                // set status
+                err.status = 404;
+                // next route
+                next (err);
+            });
         });
     }
 
@@ -259,24 +269,21 @@ class bootstrap {
      * @private
      */
     _buildErrorHandler () {
-        // 404 error handler
-        this.app.use ((req, res, next) => {
-            // create error
-            var err    = new Error ('Not Found');
-            // set status
-            err.status = 404;
-            // next route
-            next (err);
-        });
 
         // 500 error handler
         this.app.use ((err, req, res, next) => {
             // set status
             res.status (err.status || 500);
 
+            // log error
+            var pe = new prettyError ();
+            // log error
+            console.log (pe.render (err));
+
             // render error page
             res.render ('error', {
-                message : err.message, error : {}
+                message : err.message,
+                error : {}
             });
         });
     }
