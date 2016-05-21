@@ -82,6 +82,16 @@ class socket {
     }
 
     /**
+     * emits to socket
+     *
+     * @param  {String} type
+     * @param  {*}      data
+     */
+    emit (type, data) {
+        this.socket.emit (type, data);
+    }
+
+    /**
      * default toast options
      *
      * @private
