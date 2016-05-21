@@ -6,6 +6,7 @@
 'use strict';
 
 // require dependencies
+var co           = require ('co');
 var redis        = require ('socket.io-redis');
 var session      = require ('express-session');
 var passport     = require ('passport.socketio');
@@ -17,6 +18,7 @@ var cookieParser = require ('cookie-parser');
 // require local dependencies
 var acl    = require (global.appRoot + '/bin/util/acl');
 var log    = require (global.appRoot + '/bin/util/log');
+var user   = require (global.appRoot + '/bin/bundles/user/model/user');
 var cache  = require (global.appRoot + '/cache/config.json');
 var config = require (global.appRoot + '/config');
 var daemon = require (global.appRoot + '/bin/bundles/core/daemon');
@@ -83,13 +85,7 @@ class socketDaemon extends daemon {
             cookieParser : cookieParser,
             secret       : config.session,
             store        : new redisStore (),
-            key          : 'eden.session.id',
-            success      : (data, accept) => {
-               accept (null, true);
-            },
-            fail         : (data, message, error, accept) => {
-               accept (null, true);
-            }
+            key          : 'eden.session.id'
         }));
 
         // listen for connection
@@ -138,7 +134,7 @@ class socketDaemon extends daemon {
          var that = this;
 
          // check for user
-         let User = socket.request.user && socket.request.user.attributes ? socket.request.user : false;
+         var User = socket.request.user || false;
 
          // set socketid
          let socketid = that.index;
@@ -196,21 +192,31 @@ class socketDaemon extends daemon {
 
          // create socket listener
          socket.on (route.type, data => {
-             // check if user can acl
-             acl.test (route.acl, User).then (can => {
-                 // check acl returned true
-                 if (can === true) {
-                     // check controller exists
-                     if (!that._ctrl[route.controller]) {
-                         // require controller
-                         var ctrl = require (global.appRoot + route.controller);
-                         // register controller
-                         that._ctrl[route.controller] = new ctrl (that.app);
-                     }
-
-                     // run function
-                     that._ctrl[route.controller][route.socket] (socket, data, User);
+             // run coroutine
+             co(function * () {
+                 // reload user
+                 if (User) {
+                     User = yield user.findById (User.get ('_id').toString ());
                  }
+
+                 // check if can
+                 var can = yield acl.test (route.acl, User);
+
+                 // return if cant
+                 if (!can) {
+                     return;
+                 }
+
+                 // check controller exists
+                 if (!that._ctrl[route.controller]) {
+                     // require controller
+                     var ctrl = require (global.appRoot + route.controller);
+                     // register controller
+                     that._ctrl[route.controller] = new ctrl (that.app);
+                 }
+
+                 // run function
+                 that._ctrl[route.controller][route.socket] (socket, data, User);
              });
          });
      }
