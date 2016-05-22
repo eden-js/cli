@@ -31,12 +31,14 @@ class edenFrame {
     _renderGrids () {
         // set default settings
         jQuery.extend (jQuery.fn.bootgrid.Constructor.defaults.css, {
-            icon        : 'icon fa',
-            iconColumns : 'fa-th-list',
-            iconDown    : 'fa-sort-desc',
-            iconRefresh : 'fa-refresh',
-            iconSearch  : 'fa-search',
-            iconUp      : 'fa-sort-asc'
+            icon             : 'icon fa',
+            iconColumns      : 'fa-th-list',
+            iconDown         : 'fa-sort-desc',
+            iconRefresh      : 'fa-refresh',
+            iconSearch       : 'fa-search',
+            iconUp           : 'fa-sort-asc',
+            pagination       : 'pagination pagination-sm',
+            paginationButton : 'page-link'
         });
 
         // render grids
