@@ -41,7 +41,7 @@ class gulpBuilder {
      */
     constructor () {
         // wait time
-        this.wait = (config.gulpDelay ? parseInt (config.gulpDelay) : 500);
+        this._wait = (config.gulpDelay ? parseInt (config.gulpDelay) : 500);
 
         // check cache exists
         if (!fs.existsSync ('./cache')) {
@@ -56,6 +56,9 @@ class gulpBuilder {
 
         // bind methods
         this._tasks = {
+            'wait'   : {
+                'skip' : true
+            },
             'tmp'    : {
                 'skip' : true
             },
@@ -92,6 +95,9 @@ class gulpBuilder {
                 'files' : [
                     './bin/bundles/*/view/tag/**/*.tag',
                     './app/bundles/*/view/tag/**/*.tag'
+                ],
+                'dependencies' : [
+                    'wait'
                 ],
                 'skip' : true
             },
@@ -175,6 +181,19 @@ class gulpBuilder {
         });
         // add default task
         this.gulp.task ('default', ['dev']);
+    }
+
+    /**
+     * waits for something before running next
+     *
+     * @return {Promise}
+     */
+    wait () {
+        // return promise
+        return new Promise ((resolve, reject) => {
+            // run at timeout
+            setTimeout (resolve, this._wait);
+        });
     }
 
     /**
