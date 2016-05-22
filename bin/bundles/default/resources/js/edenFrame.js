@@ -17,19 +17,35 @@ class edenFrame {
      */
     constructor () {
         // bind edenframe methods
-        this._renderFrontendRenderer = this._renderFrontendRenderer.bind (this);
+        this._renderGrids = this._renderGrids.bind (this);
 
-        // render frontend renderer
-        this._renderFrontendRenderer ();
+        // render grids
+        this._renderGrids ();
     }
 
     /**
-     * renders frontend renderer
+     * renders grids
      *
      * @private
      */
-    _renderFrontendRenderer () {
-        // riot.mount ('*');
+    _renderGrids () {
+        // set default settings
+        jQuery.extend (jQuery.fn.bootgrid.Constructor.defaults.css, {
+            icon        : 'icon fa',
+            iconColumns : 'fa-th-list',
+            iconDown    : 'fa-sort-desc',
+            iconRefresh : 'fa-refresh',
+            iconSearch  : 'fa-search',
+            iconUp      : 'fa-sort-asc'
+        });
+
+        // render grids
+        jQuery ('[data-grid]').each (function () {
+            jQuery (this).bootgrid ({
+                'ajax' : true,
+                'url'  : jQuery (this).attr ('data-grid')
+            });
+        });
     }
 }
 
