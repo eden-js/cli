@@ -13,10 +13,10 @@ var aclConfig  = require (global.appRoot + '/cache/config.json').acl;
 // require dependencies
 var co         = require ('co');
 var url        = require ('url');
-var test       = require ('acl');
 var local      = require ('passport-local').Strategy;
 var config     = require ('config');
 var crypto     = require ('crypto');
+var aclUtil    = require ('acl.util');
 var passport   = require ('passport');
 var controller = require ('controller');
 
@@ -129,7 +129,7 @@ class userController extends controller {
                     // loop acl for tests
                     for (var i = 0; i < aclConfig[rt].length; i ++) {
                         // check acl
-                        var check = yield test.test (aclConfig[rt][i], res.locals.user);
+                        var check = yield aclUtil.test (aclConfig[rt][i], res.locals.user);
 
                         // check if true
                         if (check !== true) {

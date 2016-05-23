@@ -115,8 +115,8 @@ class bootstrap {
      */
     _registerAliases () {
         // register util aliases
-        alias ('acl',     global.appRoot + '/bin/util/acl.js');
-        alias ('edenLog', global.appRoot + '/bin/util/log.js');
+        alias ('util.acl', global.appRoot + '/bin/util/acl.js');
+        alias ('util.log', global.appRoot + '/bin/util/log.js');
 
         // register core aliases
         alias ('config',     global.appRoot + '/config.js');

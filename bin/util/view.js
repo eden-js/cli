@@ -11,8 +11,8 @@ var path = require ('path');
 var co   = require ('co');
 
 // require local dependencies
-var config = require (global.appRoot + '/cache/config.json');
-var acl    = require (global.appRoot + '/bin/util/acl');
+var config  = require (global.appRoot + '/cache/config.json');
+var aclUtil = require ('acl.util');
 
 /**
  * construct view
@@ -86,7 +86,7 @@ class view {
                 }
 
                 // test acl
-                var test = yield acl.test (aclTest, user);
+                var test = yield utilAcl.test (aclTest, user);
 
                 // check test
                 if (test === true) {
@@ -247,7 +247,7 @@ class view {
         // run coroutine
         co(function * () {
             // test acl
-            var test = yield acl.test (test, that.user);
+            var test = yield aclUtil.test (test, that.user);
 
             // check if acl true
             if (test !== true) {
