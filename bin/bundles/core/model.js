@@ -16,11 +16,12 @@ class model extends mongorito.Model {
     /**
      * construct model entity
      *
-     * @param props
+     * @param {*} a
+     * @param {*} b
      */
-    constructor (attrs, options) {
+    constructor (a, b) {
         // run super
-        super (attrs, options);
+        super (a, b);
 
         // bind set/get methods
         this.getAttribute  = this.getAttribute.bind (this);

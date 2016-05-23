@@ -81,7 +81,7 @@ class socketDaemon extends daemon {
         }));
 
         // use passport auth
-        this.io.use(passport.authorize ({
+        this.io.use (passport.authorize ({
             cookieParser : cookieParser,
             secret       : config.session,
             store        : new redisStore (),

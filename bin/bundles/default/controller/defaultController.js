@@ -6,7 +6,7 @@
 'use strict';
 
 // require local dependencies
-var controller = require('controller');
+var controller = require ('controller');
 
 /**
  * build default controller
@@ -15,10 +15,11 @@ class defaultController extends controller {
     /**
      * construct default controller
      *
-     * @param props
+     * @param {*} a
+     * @param {*} b
      */
-    constructor(props) {
-        super(props);
+    constructor (a, b) {
+        super (a, b);
 
         // bind methods
         this.defaultAction = this.defaultAction.bind(this);
@@ -35,7 +36,8 @@ class defaultController extends controller {
      * @menu     {MAIN} Home
      * @priority 1
      */
-    defaultAction(req, res) {
+    defaultAction (req, res) {
+        // render home page
         res.render('home', {
             'route' : '/'
         });

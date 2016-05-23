@@ -14,10 +14,13 @@ var daemon = require ('daemon');
 class exampleDaemon extends daemon {
     /**
      * construct example daemon class
+     *
+     * @param {*} a
+     * @param {*} b
      */
-    constructor (app, server) {
+    constructor (a, b) {
         // run super
-        super (app, server);
+        super (a, b);
     }
 }
 

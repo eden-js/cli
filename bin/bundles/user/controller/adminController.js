@@ -6,9 +6,9 @@
 'use strict';
 
 // bind methods
-var controller = require(global.appRoot + '/bin/bundles/core/controller');
-var datagrid   = require(global.appRoot + '/bin/bundles/default/helper/datagrid');
-var user       = require(global.appRoot + '/bin/bundles/user/model/user');
+var user       = require (global.appRoot + '/bin/bundles/user/model/user');
+var datagrid   = require ('datagrid');
+var controller = require ('controller');
 
 /**
  * build user admin controller

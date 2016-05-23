@@ -12,13 +12,13 @@ class daemon {
     /**
      * construct daemon
      *
-     * @param  {express4} app    express app
-     * @param  {Server}   server express server
+     * @param  {express4} a  express app
+     * @param  {Server}   b  express server
      */
-    constructor (app, server) {
+    constructor (a, b) {
         // set variables
-        this.app    = app;
-        this.server = server;
+        this.app    = a;
+        this.server = b;
     }
 }
 

@@ -6,7 +6,7 @@
 'use strict';
 
 // require local dependencies
-var controller = require('controller');
+var controller = require ('controller');
 
 /**
  * build example controller
@@ -15,10 +15,11 @@ class exampleController extends controller {
     /**
      * construct props
      *
-     * @param props
+     * @param {*} a
+     * @param {*} b
      */
-    constructor(props) {
-        super(props);
+    constructor (a, b) {
+        super (a, b);
     }
 }
 

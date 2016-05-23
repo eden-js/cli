@@ -6,7 +6,7 @@
 'use strict';
 
 // bind methods
-var controller = require (global.appRoot + '/bin/bundles/core/controller');
+var controller = require ('controller');
 
 /**
  * build admin controller
@@ -18,11 +18,12 @@ class adminController extends controller {
     /**
      * construct admin controller
      *
-     * @param  {express4} app [description]
+     * @param  {*} a
+     * @param  {*} b
      */
-    constructor (app) {
+    constructor (a, b) {
         // run super
-        super (app);
+        super (a, b);
 
         // bind methods
         this.indexAction = this.indexAction.bind (this);
@@ -41,6 +42,7 @@ class adminController extends controller {
      * @priority 10
      */
     indexAction (req, res) {
+        // render admin home page
         res.render ('admin', {
             'layout' : 'admin.layout.hbs'
         });

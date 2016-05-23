@@ -7,11 +7,9 @@
 
 // require dependencies
 var redis   = require ('redis');
+var config  = require ('config');
 var helper  = require ('helper');
 var emitter = require ('socket.io-emitter');
-
-// require local dependencies
-var config = require (global.appRoot + '/config');
 
 // check if socket
 var io  = false;

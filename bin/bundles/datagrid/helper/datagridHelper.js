@@ -35,6 +35,7 @@ class datagridHelper extends helper {
      * @returns {Promise}
      */
     grid (req, model, row, filter, type) {
+        // return promise
         return new Promise ((resolve, reject) => {
             // set default variables
             var response = {
