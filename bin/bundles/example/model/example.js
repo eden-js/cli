@@ -6,7 +6,7 @@
 'use strict';
 
 // import local dependencies
-var model = require (global.appRoot + '/bin/bundles/core/model');
+var model = require ('model');
 
 /**
  * create user class

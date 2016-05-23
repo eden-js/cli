@@ -6,7 +6,7 @@
 'use strict';
 
 // require local dependencies
-var daemon = require (global.appRoot + '/bin/bundles/core/daemon');
+var daemon = require ('daemon');
 
 /**
  * build example dameon class

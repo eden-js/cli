@@ -2,23 +2,23 @@
  * Created by Awesome on 2/21/2016.
  */
 
-    // use strict
+// use strict
 'use strict';
 
 // require local dependencies
-var controller = require (global.appRoot + '/bin/bundles/core/controller');
-var user       = require (global.appRoot + '/bin/bundles/user/model/user');
 var acl        = require (global.appRoot + '/bin/bundles/user/model/acl');
+var user       = require (global.appRoot + '/bin/bundles/user/model/user');
 var aclConfig  = require (global.appRoot + '/cache/config.json').acl;
-var test       = require (global.appRoot + '/bin/util/acl');
-var config     = require (global.appRoot + '/config');
 
 // require dependencies
-var co       = require ('co');
-var url      = require ('url');
-var crypto   = require ('crypto');
-var passport = require ('passport');
-var local    = require ('passport-local').Strategy;
+var co         = require ('co');
+var url        = require ('url');
+var test       = require ('acl');
+var local      = require ('passport-local').Strategy;
+var config     = require ('config');
+var crypto     = require ('crypto');
+var passport   = require ('passport');
+var controller = require ('controller');
 
 /**
  * create user controller

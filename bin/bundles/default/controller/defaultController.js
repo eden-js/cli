@@ -6,7 +6,7 @@
 'use strict';
 
 // require local dependencies
-var controller = require(global.appRoot + '/bin/bundles/core/controller');
+var controller = require('controller');
 
 /**
  * build default controller

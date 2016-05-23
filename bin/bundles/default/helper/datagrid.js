@@ -6,16 +6,20 @@
 'use strict';
 
 // require dependencies
-var co = require ('co');
+var co     = require ('co');
+var helper = require ('helper');
 
 /**
  * build datagrid helper class
  */
-class datagrid {
+class datagridHelper extends helper {
     /**
      * construct datagrid helper
      */
-    constructor () {
+    constructor (a, b) {
+        // run super
+        super (a, b);
+        
         // bind methods
         this.grid = this.grid.bind (this);
     }
@@ -102,8 +106,8 @@ class datagrid {
 }
 
 /**
- * export datagrid class
+ * export datagrid helper class
  *
- * @type {datagrid}
+ * @type {datagridHelper}
  */
-module.exports = new datagrid ();
+module.exports = new datagridHelper ();

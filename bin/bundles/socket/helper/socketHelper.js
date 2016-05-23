@@ -7,6 +7,7 @@
 
 // require dependencies
 var redis   = require ('redis');
+var helper  = require ('helper');
 var emitter = require ('socket.io-emitter');
 
 // require local dependencies
@@ -27,11 +28,14 @@ if (config.socket) {
 /**
  * build socket helper class
  */
-class socketHelper {
+class socketHelper extends helper {
     /**
      * construct socket helper class
      */
-    constructor () {
+    constructor (a, b) {
+        // run super
+        super (a, b);
+
         // bind methods
         this.room  = this.room.bind (this);
         this.user  = this.user.bind (this);

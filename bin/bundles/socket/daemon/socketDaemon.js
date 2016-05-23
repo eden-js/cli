@@ -7,7 +7,11 @@
 
 // require dependencies
 var co           = require ('co');
+var acl          = require ('acl');
+var log          = require ('edenLog');
 var redis        = require ('socket.io-redis');
+var config       = require ('config');
+var daemon       = require ('daemon');
 var session      = require ('express-session');
 var passport     = require ('passport.socketio');
 var socketio     = require ('socket.io');
@@ -16,12 +20,8 @@ var redisLocal   = require ('redis');
 var cookieParser = require ('cookie-parser');
 
 // require local dependencies
-var acl    = require (global.appRoot + '/bin/util/acl');
-var log    = require (global.appRoot + '/bin/util/log');
 var user   = require (global.appRoot + '/bin/bundles/user/model/user');
 var cache  = require (global.appRoot + '/cache/config.json');
-var config = require (global.appRoot + '/config');
-var daemon = require (global.appRoot + '/bin/bundles/core/daemon');
 
 // conditionally create sub
 var sub = false;

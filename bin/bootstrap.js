@@ -115,8 +115,8 @@ class bootstrap {
      */
     _registerAliases () {
         // register util aliases
-        alias ('acl', global.appRoot + '/bin/util/acl.js');
-        alias ('log', global.appRoot + '/bin/util/log.js');
+        alias ('acl',     global.appRoot + '/bin/util/acl.js');
+        alias ('edenLog', global.appRoot + '/bin/util/log.js');
 
         // register core aliases
         alias ('config',     global.appRoot + '/config.js');
@@ -127,7 +127,7 @@ class bootstrap {
         alias ('model',      global.appRoot + '/bin/bundles/core/model.js');
 
         // register alt-core aliases
-        alias ('socketHelper', global.appRoot + '/bin/bundles/socket/helper/socket');
+        alias ('socket', global.appRoot + '/bin/bundles/socket/helper/socketHelper.js');
     }
 
     ////////////////////////////////////////////////////////////////////////////
