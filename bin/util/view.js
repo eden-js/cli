@@ -86,7 +86,7 @@ class view {
                 }
 
                 // test acl
-                var test = yield utilAcl.test (aclTest, user);
+                var test = yield aclUtil.test (aclTest, user);
 
                 // check test
                 if (test === true) {
@@ -240,7 +240,7 @@ class view {
      * @param test acl test
      * @private
      */
-    _acl(test, block, cb) {
+    _acl (test, block, cb) {
         // set that
         var that = this;
 
@@ -251,9 +251,9 @@ class view {
 
             // check if acl true
             if (test !== true) {
-                cb(block(this));
+                cb (block(this));
             } else {
-                cb(block.inverse(this));
+                cb (block.inverse(this));
             }
         });
     }
@@ -264,7 +264,7 @@ class view {
      * @param obj
      * @private
      */
-    _json(obj) {
+    _json (obj) {
         return JSON.stringify(obj);
     }
 
@@ -278,7 +278,7 @@ class view {
      * @private
      */
     _eq (obja, objb, assert) {
-        if (Object(assert) === assert) {
+        if (Object (assert) === assert) {
             assert = false;
         }
         if (obja === objb) {

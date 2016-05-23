@@ -1,12 +1,21 @@
 {
   "name": "EdenFrame",
-  "version": "0.0.0",
+  "version": "0.0.1-alpha",
+  "description": "Web Application Framework built on Express.js, Redis and Mongorito",
+  "main": "app.js",
   "license": "(MIT OR Apache-2.0)",
+  "author": "Alex Taylor",
+  "homepage": "https://edenjs.com/",
+  "readmeFilename": "README.md",
+  "main": "app.js",
   "scripts": {
     "start-dev": "gulp",
     "start": "node ./app.js"
   },
-  "main": "app.js",
+  "engines": {
+    "node": ">= 0.12.0",
+    "npm": ">= 3.0.0"
+  },
   "dependencies": {
     "alias-module": "^1.0.1",
     "babel-preset-es2015": "^6.3.13",
