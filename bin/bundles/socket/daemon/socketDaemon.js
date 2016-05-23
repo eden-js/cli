@@ -7,11 +7,11 @@
 
 // require dependencies
 var co           = require ('co');
-var acl          = require ('acl');
-var log          = require ('edenLog');
+var log          = require ('log-util');
 var redis        = require ('socket.io-redis');
 var config       = require ('config');
 var daemon       = require ('daemon');
+var aclUtil      = require ('acl-util');
 var session      = require ('express-session');
 var passport     = require ('passport.socketio');
 var socketio     = require ('socket.io');
@@ -200,7 +200,7 @@ class socketDaemon extends daemon {
                  }
 
                  // check if can
-                 var can = yield acl.test (route.acl, User);
+                 var can = yield aclUtil.test (route.acl, User);
 
                  // return if cant
                  if (!can) {

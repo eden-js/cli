@@ -6,13 +6,13 @@
 'use strict';
 
 // require dependencies
+var co   = require ('co');
 var hbs  = require ('express-hbs');
 var path = require ('path');
-var co   = require ('co');
 
 // require local dependencies
 var config  = require (global.appRoot + '/cache/config.json');
-var aclUtil = require ('acl.util');
+var aclUtil = require ('./acl');
 
 /**
  * construct view

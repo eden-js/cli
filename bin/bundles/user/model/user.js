@@ -7,13 +7,11 @@
 
 // require dependencies
 var co     = require ('co');
+var acl    = require ('acl');
 var model  = require ('model');
 var config = require ('config');
 var crypto = require ('crypto');
 var socket = require ('socket');
-
-// require local dependencies
-var acl = require (global.appRoot + '/bin/bundles/user/model/acl');
 
 /**
  * create user model

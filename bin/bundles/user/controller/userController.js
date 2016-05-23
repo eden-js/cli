@@ -6,8 +6,8 @@
 'use strict';
 
 // require local dependencies
-var acl        = require (global.appRoot + '/bin/bundles/user/model/acl');
-var user       = require (global.appRoot + '/bin/bundles/user/model/user');
+var acl        = require ('acl');
+var user       = require ('user');
 var aclConfig  = require (global.appRoot + '/cache/config.json').acl;
 
 // require dependencies
@@ -16,7 +16,7 @@ var url        = require ('url');
 var local      = require ('passport-local').Strategy;
 var config     = require ('config');
 var crypto     = require ('crypto');
-var aclUtil    = require ('acl.util');
+var aclUtil    = require ('acl-util');
 var passport   = require ('passport');
 var controller = require ('controller');
 
