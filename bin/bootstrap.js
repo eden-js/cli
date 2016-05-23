@@ -127,7 +127,8 @@ class bootstrap {
         alias ('model',      global.appRoot + '/bin/bundles/core/model.js');
 
         // register alt-core aliases
-        alias ('socket', global.appRoot + '/bin/bundles/socket/helper/socketHelper.js');
+        alias ('socket',   global.appRoot + '/bin/bundles/socket/helper/socketHelper.js');
+        alias ('datagrid', global.appRoot + '/bin/bundles/datagrid/helper/datagridHelper.js');
     }
 
     ////////////////////////////////////////////////////////////////////////////
