@@ -8,13 +8,10 @@
 // require dependencies
 var co = require ('co');
 
-// require local dependencies
-var model = require (global.appRoot + '/bin/bundles/user/model/acl');
-
 /**
  * build acl class
  */
-class acl {
+class aclUtil {
     /**
      * construct acl class
      */
@@ -143,8 +140,8 @@ class acl {
 }
 
 /**
- * export acl class
+ * export aclUtil class
  *
- * @type {acl}
+ * @type {aclUtil}
  */
-module.exports = new acl ();
+module.exports = new aclUtil ();
