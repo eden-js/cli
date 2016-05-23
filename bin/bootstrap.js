@@ -10,6 +10,7 @@ var co           = require ('co');
 var os           = require ('os');
 var path         = require ('path');
 var http         = require ('http');
+var alias        = require ('alias-module');
 var child        = require ('child_process');
 var colors       = require ('colors');
 var session      = require ('express-session');
@@ -55,7 +56,8 @@ class bootstrap {
 
         // bind registration methods
         this._register = [
-            '_registerDatabase'
+            '_registerDatabase',
+            '_registerAliases'
         ];
 
         // bind and run register methods
@@ -104,6 +106,28 @@ class bootstrap {
      */
     _registerDatabase () {
         this.database = mongorito.connect (config.database[config.environment].host + '/' + config.database[config.environment].db);
+    }
+
+    /**
+     * registers node module aliases
+     *
+     * @private
+     */
+    _registerAliases () {
+        // register util aliases
+        alias ('acl', global.appRoot + '/bin/util/acl.js');
+        alias ('log', global.appRoot + '/bin/util/log.js');
+
+        // register core aliases
+        alias ('config',     global.appRoot + '/config.js');
+        alias ('command',    global.appRoot + '/bin/bundles/core/command.js');
+        alias ('controller', global.appRoot + '/bin/bundles/core/controller.js');
+        alias ('daemon',     global.appRoot + '/bin/bundles/core/daemon.js');
+        alias ('helper',     global.appRoot + '/bin/bundles/core/helper.js');
+        alias ('model',      global.appRoot + '/bin/bundles/core/model.js');
+
+        // register alt-core aliases
+        alias ('socketHelper', global.appRoot + '/bin/bundles/socket/helper/socket');
     }
 
     ////////////////////////////////////////////////////////////////////////////
