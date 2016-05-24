@@ -116,43 +116,46 @@ class user extends model {
         // set that
         var that = this;
 
-        // run coroutine
-        co(function * () {
-            var arr  = [];
+        // return promise
+        return new Promise ((resolve, reject) => {
+            // run coroutine
+            co(function * () {
+                var arr  = [];
 
-            // check default acl
-            var def = yield acl.where ({
-                'name' : config.acl.default.name
-            }).findOne ();
-            // check default acl exists
-            if (!def) {
-                def = new acl (config.acl.default);
-                yield def.save ();
-            }
-            // set user acl
-            arr.push (def);
-
-            // check first
-            var count = yield user.count ();
-            if (!count) {
-                // check first acl
-                var adm = yield acl.where ({
-                    'name' : config.acl.first.name
+                // check default acl
+                var def = yield acl.where ({
+                    'name' : config.acl.default.name
                 }).findOne ();
-                // check first acl exists
-                if (!adm) {
-                    adm = new acl (config.acl.first);
-                    yield adm.save ();
+                // check default acl exists
+                if (!def) {
+                    def = new acl (config.acl.default);
+                    yield def.save ();
                 }
                 // set user acl
-                arr.push (adm);
-            }
+                arr.push (def);
 
-            // set acl
-            that.set ('acl', arr);
+                // check first
+                var count = yield user.count ();
+                if (!count) {
+                    // check first acl
+                    var adm = yield acl.where ({
+                        'name' : config.acl.first.name
+                    }).findOne ();
+                    // check first acl exists
+                    if (!adm) {
+                        adm = new acl (config.acl.first);
+                        yield adm.save ();
+                    }
+                    // set user acl
+                    arr.push (adm);
+                }
 
-            // run next
-            yield next;
+                // set acl
+                that.set ('acl', arr);
+
+                // run next
+                resolve (true);
+            });
         });
     }
 

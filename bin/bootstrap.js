@@ -268,6 +268,7 @@ class bootstrap {
                             var ctrl = yield that._require (global.appRoot + routeType[route].controller);
 
                             // register controller
+                            console.log (routeType[route].controller);
                             that._ctrl[routeType[route].controller] = new ctrl (that.app);
                         }
 

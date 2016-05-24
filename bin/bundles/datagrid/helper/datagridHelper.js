@@ -32,9 +32,11 @@ class datagridHelper extends helper {
      * @param row
      * @param filter
      * @param type
+     * @param extra
+     *
      * @returns {Promise}
      */
-    grid (req, model, row, filter, type) {
+    grid (req, model, row, filter, type, extra) {
         // return promise
         return new Promise ((resolve, reject) => {
             // set default variables
@@ -49,7 +51,7 @@ class datagridHelper extends helper {
                 response.rowCount = 10^10;
             }
             // set default where object
-            var where = {};
+            var where = extra || {};
             // set default order
             var order = {};
             // set default filter
@@ -63,7 +65,7 @@ class datagridHelper extends helper {
                 var i = 0;
 
                 // check for search phrase
-                if (req.body.searchPhrase && filter) {
+                if (req.body.searchPhrase || filter) {
                     where[type] = [];
                     for (i = 0; i < filter.length; i++) {
                         // create push object
