@@ -6,7 +6,7 @@
 'use strict';
 
 // bind methods
-var user       = require (global.appRoot + '/bin/bundles/user/model/user');
+var user       = require ('user');
 var datagrid   = require ('datagrid');
 var controller = require ('controller');
 
@@ -22,13 +22,13 @@ class adminController extends controller {
      *
      * @param props
      */
-    constructor(props) {
+    constructor (props) {
         // run super
-        super(props);
+        super (props);
 
         // bind methods
-        this.indexAction    = this.indexAction.bind(this);
-        this.userGridAction = this.userGridAction.bind(this);
+        this.indexAction    = this.indexAction.bind (this);
+        this.userGridAction = this.userGridAction.bind (this);
     }
 
     /**
@@ -40,11 +40,10 @@ class adminController extends controller {
      * @name     ADMIN_USERS
      * @route    {get} /
      * @menu     {ADMIN} Users
-     *
      * @priority 11
      */
-    indexAction(req, res) {
-        res.render('admin/user');
+    indexAction (req, res) {
+        res.render ('admin/user');
     }
 
     /**
@@ -55,14 +54,15 @@ class adminController extends controller {
      *
      * @route {post} /grid
      */
-    userGridAction(req, res) {
-        return datagrid.grid(req, user, (row) => {
+    userGridAction (req, res) {
+        // return datagrid
+        return datagrid.grid (req, user, (row) => {
             return {
-                'id'       : row.get('_id').toString(),
-                'username' : row.get('username')
+                'id'       : row.get ('_id').toString (),
+                'username' : row.get ('username')
             };
-        }, 'username').then(response => {
-            res.json(response);
+        }, 'username').then (response => {
+            res.json (response);
         });
     }
 }
