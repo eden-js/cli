@@ -53,7 +53,7 @@ class user extends model {
      * @param pass
      * @returns {Promise}
      */
-    authenticate(pass) {
+    authenticate (pass) {
         var that = this;
 
         // return promise
@@ -74,7 +74,7 @@ class user extends model {
             }
 
             // password accepted
-            resolve({
+            resolve ({
                 'error' : false
             });
         });
@@ -110,13 +110,13 @@ class user extends model {
     /**
      * check ACL
      *
-     * @param next
+     * @return {Promise}
      */
-    checkAcl (next) {
+    checkAcl () {
         // set that
         var that = this;
 
-        // return promise
+        // return new promise
         return new Promise ((resolve, reject) => {
             // run coroutine
             co(function * () {

@@ -5,6 +5,8 @@
 module.exports = {
     // title of the app
     title       : 'EdenFrame',
+    // domain for the app
+    domain      : 'domain.tld',
     // the port to run the app
     port        : '3007',
     // the environment to run the app in
@@ -14,18 +16,20 @@ module.exports = {
     // secret for session
     session     : 'SESSION',
     // set threads
-    threads     : 10,
+    threads     : 1,
     // default acl information
     acl         : {
-        // default acl per user
+        // default acl for every user
         'default' : {
             name  : 'user',
-            level : 0
+            value : [
+                'loggedIn'
+            ]
         },
-        // default acl for first user (admin account)
+        // default acl for first user (admin)
         'first'   : {
             name  : 'admin',
-            level : 100
+            value : true
         }
     },
     // database information (mongodb)
