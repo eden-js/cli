@@ -112,11 +112,13 @@ class socketDaemon extends daemon {
             }
 
             // loop all user socket connections
-            for (var i = 0; i < that.users[data.to].length; i++) {
-                // check socket exists
-                if (that.sockets[that.users[data.to][i]]) {
-                    // emit to socket
-                    that.sockets[that.users[data.to][i]].emit (data.type, data.data);
+            if (that.users[data.to]) {
+                for (var i = 0; i < that.users[data.to].length; i++) {
+                    // check socket exists
+                    if (that.sockets[that.users[data.to][i]]) {
+                        // emit to socket
+                        that.sockets[that.users[data.to][i]].emit (data.type, data.data);
+                    }
                 }
             }
         });
@@ -193,7 +195,7 @@ class socketDaemon extends daemon {
          // create socket listener
          socket.on (route.type, data => {
              // run coroutine
-             co(function * () {
+             co (function * () {
                  // reload user
                  if (User) {
                      User = yield user.findById (User.get ('_id').toString ());
