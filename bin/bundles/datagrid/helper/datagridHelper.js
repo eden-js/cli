@@ -98,7 +98,7 @@ class datagridHelper extends helper {
 
                 // loop results
                 for (i = 0; i < results.length; i++) {
-                    response.rows.push (row (results[i]));
+                    response.rows.push (yield row (results[i]));
                 }
 
                 // send response
