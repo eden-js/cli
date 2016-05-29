@@ -25,8 +25,10 @@ var cache  = require (global.appRoot + '/cache/config.json');
 
 // conditionally create sub
 var sub = false;
+var pub = false;
 if (config.socket) {
     sub = redisLocal.createClient ();
+    pub = redisLocal.createClient ();
 }
 
 /**
@@ -55,6 +57,10 @@ class socketDaemon extends daemon {
         // bind methods
         this.build  = this.build.bind (this);
         this.socket = this.socket.bind (this);
+
+        // bind private methods
+        this._connections    = this._connections.bind (this);
+        this._createListener = this._createListener.bind (this);
 
         // check if socket enabled;
         if (!config.socket) {
@@ -135,6 +141,9 @@ class socketDaemon extends daemon {
          // set that
          var that = this;
 
+         // publish connections
+         this._connections ();
+
          // check for user
          var User = socket.request.user || false;
 
@@ -162,6 +171,9 @@ class socketDaemon extends daemon {
          socket.on ('disconnect', () => {
              // log disconnected
              log ('client ' + socketid + ' disconnected');
+
+             // publish connections
+             that._connections ();
 
              // remove socket id from user
              if (User) {
@@ -221,6 +233,19 @@ class socketDaemon extends daemon {
                  that._ctrl[route.controller][route.socket] (socket, data, User);
              });
          });
+     }
+
+     /**
+      * publishes socket connection count
+      *
+      * @private
+      */
+     _connections () {
+         // check if pub
+         if (pub) {
+             // emit to socket
+             pub.publish (config.domain + ':socket-connections', this.sockets.sockets.length);
+         }
      }
 }
 
