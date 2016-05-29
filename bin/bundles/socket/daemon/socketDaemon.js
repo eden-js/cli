@@ -244,7 +244,7 @@ class socketDaemon extends daemon {
          // check if pub
          if (pub) {
              // emit to socket
-             pub.publish (config.domain + ':socket-connections', this.sockets.sockets.length);
+             pub.publish (config.domain + ':socket-connections', Object.keys (this.io.sockets.sockets).length + '');
          }
      }
 }
