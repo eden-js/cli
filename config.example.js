@@ -84,10 +84,10 @@ config.js = [
  */
 
 // secret for crypto
-config.secret = 'x:.+o85I6d6b1N1wrU.2*~I1299Hg23Hf^H1pRX5t!UAqR.T5S';
+config.secret = 'SECRET';
 
 // secret for session
-config.session = 'x:.+o85I6d6b1N1wrU.2*~I1299Hg23Hf^H1pRX5t!UAqR.T5S';
+config.session = config.secret;
 
 
 /**
