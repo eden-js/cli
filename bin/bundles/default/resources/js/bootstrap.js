@@ -3,4 +3,4 @@
  */
 
 // require local dependencies
-var tags = require ('../../../../../cache/tag/tags.min.js');
+var tags = require ('cache/tags.min.js');

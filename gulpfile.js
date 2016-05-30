@@ -85,16 +85,10 @@ class gulpBuilder {
                     './app/bundles/*/helper/**/*Helper.js'
                 ],
             },
-            'view'   : {
-                'files' : [
-                    './bin/bundles/*/view/**/*.hbs',
-                    './app/bundles/*/view/**/*.hbs'
-                ],
-            },
             'tag'    : {
                 'files' : [
-                    './bin/bundles/*/view/tag/**/*.tag',
-                    './app/bundles/*/view/tag/**/*.tag'
+                    './bin/bundles/*/tag/**/*.tag',
+                    './app/bundles/*/tag/**/*.tag'
                 ],
                 'dependencies' : [
                     'wait'
@@ -351,37 +345,6 @@ class gulpBuilder {
     }
 
     /**
-     * view task
-     */
-    view () {
-        // set that
-        var that = this;
-
-        // ensure running only once
-        if (this._viewRunning) {
-            return;
-        }
-        this._viewRunning = true;
-
-        // move views into single folder
-        // do within setTimeout to remove empty files
-        // @todo bundle priority
-        return this.gulp.src (this._tasks.view.files)
-            .pipe (rename ((filePath) => {
-                var amended = filePath.dirname.split (path.sep);
-                amended.shift ();
-                amended.shift ();
-                filePath.dirname = amended.join (path.sep);
-            }))
-            .pipe (chmod (755))
-            .pipe (this.gulp.dest ('cache/view'))
-            .on('end', () => {
-                // reset view running
-                that._viewRunning = false;
-            });
-    }
-
-    /**
      * tag task
      */
     tag () {
@@ -407,7 +370,7 @@ class gulpBuilder {
             }))
             .pipe (concat ('tags.min.js'))
             .pipe (header (riotHeader))
-            .pipe (this.gulp.dest ('./cache/tag'))
+            .pipe (this.gulp.dest ('./cache'))
             .on ('end', () => {
                 // reset running flag
                 that._tagRunning = false;
@@ -429,8 +392,8 @@ class gulpBuilder {
 
         // create javascript array
         var js = [];
-        js     = js.concat (glob.sync ('./bin/bundles/*/resources/js/bootstrap.js'));
-        js     = js.concat (glob.sync ('./app/bundles/*/resources/js/bootstrap.js'));
+        js = js.concat (glob.sync ('./bin/bundles/*/resources/js/bootstrap.js'));
+        js = js.concat (glob.sync ('./app/bundles/*/resources/js/bootstrap.js'));
 
         // build vendor prepend
         var vendor = '';
@@ -443,7 +406,13 @@ class gulpBuilder {
         // browserfiy javascript
         // do within setTimeout to remove empty files
         return browserify ({
-            entries : js
+            entries : js,
+            paths   : [
+                './',
+                './app/bundles',
+                './bin/bundles',
+                './node_modules'
+            ]
         })
             .transform (babelify)
             .bundle ()

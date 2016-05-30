@@ -195,6 +195,16 @@ class socketDaemon extends daemon {
      }
 
      /**
+      * route function for CSR
+      *
+      * @param  {socket} socket
+      * @param  {user}   User
+      */
+     _route (socket, User) {
+
+     }
+
+     /**
       * creates route listener
       *
       * @param  {Object} route
