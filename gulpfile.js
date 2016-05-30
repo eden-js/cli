@@ -164,10 +164,7 @@ class gulpBuilder {
             nodemon ({
                 'script' : './app.js',
                 'ext'    : 'js json',
-                'ignore' : [
-                    'tags.min.js'
-                ],
-                'delay'  : this.wait,
+                'delay'  : this._wait,
                 'watch'  : [
                     'cache/'
                 ],
@@ -397,13 +394,19 @@ class gulpBuilder {
         }
         this._tagRunning = true;
 
+        // create header
+        var riotHeader = '';
+        for (var i = 0; i < config.view.include.length; i++) {
+            riotHeader += 'var ' + config.view.include[i] + ' = require ("' + config.view.include[i] + '");';
+        }
+
         // move tags into javascript compiled file (riotjs)
         return this.gulp.src (this._tasks.tag.files)
             .pipe (riot ({
                 compact : true
             }))
             .pipe (concat ('tags.min.js'))
-            .pipe (header ('var riot = require(\'riot\');'))
+            .pipe (header (riotHeader))
             .pipe (this.gulp.dest ('./cache/tag'))
             .on ('end', () => {
                 // reset running flag
