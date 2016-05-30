@@ -278,8 +278,15 @@ class bootstrap {
                 }
             }
 
+            // set render as json on riot
+            this.app.use ('riot/*', (req, res, next) => {
+                // send riot to render
+                req.locals.riot = true;
+            });
+
             // set routes to app
             that.app.use ('/', that.router);
+            that.app.use ('/riot/', that.router);
 
             // use 404 handler
             this.app.use ((req, res, next) => {
