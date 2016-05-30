@@ -179,7 +179,7 @@ class bootstrap {
             res.locals.eden  = {
                 'domain' : config.domain
             };
-            res.locals.route = req.originalUrl;
+            res.locals.route = req.originalUrl.replace ('riot/', '');
 
             // go to next
             next ();
@@ -282,6 +282,30 @@ class bootstrap {
             this.app.use ('riot/*', (req, res, next) => {
                 // send riot to render
                 req.locals.riot = true;
+
+                // take over render function
+                res.render = (view, data) => {
+                    // shallow set locals
+                    for (var key in req.locals) {
+                        data[key] = req.locals[key];
+                    }
+
+                    // send json
+                    res.json ({
+                        'view' : view,
+                        'data' : data
+                    });
+                };
+
+                // take over redirect function
+                res.redirect = (url) => {
+                    res.json ({
+                        'redirect' : url
+                    });
+                };
+
+                // run next
+                next ();
             });
 
             // set routes to app
