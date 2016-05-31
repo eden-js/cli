@@ -117,7 +117,13 @@ class view {
 
         // sort by priority
         arr.sort (function (a, b) {
-            return (a.priority || 10) > (b.priority || 10);
+            if ((a.priority ? a.priority : 10) > (b.priority ? b.priority : 10)) {
+                return 1;
+            } else if ((a.priority ? a.priority : 10) < (b.priority ? b.priority : 10)) {
+                return -1;
+            } else {
+                return 0;
+            }
         });
 
         // return array
@@ -168,6 +174,7 @@ class view {
         co (function * () {
             // set variables
             var menu = view.sortMenu (menus[name]);
+            console.log (menu);
             // open list element
             var rtn = '<ul class="' + (className || 'nav navbar-nav') + '">';
 
