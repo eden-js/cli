@@ -33,8 +33,20 @@ class engine {
         // require riot tag
         options.mountPage = filePath.split ('/')[filePath.split ('/').length - 1].trim ().replace ('.tag', '') + '-page';
 
+        // render page
+        var page  = '<!DOCTYPE html>';
+            page += '<head>';
+            page += '<meta charset="utf-8">';
+            page += '<title>' + options.title + '</title>';
+            page += '<link rel="stylesheet" href="/assets/css/app.min.css">';
+            page += '</head>';
+            page += '<body>';
+            page += riot.render ((options.layout ? options.layout : 'main') + '-layout', options);
+            page += '<script type="text/javascript" href="/assets/js/app.min.js"></script>';
+            page += '</body>';
+
         // return render callback
-        return callback (null, riot.render ((options.layout ? options.layout : 'main') + '-layout', options));
+        return callback (null, page);
     }
 }
 
