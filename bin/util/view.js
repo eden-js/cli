@@ -174,7 +174,6 @@ class view {
         co (function * () {
             // set variables
             var menu = view.sortMenu (menus[name]);
-            console.log (menu);
             // open list element
             var rtn = '<ul class="' + (className || 'nav navbar-nav') + '">';
 
