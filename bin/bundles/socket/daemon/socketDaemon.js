@@ -60,7 +60,6 @@ class socketDaemon extends daemon {
 
         // bind private methods
         this._route       = this._route.bind (this);
-        this._socket      = this._socket.bind (this);
         this._connections = this._connections.bind (this);
 
         // check if socket enabled;
@@ -190,7 +189,7 @@ class socketDaemon extends daemon {
          // create functions for cached config
          for (var type in cache.sockets) {
              // create listener
-             this._socket (cache.sockets[type], socket, User);
+             this._route (cache.sockets[type], socket, User);
          }
      }
 
@@ -201,7 +200,7 @@ class socketDaemon extends daemon {
       * @param  {socket} socket
       * @param  {user}   User
       */
-     _socket (route, socket, User) {
+     _route (route, socket, User) {
          // set that
          var that = this;
 
