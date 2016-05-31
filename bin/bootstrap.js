@@ -180,7 +180,7 @@ class bootstrap {
             res.locals.eden  = {
                 'domain' : config.domain
             };
-            res.locals.route = req.originalUrl.replace ('riot/', '');
+            res.locals.route = req.originalUrl.replace ('ajx/', '');
 
             // go to next
             next ();
@@ -191,6 +191,15 @@ class bootstrap {
             // set headers
             res.header ('Access-Control-Allow-Origin',  '*');
             res.header ('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+
+            // go to next
+            next ();
+        });
+
+        // set CORS on api
+        this.app.all ('/ajx/*', (req, res, next) => {
+            // set response to json
+            res.locals.isJSON = true;
 
             // go to next
             next ();
@@ -280,6 +289,7 @@ class bootstrap {
 
             // set routes to app
             that.app.use ('/', that.router);
+            that.app.use ('/ajx', that.router);
 
             // use 404 handler
             this.app.use ((req, res, next) => {

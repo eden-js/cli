@@ -8,7 +8,7 @@
                 <a class="nav-link" href="#" onclick={ onHome }>Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">About</a>
+                <a class="nav-link" href="/login">Login</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">Contact</a>

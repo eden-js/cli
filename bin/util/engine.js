@@ -39,6 +39,17 @@ class engine {
         delete options._locals;
         delete options.settings;
 
+        // check if should json
+        if (options.isJSON) {
+            // delete isJSON
+            delete options.isJSON;
+
+            // return callback
+            return callback (null, JSON.stringify ({
+                'opts' : options
+            }));
+        }
+
         // render page
         var page  = '<!DOCTYPE html>';
             page += '<html>';
