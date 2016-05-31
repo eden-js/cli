@@ -31,6 +31,7 @@ class engine {
      * @return {*}
      */
     render (filePath, options, callback) {
+        console.log ('working');
         // require riot tag
         options.mountPage = filePath.split ('/')[filePath.split ('/').length - 1].trim ().replace ('.tag', '') + '-page';
 
@@ -50,6 +51,9 @@ class engine {
             }));
         }
 
+        // set server option
+        options.server = true;
+
         // render page
         var page  = '<!DOCTYPE html>';
             page += '<html>';
@@ -61,10 +65,16 @@ class engine {
             page += '<body>';
             page += riot.render ((options.layout ? options.layout : 'main') + '-layout', options);
             page += '<script>var eden = ' + JSON.stringify (options.eden) + ';</script>';
+
+            // delete server
+            delete options.server;
+
             page += '<script>var opts = ' + JSON.stringify (options) + ';</script>';
             page += '<script type="text/javascript" src="/assets/js/app.min.js"></script>';
             page += '</body>';
             page += '</html>';
+
+            console.log (page);
 
         // return render callback
         return callback (null, page);
