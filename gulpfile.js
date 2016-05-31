@@ -87,8 +87,8 @@ class gulpBuilder {
             },
             'tag'    : {
                 'files' : [
-                    './bin/bundles/*/tag/**/*.tag',
-                    './app/bundles/*/tag/**/*.tag'
+                    './bin/bundles/*/view/**/*.tag',
+                    './app/bundles/*/view/**/*.tag'
                 ],
                 'dependencies' : [
                     'wait'
@@ -359,22 +359,39 @@ class gulpBuilder {
 
         // create header
         var riotHeader = '';
-        for (var i = 0; i < config.view.include.length; i++) {
-            riotHeader += 'var ' + config.view.include[i] + ' = require ("' + config.view.include[i] + '");';
+        for (var key in config.view.include) {
+            riotHeader += 'var ' + key + ' = require ("' + config.view.include[key] + '");';
         }
 
-        // move tags into javascript compiled file (riotjs)
-        return this.gulp.src (this._tasks.tag.files)
-            .pipe (riot ({
-                compact : true
-            }))
-            .pipe (concat ('tags.min.js'))
-            .pipe (header (riotHeader))
-            .pipe (this.gulp.dest ('./cache'))
-            .on ('end', () => {
-                // reset running flag
-                that._tagRunning = false;
-            });
+        // return promise
+        return new Promise ((resolve, reject) => {
+            // move views into single folder
+            this.gulp.src (this._tasks.tag.files)
+                .pipe (rename ((filePath) => {
+                    var amended = filePath.dirname.split (path.sep);
+                    amended.shift ();
+                    amended.shift ();
+                    filePath.dirname = amended.join (path.sep);
+                }))
+                .pipe (chmod (755))
+                .pipe (this.gulp.dest ('cache/view'))
+                .on ('end', () => {
+                    this.gulp.src (this._tasks.tag.files)
+                        .pipe (riot ({
+                            compact : true
+                        }))
+                        .pipe (concat ('tags.min.js'))
+                        .pipe (header (riotHeader))
+                        .pipe (this.gulp.dest ('./cache'))
+                        .on ('end', () => {
+                            // reset running flag
+                            that._tagRunning = false;
+
+                            // resolve
+                            return resolve (true);
+                        });
+                });
+        });
     }
 
     /**
