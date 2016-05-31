@@ -5,7 +5,7 @@
         </a>
         <ul class="nav navbar-nav">
             <li class="nav-item active">
-                <a class="nav-link" href="#">Home</a>
+                <a class="nav-link" href="#" onclick={ onHome }>Home</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">About</a>
@@ -18,33 +18,28 @@
     <div class="container" name="page"></div>
 
     /**
-     * mount page function
-
-     * @param  {String} page
+     * on home function
      */
-    mountPage (page) {
-      riot.mount(this.page, page, opts);
+    onHome () {
+        alert ('working');
     }
 
     /**
-     * on update function
-     *
-     * @param  {String} 'update'
+     * mount page function
      */
-    this.on ('update', () => {
+    mountPage () {
         if (opts.mountPage) {
-            this.mountPage (opts.mountPage);
+            riot.mount (this.page, opts.mountPage, opts);
         }
-    });
+    }
 
     /**
      * on mount function
      *
      * @param  {String} 'mount'
      */
-    this.on ('mount', () => {
-        if (opts.mountPage) {
-            this.mountPage (opts.mountPage);
-        }
+    this.on ('update mount', () => {
+        // mount page on update/mount
+        this.mountPage ();
     });
 </main-layout>

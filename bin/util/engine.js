@@ -20,6 +20,7 @@ class engine {
             require (tagFiles[i]);
         }
     }
+
     /**
      * render riot tag locally
      *
@@ -33,6 +34,11 @@ class engine {
         // require riot tag
         options.mountPage = filePath.split ('/')[filePath.split ('/').length - 1].trim ().replace ('.tag', '') + '-page';
 
+        // delete frontend options
+        delete options.cache;
+        delete options._locals;
+        delete options.settings;
+
         // render page
         var page  = '<!DOCTYPE html>';
             page += '<html>';
@@ -43,7 +49,9 @@ class engine {
             page += '</head>';
             page += '<body>';
             page += riot.render ((options.layout ? options.layout : 'main') + '-layout', options);
-            page += '<script type="text/javascript" href="/assets/js/app.min.js"></script>';
+            page += '<script>var eden = ' + JSON.stringify (options.eden) + ';</script>';
+            page += '<script>var opts = ' + JSON.stringify (options) + ';</script>';
+            page += '<script type="text/javascript" src="/assets/js/app.min.js"></script>';
             page += '</body>';
             page += '</html>';
 
