@@ -25,6 +25,7 @@ var cookieParser = require ('cookie-parser');
 // require local dependencies
 var view     = require (global.appRoot + '/bin/util/view');
 var config   = require (global.appRoot + '/config');
+var engine   = require (global.appRoot + '/bin/util/engine');
 var compiled = require (global.appRoot + '/cache/config.json');
 var daemons  = require (global.appRoot + '/cache/daemons.json');
 
@@ -157,7 +158,7 @@ class bootstrap {
         this.app.use (bodyParser.json ());
         this.app.use (bodyParser.urlencoded ({extended : true}));
         this.app.use (cookieParser (config.session));
-        this.app.use (express.static('www'));
+        this.app.use (express.static ('www'));
         this.app.use (session ({
             store             : new redisStore (),
             secret            : config.session,
@@ -227,8 +228,8 @@ class bootstrap {
     _buildView () {
         // build view engine
         this.app.set ('views', global.appRoot + '/cache/view');
-        this.app.set ('view engine', 'hbs');
-        this.app.engine ('hbs', new view ().engine);
+        this.app.set ('view engine', 'tag');
+        this.app.engine ('tag', new engine ().render);
     }
 
     /**
