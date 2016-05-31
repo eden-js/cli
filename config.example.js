@@ -118,12 +118,12 @@ config.acl = {
 // create view object
 config.view = {
     // modules will be required at the top of riots tags.min.js
-    'include' : [
+    'include' : {
         // include riot module
-        'riot',
+        'riot'   : 'riot',
         // include socket module
-        'socket'
-    ]
+        'socket' : 'socket/resources/js/socket'
+    }
 };
 
 /**
