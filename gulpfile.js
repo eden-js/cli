@@ -434,8 +434,8 @@ class gulpBuilder {
             .transform (babelify)
             .bundle ()
             .pipe (source ('app.min.js'))
-            .pipe (streamify (uglify ()))
             .pipe (streamify (header (vendor)))
+            .pipe (streamify (uglify ()))
             .pipe (this.gulp.dest ('./www/assets/js'))
             .on ('end', () => {
                 // reset running flag
