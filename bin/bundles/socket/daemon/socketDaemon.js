@@ -59,7 +59,6 @@ class socketDaemon extends daemon {
         this.socket = this.socket.bind (this);
 
         // bind private methods
-        this._route       = this._route.bind (this);
         this._socket      = this._socket.bind (this);
         this._connections = this._connections.bind (this);
 
@@ -192,16 +191,6 @@ class socketDaemon extends daemon {
              // create listener
              this._socket (cache.sockets[type], socket, User);
          }
-     }
-
-     /**
-      * route function for CSR
-      *
-      * @param  {socket} socket
-      * @param  {user}   User
-      */
-     _route (socket, User) {
-
      }
 
      /**
