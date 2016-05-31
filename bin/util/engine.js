@@ -35,6 +35,7 @@ class engine {
 
         // render page
         var page  = '<!DOCTYPE html>';
+            page += '<html>';
             page += '<head>';
             page += '<meta charset="utf-8">';
             page += '<title>' + options.title + '</title>';
@@ -44,6 +45,7 @@ class engine {
             page += riot.render ((options.layout ? options.layout : 'main') + '-layout', options);
             page += '<script type="text/javascript" href="/assets/js/app.min.js"></script>';
             page += '</body>';
+            page += '</html>';
 
         // return render callback
         return callback (null, page);
