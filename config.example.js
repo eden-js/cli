@@ -122,7 +122,7 @@ config.view = {
         // include riot module
         'riot'   : 'riot',
         // include socket module
-        'socket' : 'socket/resources/js/socket'
+        'socket' : 'socket/resources/js/bootstrap'
     }
 };
 
