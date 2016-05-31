@@ -59,11 +59,11 @@ class bootstrap {
 
             // get json from a link
             $.getJSON ('/ajx' + a.attr ('href'), (data) => {
-                console.log (data);
                 // set window opts
                 window.opts = data.opts;
-
-                console.log (data.opts);
+                
+                // mount riot tags
+                this._mount = riot.mount ('*', window.opts);
             });
         });
     }
