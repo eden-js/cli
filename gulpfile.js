@@ -215,22 +215,22 @@ class gulpBuilder {
         // loop config sass files
         if (config.sass && config.sass.length) {
             for (var i = 0; i < config.sass.length; i ++) {
-                sassFiles.push(config.sass[i]);
+                sassFiles.push (config.sass[i]);
             }
         }
 
         // push local bootstrap files
-        sassFiles.push('./bin/bundles/*/resources/scss/bootstrap.scss');
-        sassFiles.push('./app/bundles/*/resources/scss/bootstrap.scss');
+        sassFiles.push ('./bin/bundles/*/resources/scss/bootstrap.scss');
+        sassFiles.push ('./app/bundles/*/resources/scss/bootstrap.scss');
 
         // run gulp
         return this.gulp.src (sassFiles)
             .pipe (through.obj (function (chunk, enc, cb) {
                 // run through callback
-                var type = chunk.path.split('.');
+                var type = chunk.path.split ('.');
                     type = type[type.length - 1];
                 if (type == 'css') {
-                    var prepend = fs.readFileSync(chunk.path, 'utf8');
+                    var prepend = fs.readFileSync (chunk.path, 'utf8');
                     this.push ({
                         'all' : prepend + os.EOL
                     });
