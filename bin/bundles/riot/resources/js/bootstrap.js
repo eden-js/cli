@@ -21,6 +21,7 @@ class bootstrap {
         // set mount
         this._bar   = false;
         this._mount = false;
+        this._state = window.opts;
 
         // bind methods
         this.initialize = this.initialize.bind (this);
@@ -65,16 +66,22 @@ class bootstrap {
 
             // get json from a link
             $.getJSON ('/ajx' + a.attr ('href'), (data) => {
-                // set window opts
-                window.opts = data.opts;
-
                 // mount riot tags
                 that._mount.setOpts (data.opts, true);
 
                 // set progress go
                 that._bar.go (100);
+                
+                // push state
+                window.history.pushState (data, data.opts.route, data.opts.route);
             });
         });
+        
+        // on pop state
+        window.onpopstate = function (e) {
+            // mount riot tags
+            that._mount.setOpts (e.state ? e.state.opts : that._state, true);
+        };
     }
 }
 
