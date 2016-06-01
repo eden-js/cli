@@ -40,7 +40,7 @@ class bootstrap {
     initialize () {
         // mount riot tags
         this._bar   = new bar ();
-        this._mount = riot.mount ('*', window.edenState)[0];
+        this._mount = riot.mount (document.querySelector ('body').children[0], window.edenState)[0];
     }
 
     /**
