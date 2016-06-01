@@ -177,10 +177,8 @@ class bootstrap {
             res.header ('X-Powered-By', 'EdenFrame');
 
             // set variables
-            res.locals.eden  = {
-                'domain' : config.domain
-            };
-            res.locals.route = req.originalUrl.replace ('ajx/', '');
+            res.locals.route  = req.originalUrl.replace ('ajx/', '');
+            res.locals.domain = config.domain;
 
             // go to next
             next ();

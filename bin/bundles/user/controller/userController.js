@@ -98,20 +98,25 @@ class userController extends controller {
 
         // add user to locals
         app.use ((req, res, next) => {
+            // run coroutine
             co (function * () {
                 // get acls
                 var aclArr = [];
                 var acls   = [];
+                
+                // check for req user
                 if (req.user) {
                     acls = yield req.user.model ('acl');
                 }
+                
+                // loop acls for acl array
                 for (var i = 0; i < acls.length; i++) {
                     aclArr.push (acls[i].sanitise ());
                 }
+                
                 // set user locally
-                res.locals.user      = req.user;
-                res.locals.eden.user = req.user ? req.user.sanitise () : false;
-                res.locals.eden.acl  = aclArr;
+                res.locals.acl  = aclArr;
+                res.locals.user = req.user ? req.user.sanitise () : false;
 
                 // run next
                 next ();
