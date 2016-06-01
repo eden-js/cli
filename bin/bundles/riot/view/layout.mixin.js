@@ -7,7 +7,7 @@ if (!riot) {
 riot.mixin ('layout', {
     init: function () {
         // on update/mount events
-        this.on ('update mount', () => {
+        this.on ('update', () => {
             // mount page on load
             if (this.opts.mountPage) riot.mount (this.page, this.opts.mountPage, this.opts);
         });

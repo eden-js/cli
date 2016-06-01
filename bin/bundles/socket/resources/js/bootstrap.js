@@ -36,7 +36,7 @@ class socket {
         var that = this;
 
         // run socket
-        this.socket = io.connect ('//' + window.opts.domain, {
+        this.socket = io.connect ('//' + window.edenState.domain, {
             secure    : true,
             reconnect : true
         });

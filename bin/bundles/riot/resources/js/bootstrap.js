@@ -21,17 +21,15 @@ class bootstrap {
         // set mount
         this._bar   = false;
         this._mount = false;
-        this._state = window.opts;
+        this._state = window.edenState;
 
         // bind methods
         this.initialize = this.initialize.bind (this);
         this.run        = this.run.bind (this);
 
-        // run methods
-        this.initialize ();
-
         // run on document ready
         jQuery (document).ready (() => {
+            this.initialize ();
             this.run (jQuery);
         });
     }
@@ -42,7 +40,7 @@ class bootstrap {
     initialize () {
         // mount riot tags
         this._bar   = new bar ();
-        this._mount = riot.mount ('*', window.opts)[0];
+        this._mount = riot.mount ('*', window.edenState)[0];
     }
 
     /**

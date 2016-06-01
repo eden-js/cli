@@ -1,4 +1,4 @@
-<main-layout class="layout">
+<main-layout>
     <nav class="navbar navbar-fixed-top navbar-dark bg-inverse">
         <a class="navbar-brand" href="#">
             { opts.title }

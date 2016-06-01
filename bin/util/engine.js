@@ -56,6 +56,8 @@ class engine {
         // set server option
         options.server = true;
 
+        console.time ('render');
+        
         // render page
         var page  = '<!DOCTYPE html>';
             page += '<html>';
@@ -67,16 +69,17 @@ class engine {
             page += '</head>';
             page += '<body>';
             page += riot.render ((options.layout ? options.layout : 'main') + '-layout', options);
-            page += '<script>var eden = ' + JSON.stringify (options.eden) + ';</script>';
 
             // delete server
             delete options.server;
 
-            page += '<script>var opts = ' + JSON.stringify (options) + ';</script>';
+            page += '<script>var edenState = ' + JSON.stringify (options) + ';</script>';
             page += '<script type="text/javascript" src="/assets/js/app.min.js"></script>';
             page += options.body || '';
             page += '</body>';
             page += '</html>';
+            
+        console.timeEnd ('render');
 
         // return render callback
         return callback (null, page);
