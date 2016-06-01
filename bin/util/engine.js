@@ -10,9 +10,12 @@ var glob = require ('glob');
  * create engine class
  */
 class engine {
+    /**
+     * construct riot engine class
+     */
     constructor () {
         // require all tags
-        var tagFiles = glob.sync (global.appRoot + '/cache/view/**/*.tag');
+        var tagFiles = glob.sync (global.appRoot + '/cache/view/**/*.{tag,mixin.js}');
 
         // loop tag files
         for (var i = 0; i < tagFiles.length; i++) {
@@ -31,7 +34,6 @@ class engine {
      * @return {*}
      */
     render (filePath, options, callback) {
-        console.log ('working');
         // require riot tag
         options.mountPage = filePath.split ('/')[filePath.split ('/').length - 1].trim ().replace ('.tag', '') + '-page';
 
@@ -61,6 +63,7 @@ class engine {
             page += '<meta charset="utf-8">';
             page += '<title>' + options.title + '</title>';
             page += '<link rel="stylesheet" href="/assets/css/app.min.css">';
+            page += options.head || '';
             page += '</head>';
             page += '<body>';
             page += riot.render ((options.layout ? options.layout : 'main') + '-layout', options);
@@ -71,10 +74,9 @@ class engine {
 
             page += '<script>var opts = ' + JSON.stringify (options) + ';</script>';
             page += '<script type="text/javascript" src="/assets/js/app.min.js"></script>';
+            page += options.body || '';
             page += '</body>';
             page += '</html>';
-
-            console.log (page);
 
         // return render callback
         return callback (null, page);

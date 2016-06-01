@@ -1,4 +1,4 @@
-<main-layout>
+<main-layout class="layout">
     <nav class="navbar navbar-fixed-top navbar-dark bg-inverse">
         <a class="navbar-brand" href="#">
             { opts.title }
@@ -17,29 +17,9 @@
     </nav>
     <div class="container" name="page"></div>
 
-    /**
-     * on home function
-     */
-    onHome () {
-        alert ('working');
-    }
+    <script>
+        // add layout mixin
+        this.mixin ('layout');
 
-    /**
-     * mount page function
-     */
-    mountPage () {
-        if (opts.mountPage) {
-            riot.mount (this.page, opts.mountPage, opts);
-        }
-    }
-
-    /**
-     * on mount function
-     *
-     * @param  {String} 'mount'
-     */
-    this.on ('update mount', () => {
-        // mount page on update/mount
-        this.mountPage ();
-    });
+    </script>
 </main-layout>

@@ -87,6 +87,8 @@ class gulpBuilder {
             },
             'tag'    : {
                 'files' : [
+                    './bin/bundles/*/view/**/*.mixin.js',
+                    './app/bundles/*/view/**/*.mixin.js',
                     './bin/bundles/*/view/**/*.tag',
                     './app/bundles/*/view/**/*.tag'
                 ],

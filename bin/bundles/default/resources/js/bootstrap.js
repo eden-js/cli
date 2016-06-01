@@ -6,6 +6,7 @@
 'use strict';
 
 // require local dependencies
+var bar  = require ('nanobar');
 var riot = require ('riot');
 var tags = require ('cache/tags.min.js');
 
@@ -18,6 +19,7 @@ class bootstrap {
      */
     constructor () {
         // set mount
+        this._bar   = false;
         this._mount = false;
 
         // bind methods
@@ -38,7 +40,8 @@ class bootstrap {
      */
     initialize () {
         // mount riot tags
-        this._mount = riot.mount ('*', window.opts);
+        this._bar   = new bar ();
+        this._mount = riot.mount ('*', window.opts)[0];
     }
 
     /**
@@ -54,6 +57,9 @@ class bootstrap {
             e.preventDefault  ();
             e.stopPropagation ();
 
+            // progress bar
+            that._bar.go (50);
+
             // get a link
             var a = $ (this);
 
@@ -61,9 +67,12 @@ class bootstrap {
             $.getJSON ('/ajx' + a.attr ('href'), (data) => {
                 // set window opts
                 window.opts = data.opts;
-                
+
                 // mount riot tags
-                this._mount = riot.mount ('*', window.opts);
+                that._mount.setOpts (data.opts, true);
+
+                // set progress go
+                that._bar.go (100);
             });
         });
     }

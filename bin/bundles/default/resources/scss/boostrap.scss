@@ -1,0 +1,10 @@
+// progress bar logic
+.nanobar {
+    top   : 0;
+    left  : 0;
+    right : 0;
+
+    .bar {
+        background : $brand-secondary;
+    }
+}

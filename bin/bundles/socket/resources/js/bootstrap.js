@@ -42,7 +42,7 @@ class socket {
         });
 
         // build alerts
-        this.alerts();
+        this.alerts ();
     }
 
     /**
