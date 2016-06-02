@@ -3,8 +3,10 @@
 'use strict';
 
 // require dependencies
-var riot = require ('riot');
-var glob = require ('glob');
+var acl    = require ('acl-util');
+var riot   = require ('riot');
+var glob   = require ('glob');
+var config = require ('config');
 
 /**
  * create engine class
@@ -22,6 +24,14 @@ class engine {
             // require tag file
             require (tagFiles[i]);
         }
+
+        // bind methods
+        this.render = this.render.bind (this);
+
+        // bind private methods
+        this._menus    = this._menus.bind (this);
+        this._subMenu  = this._subMenu.bind (this);
+        this._sortMenu = this._sortMenu.bind (this);
     }
 
     /**
@@ -42,6 +52,9 @@ class engine {
         delete options._locals;
         delete options.settings;
 
+        // set menus
+        options.menus = this._menus (options.acl, options.menu && options.menu.remove ? options.menu.remove : []);
+
         // check if should json
         if (options.isJSON) {
             // delete isJSON
@@ -57,7 +70,7 @@ class engine {
         options.server = true;
 
         console.time ('render');
-        
+
         // render page
         var page  = '<!DOCTYPE html>';
             page += '<html>';
@@ -78,11 +91,118 @@ class engine {
             page += options.body || '';
             page += '</body>';
             page += '</html>';
-            
+
         console.timeEnd ('render');
 
         // return render callback
         return callback (null, page);
+    }
+
+    /**
+     * creates menus object
+     *
+     * @param  {Object} options
+     *
+     * @private
+     * @return {Object}
+     */
+    _menus (opts) {
+        // create menus object
+        var menus = {};
+
+        // loop menus
+        for (var name in config.menus) {
+            // set menus object
+            menus[name] = this._subMenu (this._sortMenu (config.menus[name]), opts);
+
+            // check menu length
+            if (!menus[name].length) {
+                // remove menu
+                delete menus[name];
+            }
+        }
+
+        // return menus object
+        return menus;
+    }
+
+    /**
+     * loop menu items
+     *
+     * @param  {Array}  subs
+     * @param  {Object} options
+     *
+     * @private
+     * @return {Array}
+     */
+    _subMenu (subs, opts) {
+        // set remove
+        var menu   = [];
+        var route  = (opts.route || '').replace (/^\/|\/$/g, '');
+        var remove = opts.menu && opts.menu.remove ? opts.menu.remove : [];
+
+        // loop menu children
+        for (var i = 0; i < subs.length; i++) {
+            // let child
+            var child = subs[i];
+
+            // check if should remove
+            if (remove.indexOf (child.name.toUpperCase ()) > -1) {
+                continue;
+            }
+
+            // check for item children
+            if (child.children.length) {
+                // set menu children
+                child.children = this._subMenu (this._sortMenu (child.children));
+
+                // check children length
+                if (!child.children.length) {
+                    // delete children
+                    delete child.children;
+                }
+            }
+
+            // check if acl
+            if (child.acl && !acl.acl ((opts.acl || [], child.acl, opts.user))) {
+                continue;
+            }
+
+            // check if active
+            child.active = child.route ? (route == child.route.replace (/^\/|\/$/g, '')) : false;
+
+            // add to array
+            menu.push (child);
+        }
+
+        // return menu
+        return menu;
+    }
+
+    /**
+     * sorts menu by priority
+     *
+     * @param {Object} menu
+     *
+     * @private
+     * @returns {Array}
+     */
+    _sortMenu (menu) {
+         // set pre sort array
+         var arr = [];
+
+         // loop menu object
+         for (var key in menu) {
+             arr.push (menu[key]);
+         }
+
+         // sort by priority
+         arr.sort (function (a, b) {
+             return (a.priority || 10) > (b.priority || 10);
+         });
+
+         // return array
+         return arr;
     }
 }
 
