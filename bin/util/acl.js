@@ -48,7 +48,7 @@ class aclUtil {
         if (!Acl) return (Acl.fail || false);
 
         // check for user groups specific acl
-        var aclTest = this._aclTest (Acl, userAcl);
+        var aclTest = this._aclTest (userAcl, Acl);
 
         // return result
         return (aclTest ? true : (Acl.fail || false));
@@ -136,6 +136,7 @@ class aclUtil {
     _aclTest (userAcl, Acl) {
         // set variables
         var can     = false;
+        userAcl     = userAcl || [];
         var aclTest = [];
 
         // loop acl array
