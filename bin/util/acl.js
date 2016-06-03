@@ -28,27 +28,30 @@ class aclUtil {
     /**
      * test match existing acl
      *
-     * @param  {Object} acl
-     * @param  {Array}  Acl
+     * @param  {Object} userAcl ACL to check has permissions
+     * @param  {Array}  Acl     permissions to match
      * @param  {user}   User
      *
      * @return {*}
      */
-    acl (acl, Acl, User) {
+    acl (userAcl, Acl, User) {
+        // set default Acl
+        Acl = Acl || [];
+
         // check user specific acl
-        var userTest = this._userTest (acl, User);
+        var userTest = this._userTest (Acl, User);
         if (userTest !== null) {
-            return (userTest ? true : (acl.fail || false));
+            return (userTest ? true : (Acl.fail || false));
         }
 
         // check user acl
-        if (!Acl) return (acl.fail || false);
+        if (!Acl) return (Acl.fail || false);
 
         // check for user groups specific acl
-        var aclTest = this._aclTest (acl, Acl);
+        var aclTest = this._aclTest (Acl, userAcl);
 
         // return result
-        return (aclTest ? true : (acl.fail || false));
+        return (aclTest ? true : (Acl.fail || false));
     }
 
     /**
@@ -94,7 +97,7 @@ class aclUtil {
      */
     _userTest (acl, User) {
         // check if user defined
-        if (!User || User === undefined) {
+        if (!User || typeof User === 'undefined') {
             User = false;
         }
 
@@ -137,9 +140,9 @@ class aclUtil {
         var aclTest = [];
 
         // loop acl array
-        for (var i = 0; i < userAcl.length; i++) {
+        for (var a = 0; a < userAcl.length; a++) {
             // add acl to aclTest array
-            aclTest = aclTest.concat (userAcl[i].value);
+            aclTest = aclTest.concat (userAcl[a].value);
         }
 
         // Return true if acl is admin
@@ -148,17 +151,15 @@ class aclUtil {
         }
 
         // loop all acl
-        for (var x = 0; x < acl.test.length; x++) {
-            if (aclTest.indexOf (acl.test[x]) > -1) {
+        for (var b = 0; b < acl.test.length; b++) {
+            if (aclTest.indexOf (acl.test[b]) > -1) {
                 // found the acl required, return true
-                can = true;
-            } else {
-                return false;
+                return true;
             }
         }
 
         // return found acl
-        return can;
+        return false;
     }
 }
 

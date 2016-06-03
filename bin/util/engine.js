@@ -148,19 +148,24 @@ class engine {
             // let child
             var child = subs[i];
 
+            // check child exists
+            if (!child) {
+                continue;
+            }
+
             // check if should remove
             if (remove.indexOf (child.name.toUpperCase ()) > -1) {
                 continue;
             }
 
             // check for item children
-            if (child.children.length) {
+            if (child.children && child.children.length) {
                 // set menu children
                 child.children = this._subMenu (this._sortMenu (child.children));
             }
 
             // check children length
-            if (!child.children.length) {
+            if (child.children && !child.children.length) {
                 // delete children
                 delete child.children;
             }
@@ -179,7 +184,6 @@ class engine {
             // delete redundant fields
             delete child.acl;
             delete child.menu;
-            delete child.name;
             delete child.parent;
             delete child.priority;
 
