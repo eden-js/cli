@@ -184,7 +184,7 @@ class engine {
             delete child.acl;
             delete child.menu;
             delete child.parent;
-            delete child.priority;
+            // delete child.priority;
 
             // add to array
             menu.push (child);
