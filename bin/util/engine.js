@@ -3,10 +3,12 @@
 'use strict';
 
 // require dependencies
-var acl    = require ('acl-util');
-var riot   = require ('riot');
-var glob   = require ('glob');
-var config = require ('config');
+var acl  = require ('acl-util');
+var riot = require ('riot');
+var glob = require ('glob');
+
+// require local dependencies
+var config = require (global.appRoot + '/cache/config.json');
 
 /**
  * create engine class
@@ -53,7 +55,7 @@ class engine {
         delete options.settings;
 
         // set menus
-        options.menus = this._menus (options.acl, options.menu && options.menu.remove ? options.menu.remove : []);
+        options.menu = this._menus (options);
 
         // check if should json
         if (options.isJSON) {
@@ -155,12 +157,12 @@ class engine {
             if (child.children.length) {
                 // set menu children
                 child.children = this._subMenu (this._sortMenu (child.children));
+            }
 
-                // check children length
-                if (!child.children.length) {
-                    // delete children
-                    delete child.children;
-                }
+            // check children length
+            if (!child.children.length) {
+                // delete children
+                delete child.children;
             }
 
             // check if acl
@@ -170,6 +172,16 @@ class engine {
 
             // check if active
             child.active = child.route ? (route == child.route.replace (/^\/|\/$/g, '')) : false;
+
+            // remove active if false
+            if (!child.active) delete child.active;
+
+            // delete redundant fields
+            delete child.acl;
+            delete child.menu;
+            delete child.name;
+            delete child.parent;
+            delete child.priority;
 
             // add to array
             menu.push (child);
