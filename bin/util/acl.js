@@ -89,30 +89,30 @@ class aclUtil {
     /**
      * tests for user login/logout specific acl
      *
-     * @param acl
-     * @param User
+     * @param {object} Acl   acl to test
+     * @param {user}   User
      *
-     * @returns {boolean|null}
      * @private
+     * @returns {boolean|null}
      */
-    _userTest (acl, User) {
+    _userTest (Acl, User) {
         // check if user defined
         if (!User || typeof User === 'undefined') {
             User = false;
         }
 
         // check for acl
-        if (!acl) {
+        if (!Acl) {
             return true;
         }
 
         // check logged in specific acl
-        if ((!User && acl.test === false) || (User && acl.test === true)) {
+        if ((!User && Acl.test === false) || (User && Acl.test === true)) {
             return true;
         }
 
         // Check logged out for specific acl
-        if ((User && acl.test === false) || (!User && acl.test === true)) {
+        if ((User && Acl.test === false) || (!User && Acl.test === true)) {
             return false;
         }
 

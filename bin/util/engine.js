@@ -161,7 +161,7 @@ class engine {
             // check for item children
             if (child.children && child.children.length) {
                 // set menu children
-                child.children = this._subMenu (this._sortMenu (child.children));
+                child.children = this._subMenu (this._sortMenu (child.children), opts);
             }
 
             // check children length
@@ -171,7 +171,7 @@ class engine {
             }
 
             // check if acl
-            if (child.acl && acl.acl ((opts.acl || [], child.acl, opts.user)) !== true) {
+            if (child.acl && acl.acl (opts.acl.length ? opts.acl : false, child.acl, opts.user) !== true) {
                 continue;
             }
 
