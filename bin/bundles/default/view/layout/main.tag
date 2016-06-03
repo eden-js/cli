@@ -3,17 +3,7 @@
         <a class="navbar-brand" href="#">
             { opts.title }
         </a>
-        <ul class="nav navbar-nav">
-            <li class="nav-item active">
-                <a class="nav-link" href="#" onclick={ onHome }>Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/login">Login</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Contact</a>
-            </li>
-        </ul>
+        <menu name="MAIN" menu={ opts.menu } classes={ menuClass } />
     </nav>
     <div class="container" name="page"></div>
 
@@ -21,5 +11,9 @@
         // add layout mixin
         this.mixin ('layout');
 
+        // set menu class object
+        this.menuClass = {
+            'main' : 'nav navbar-nav'
+        };
     </script>
 </main-layout>
