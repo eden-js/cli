@@ -214,7 +214,13 @@ class engine {
 
          // sort by priority
          arr.sort (function (a, b) {
-             return (a.priority || 10) > (b.priority || 10);
+             if ((a.priority || 10) > (b.priority || 10)) {
+                 return 1;
+             } else if ((a.priority || 10) < (b.priority || 10)) {
+                 return -1;
+             } else {
+                 return 0;
+             }
          });
 
          // return array
