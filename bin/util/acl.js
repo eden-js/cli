@@ -28,9 +28,9 @@ class aclUtil {
     /**
      * test match existing acl
      *
-     * @param  {Object} userAcl ACL to check has permissions
-     * @param  {Array}  Acl     permissions to match
-     * @param  {user}   User
+     * @param {Object} userAcl ACL to check has permissions
+     * @param {Array}  Acl     permissions to match
+     * @param {user}   User
      *
      * @return {*}
      */
@@ -57,11 +57,12 @@ class aclUtil {
     /**
      * tests acl
      *
-     * @param acl
-     * @param User
+     * @param {Array}  Acl     permissions to match
+     * @param {user}   User
+     *
      * @returns {Promise}
      */
-    test (acl, User) {
+    test (Acl, User) {
         // set that
         var that = this;
 
@@ -72,16 +73,14 @@ class aclUtil {
                 // set user acl
                 var userAcl = User ? yield User.model ('acl') : [];
 
-                // create acl array
-                var Acl = [];
                 // loop user acl
                 for (var i = 0; i < userAcl.length; i++) {
                     // push into acl
-                    Acl.push (userAcl[i].sanitise ());
+                    userAcl[i] = userAcl[i].sanitise ();
                 }
 
                 // resolve test match
-                resolve (that.acl (acl, Acl.length ? Acl : false, User));
+                resolve (that.acl (userAcl, Acl, User));
             });
         });
     }
@@ -89,7 +88,7 @@ class aclUtil {
     /**
      * tests for user login/logout specific acl
      *
-     * @param {object} Acl   acl to test
+     * @param {Object} Acl   acl to test
      * @param {user}   User
      *
      * @private
@@ -128,13 +127,13 @@ class aclUtil {
     /**
      * tests for user groups specific acl
      *
-     * @param acl
-     * @param userAcl
+     * @param {Object} userAcl ACL to check has permissions
+     * @param {Object} Acl   acl to test
      *
-     * @returns {boolean}
      * @private
+     * @returns {boolean|null}
      */
-    _aclTest (acl, userAcl) {
+    _aclTest (userAcl, Acl) {
         // set variables
         var can     = false;
         var aclTest = [];
@@ -147,12 +146,14 @@ class aclUtil {
 
         // Return true if acl is admin
         if (aclTest.indexOf (true) > -1) {
+            // return true
             return true;
         }
 
         // loop all acl
-        for (var b = 0; b < acl.test.length; b++) {
-            if (aclTest.indexOf (acl.test[b]) > -1) {
+        for (var b = 0; b < Acl.test.length; b++) {
+            // check if should return true
+            if (aclTest.indexOf (Acl.test[b]) > -1) {
                 // found the acl required, return true
                 return true;
             }
