@@ -1,4 +1,3 @@
-
 // use strict
 'use strict';
 
@@ -63,8 +62,8 @@ class engine {
             delete options.isJSON;
 
             // return callback
-            return callback (null, JSON.stringify ({
-                'opts' : options
+            return callback (null, JSON.stringify({
+                'opts': options
             }));
         }
 
@@ -74,25 +73,25 @@ class engine {
         console.time ('render');
 
         // render page
-        var page  = '<!DOCTYPE html>';
-            page += '<html>';
-            page += '<head>';
-            page += '<meta charset="utf-8">';
-            page += '<title>' + options.title + '</title>';
-            page += '<link rel="stylesheet" href="/assets/css/app.min.css">';
-            page += options.head || '';
-            page += '</head>';
-            page += '<body>';
-            page += riot.render ((options.layout ? options.layout : 'main') + '-layout', options);
+        var page = '<!DOCTYPE html>';
+        page += '<html>';
+        page += '<head>';
+        page += '<meta charset="utf-8">';
+        page += '<title>' + options.title + '</title>';
+        page += '<link rel="stylesheet" href="/assets/css/app.min.css">';
+        page += options.head || '';
+        page += '</head>';
+        page += '<body>';
+        page += riot.render ((options.layout ? options.layout : 'main') + '-layout', options);
 
-            // delete server
-            delete options.server;
+        // delete server
+        delete options.server;
 
-            page += '<script>var edenState = ' + JSON.stringify (options) + ';</script>';
-            page += '<script type="text/javascript" src="/assets/js/app.min.js"></script>';
-            page += options.body || '';
-            page += '</body>';
-            page += '</html>';
+        page += '<script>var edenState = ' + JSON.stringify (options) + ';</script>';
+        page += '<script type="text/javascript" src="/assets/js/app.min.js"></script>';
+        page += options.body || '';
+        page += '</body>';
+        page += '</html>';
 
         console.timeEnd ('render');
 
@@ -139,8 +138,8 @@ class engine {
      */
     _subMenu (subs, opts) {
         // set remove
-        var menu   = [];
-        var route  = (opts.route || '').replace (/^\/|\/$/g, '');
+        var menu = [];
+        var route = (opts.route || '').replace (/^\/|\/$/g, '');
         var remove = opts.menu && opts.menu.remove ? opts.menu.remove : [];
 
         // loop menu children
@@ -204,27 +203,27 @@ class engine {
      * @returns {Array}
      */
     _sortMenu (menu) {
-         // set pre sort array
-         var arr = [];
+        // set pre sort array
+        var arr = [];
 
-         // loop menu object
-         for (var key in menu) {
-             arr.push (menu[key]);
-         }
+        // loop menu object
+        for (var key in menu) {
+            arr.push (menu[key]);
+        }
 
-         // sort by priority
-         arr.sort (function (a, b) {
-             if ((a.priority || 10) > (b.priority || 10)) {
-                 return 1;
-             } else if ((a.priority || 10) < (b.priority || 10)) {
-                 return -1;
-             } else {
-                 return 0;
-             }
-         });
+        // sort by priority
+        arr.sort (function (a, b) {
+            if ((a.priority ? a.priority : 10) > (b.priority ? b.priority : 10)) {
+                return 1;
+            } else if ((a.priority ? a.priority : 10) < (b.priority ? b.priority : 10)) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
 
-         // return array
-         return arr;
+        // return array
+        return arr;
     }
 }
 
