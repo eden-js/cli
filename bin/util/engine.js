@@ -166,7 +166,7 @@ class engine {
             }
 
             // check if acl
-            if (child.acl && !acl.acl ((opts.acl || [], child.acl, opts.user))) {
+            if (child.acl && acl.acl ((opts.acl || [], child.acl, opts.user)) !== true) {
                 continue;
             }
 
