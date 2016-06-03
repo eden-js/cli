@@ -198,6 +198,14 @@ class bootstrap {
         this.app.all ('/ajx/*', (req, res, next) => {
             // set response to json
             res.locals.isJSON = true;
+            
+            // set res.redirect
+            res.redirect = (url) => {
+                // render json
+                res.json ({
+                    'url' : url
+                });
+            };
 
             // go to next
             next ();

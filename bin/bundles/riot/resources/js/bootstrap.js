@@ -52,6 +52,14 @@ class bootstrap {
 
         // run on document ready
         $ (document).on ('click', 'a[href^="/"]', function (e) {
+            // get a link
+            var a = $ (this);
+            
+            // check if href
+            if (a.attr ('href').indexOf ('steam') > -1) {
+                return;
+            }
+        
             // prevent default
             e.preventDefault  ();
             e.stopPropagation ();
@@ -59,20 +67,8 @@ class bootstrap {
             // progress bar
             that._bar.go (50);
 
-            // get a link
-            var a = $ (this);
-
             // get json from a link
-            $.getJSON ('/ajx' + a.attr ('href'), (data) => {
-                // mount riot tags
-                that._mount.setOpts (data.opts, true);
-
-                // set progress go
-                that._bar.go (100);
-                
-                // push state
-                window.history.pushState (data, data.opts.route, data.opts.route);
-            });
+            that._load ('/ajx' + a.attr ('href'));
         });
         
         // on pop state
@@ -80,6 +76,53 @@ class bootstrap {
             // mount riot tags
             that._mount.setOpts (e.state ? e.state.opts : that._state, true);
         };
+    }
+    
+    /**
+     * loads url
+     *
+     * @param  {String} url
+     *
+     * @private
+     */    
+    _load (url) {
+        // load json from url
+        $.getJSON (url, (data, status, request) => {
+            // check if redirect
+            if (data.redirect) return this._redirect (data.redirect);
+            
+            // mount riot tags
+            this._mount.setOpts (data.opts, true);
+
+            // set progress go
+            this._bar.go (100);
+            
+            // push state
+            window.history.pushState (data, data.opts.route, data.opts.route);
+        }).error ((e) => {
+            console.log (e.getAllResponseHeaders());
+        });
+    }
+    
+    /**
+     * redirects to url
+     *
+     * @param  {String} url
+     *
+     * @private
+     */
+    _redirect (url) {
+        // check if actual redirect
+        if (/^(?:[a-z]+:)?\/\//i.test (url)) {
+            // update window location
+            window.location.href = url;
+            
+            // return
+            return;
+        }
+        
+        // load next redirect
+        return this._load (url.indexOf ('/ajx') === 0 ? url : '/ajx' + url);
     }
 }
 

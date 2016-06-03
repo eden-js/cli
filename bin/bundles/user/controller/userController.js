@@ -103,17 +103,17 @@ class userController extends controller {
                 // get acls
                 var aclArr = [];
                 var acls   = [];
-                
+
                 // check for req user
                 if (req.user) {
                     acls = yield req.user.model ('acl');
                 }
-                
+
                 // loop acls for acl array
                 for (var i = 0; i < acls.length; i++) {
                     aclArr.push (acls[i].sanitise ());
                 }
-                
+
                 // set user locally
                 res.locals.acl  = aclArr;
                 res.locals.user = req.user ? req.user.sanitise () : false;
@@ -125,34 +125,35 @@ class userController extends controller {
 
         // check acl on run
         app.use ((req, res, next) => {
-            co (function * () {
-                // do route regex
-                var rt = '/' + res.locals.route.replace (/^\/|\/$/g, '');
+            // do route regex
+            var rt = '/' + res.locals.route.replace (/^\/|\/$/g, '');
 
-                // check route has acl
-                if (aclConfig[rt] && aclConfig[rt].length) {
-                    // loop acl for tests
-                    for (var i = 0; i < aclConfig[rt].length; i ++) {
-                        // check acl
-                        var check = yield aclUtil.test (aclConfig[rt][i], res.locals.user);
+            // check route has acl
+            if (!aclConfig[rt] || !aclConfig[rt].length) {
+                // return next
+                return next ();
+            }
 
-                        // check if true
-                        if (check !== true) {
-                            // check if redirect
-                            if (check.redirect) {
-                                // redirect to fail auth redirect
-                                return res.redirect (check.redirect);
-                            }
+            // loop acl for tests
+            for (var i = 0; i < aclConfig[rt].length; i ++) {
+                // check acl
+                var check = aclUtil.acl (res.locals.acl, aclConfig[rt][i], res.locals.user);
 
-                            // redirect home
-                            return res.redirect ('/');
-                        }
+                // check if true
+                if (check !== true) {
+                    // check if redirect
+                    if (check.redirect) {
+                        // redirect to fail auth redirect
+                        return res.redirect (check.redirect);
                     }
-                }
 
-                // do next
-                next ();
-            });
+                    // redirect home
+                    return res.redirect ('/');
+                }
+            }
+
+            // do next
+            next ();
         });
     }
 

@@ -71,7 +71,12 @@ class aclUtil {
             // do coroutine
             co (function * () {
                 // set user acl
-                var userAcl = User ? yield User.model ('acl') : [];
+                var userAcl = [];
+
+                // check for user
+                if (User) {
+                    userAcl = yield User.model ('acl');
+                }
 
                 // loop user acl
                 for (var i = 0; i < userAcl.length; i++) {
