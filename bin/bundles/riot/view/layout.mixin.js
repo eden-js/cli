@@ -11,6 +11,13 @@ riot.mixin ('layout', {
             // mount page on load
             if (this.opts.mountPage) riot.mount (this.page, this.opts.mountPage, this.opts);
         });
+        // on updated
+        this.on ('updated', () => {
+            // check for jQuery
+            if (typeof jQuery !== 'undefined') {
+                jQuery ('body').trigger ('layout');
+            }
+        });
     },
 
     getOpts: function () {
