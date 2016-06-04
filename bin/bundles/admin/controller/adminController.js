@@ -44,7 +44,7 @@ class adminController extends controller {
     indexAction (req, res) {
         // render admin home page
         res.render ('admin', {
-            'layout' : 'admin.layout.hbs'
+            'layout' : 'admin'
         });
     }
 }

@@ -24,8 +24,13 @@ class bootstrap {
         this._state = window.edenState;
 
         // bind methods
-        this.initialize = this.initialize.bind (this);
         this.run        = this.run.bind (this);
+        this.initialize = this.initialize.bind (this);
+
+        // bind private methods
+        this._load     = this._load.bind (this);
+        this._layout   = this._layout.bind (this);
+        this._redirect = this._redirect.bind (this);
 
         // run on document ready
         jQuery (document).ready (() => {
@@ -77,8 +82,11 @@ class bootstrap {
 
         // on pop state
         window.onpopstate = function (e) {
+            // set ops
+            var ops = (e.state ? e.state.opts : that._state, true);
+
             // mount riot tags
-            that._mount.setOpts (e.state ? e.state.opts : that._state, true);
+            if (!that._layout (ops)) that._mount.setOpts (ops);
         };
     }
 
@@ -95,8 +103,8 @@ class bootstrap {
             // check if redirect
             if (data.redirect) return this._redirect (data.redirect);
 
-            // mount riot tags
-            this._mount.setOpts (data.opts, true);
+            // check for layout
+            if (!this._layout (data.opts)) this._mount.setOpts (data.opts, true);
 
             // set progress go
             this._bar.go (100);
@@ -106,6 +114,55 @@ class bootstrap {
         }).error ((e) => {
             console.log (e.getAllResponseHeaders());
         });
+    }
+
+    /**
+     * checks for correct layout
+     *
+     * @param  {Object} opts
+     *
+     * @private
+     * @return {Boolean}
+     */
+    _layout (opts) {
+        // set that
+        var that = this;
+
+        // set layout variable
+        var layout = (opts.layout || 'main-layout');
+
+        // set remount
+        var remount = false;
+
+        // check layout tags
+        jQuery ('body > *').each (function () {
+            // check if not tag
+            if (this.tagName.toUpperCase ().indexOf ('-LAYOUT') === -1) {
+                // return not layout
+                return;
+            }
+
+            // set tag
+            var tag = jQuery (this);
+
+            // check if correct layout
+            if (this.tagName.toUpperCase () !== layout.toUpperCase ()) {
+                // unmount tag
+                that._mount.unmount (true);
+
+                // replace tag
+                tag.replaceWith ('<' + layout + '></' + layout + '>');
+
+                // mount the tag
+                this._mount = riot.mount (layout, opts);
+
+                // set remount
+                remount = true;
+            }
+        });
+
+        // return remount
+        return remount;
     }
 
     /**

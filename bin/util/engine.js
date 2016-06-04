@@ -56,6 +56,9 @@ class engine {
         // set menus
         options.menu = this._menus (options);
 
+        // set layout
+        options.layout = (options.layout ? options.layout : 'main') + '-layout';
+
         // check if should json
         if (options.isJSON) {
             // delete isJSON
@@ -82,7 +85,7 @@ class engine {
         page += options.head || '';
         page += '</head>';
         page += '<body>';
-        page += riot.render ((options.layout ? options.layout : 'main') + '-layout', options);
+        page += riot.render (options.layout, options);
 
         // delete server
         delete options.server;
