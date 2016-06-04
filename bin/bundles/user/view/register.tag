@@ -9,7 +9,7 @@
                     <form accept-charset="UTF-8" role="form" method="post" action="/register">
                         <fieldset>
                             <div class="form-group">
-                                <input class="form-control" placeholder="yourmail@example.com" name="username" type="text" value="assdafas">
+                                <input class="form-control" placeholder="yourmail@example.com" name="username" type="text" value={ opts.old ? opts.old.username : '' }>
                             </div>
                             <div class="form-group">
                                 <input class="form-control" placeholder="Password" name="password" type="password">

@@ -43,7 +43,9 @@ class adminController extends controller {
      * @priority 11
      */
     indexAction (req, res) {
-        res.render ('admin/user');
+        res.render ('user-admin', {
+            'layout' : 'admin'
+        });
     }
 
     /**
