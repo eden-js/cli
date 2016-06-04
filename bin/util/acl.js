@@ -71,17 +71,16 @@ class aclUtil {
             // do coroutine
             co (function * () {
                 // set user acl
+                var test    = [];
                 var userAcl = [];
 
                 // check for user
-                if (User) {
-                    userAcl = yield User.model ('acl');
-                }
+                if (User) test = yield User.model ('acl');
 
                 // loop user acl
-                for (var i = 0; i < userAcl.length; i++) {
+                for (var i = 0; i < test.length; i++) {
                     // push into acl
-                    userAcl[i] = userAcl[i].sanitise ();
+                    userAcl.push (test[i].sanitise ());
                 }
 
                 // resolve test match

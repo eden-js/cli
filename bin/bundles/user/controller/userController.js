@@ -57,6 +57,7 @@ class userController extends controller {
 
         // create local strategy
         passport.use (new local ((username, password, done) => {
+            // run coroutine
             co (function * () {
                 // find user
                 var User = yield user.where ({
@@ -80,19 +81,19 @@ class userController extends controller {
 
         // serializes user
         passport.serializeUser ((User, done) => {
+            // emit done
             done (null, User.get ('_id').toString ());
         });
 
         // deserialize user
         passport.deserializeUser ((id, done) => {
+            // run coroutine
             co (function * () {
+                // find user by id
                 var User = yield user.findById (id);
 
-                if (User) {
-                    done (null, User);
-                } else {
-                    done (null, false);
-                }
+                // callback done with user
+                done (null, User);
             });
         });
 
@@ -170,6 +171,7 @@ class userController extends controller {
      * @priority 2
      */
     loginAction (req, res) {
+        // render login page
         res.render ('login', {});
     }
 
@@ -183,14 +185,20 @@ class userController extends controller {
      * @acl   {test:false,fail:{redirect:"/"}}
      */
     loginFormAction (req, res, next) {
+        // authenticate with passport
         passport.authenticate ('local', (err, User, info) => {
-            if (! User) {
+            // check user exists
+            if (!User) {
+                // render login page
                 return res.render ('login', {
                     'error' : info.message,
                     'old'   : req.body
                 });
             }
+
+            // do passport login
             req.login (User, {}, (err) => {
+                // redirect to home
                 res.redirect ('/');
             });
         }) (req, res, next);
@@ -209,7 +217,9 @@ class userController extends controller {
      * @priority 2
      */
     logoutAction (req, res) {
+        // logout
         req.logout ();
+        // redirect to home
         res.redirect ('/');
     }
 
@@ -223,6 +233,7 @@ class userController extends controller {
      * @acl   {test:false,fail:{redirect:"/"}}
      */
     registerAction (req, res) {
+        // render registration page
         res.render ('register', {});
     }
 
@@ -236,9 +247,11 @@ class userController extends controller {
      * @acl   {test:false,fail:{redirect:"/"}}
      */
     registerFormAction (req, res) {
+        // run coroutine
         co (function * () {
             // check username
             if (req.body.username.trim ().length < 5) {
+                // render registration page
                 return res.render ('register', {
                     'error' : 'your username must be at least 5 characters long',
                     'old'   : req.body
@@ -252,6 +265,7 @@ class userController extends controller {
 
             // check if user exists
             if (User) {
+                // render registration page
                 return res.render ('register', {
                     'error' : 'the username "' + req.body.username + '" is already taken',
                     'old'   : req.body
@@ -260,6 +274,7 @@ class userController extends controller {
 
             // check password length
             if (req.body.password.trim ().length < 5) {
+                // render registration page
                 return res.render ('register', {
                     'error' : 'your password must be at least 5 characters long',
                     'old'   : req.body
@@ -268,6 +283,7 @@ class userController extends controller {
 
             // check passwords match
             if (req.body.password != req.body.passwordb) {
+                // render registration page
                 return res.render ('register', {
                     'error' : 'your passwords do not match',
                     'old'   : req.body
@@ -290,6 +306,7 @@ class userController extends controller {
 
             // log user in
             req.login (User, (err) => {
+                // redirect to home
                 res.redirect ('/');
             });
         });

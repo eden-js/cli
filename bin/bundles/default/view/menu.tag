@@ -22,7 +22,6 @@
          * @param  {String} 'update mount'
          */
         this.on ('update mount', () => {
-            console.log (opts.menu);
             // set subs
             this.menu = opts.menu[opts.name.toUpperCase ()] || [];
         });

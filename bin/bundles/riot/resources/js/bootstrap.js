@@ -29,7 +29,9 @@ class bootstrap {
 
         // run on document ready
         jQuery (document).ready (() => {
+            // initialize
             this.initialize ();
+            // run with jquery
             this.run (jQuery);
         });
     }
@@ -38,8 +40,10 @@ class bootstrap {
      * initialize functionality
      */
     initialize () {
-        // mount riot tags
-        this._bar   = new bar ();
+        // mount bar
+        this._bar = new bar ();
+
+        // mount riot tag
         this._mount = riot.mount (document.querySelector ('body').children[0], window.edenState)[0];
     }
 
@@ -54,12 +58,12 @@ class bootstrap {
         $ (document).on ('click', 'a[href^="/"]', function (e) {
             // get a link
             var a = $ (this);
-            
+
             // check if href
-            if (a.attr ('href').indexOf ('steam') > -1) {
+            if (a.attr ('href').indexOf ('steam') > -1 || a.attr ('href').indexOf ('#') === 0) {
                 return;
             }
-        
+
             // prevent default
             e.preventDefault  ();
             e.stopPropagation ();
@@ -70,40 +74,40 @@ class bootstrap {
             // get json from a link
             that._load ('/ajx' + a.attr ('href'));
         });
-        
+
         // on pop state
         window.onpopstate = function (e) {
             // mount riot tags
             that._mount.setOpts (e.state ? e.state.opts : that._state, true);
         };
     }
-    
+
     /**
      * loads url
      *
      * @param  {String} url
      *
      * @private
-     */    
+     */
     _load (url) {
         // load json from url
         $.getJSON (url, (data, status, request) => {
             // check if redirect
             if (data.redirect) return this._redirect (data.redirect);
-            
+
             // mount riot tags
             this._mount.setOpts (data.opts, true);
 
             // set progress go
             this._bar.go (100);
-            
+
             // push state
             window.history.pushState (data, data.opts.route, data.opts.route);
         }).error ((e) => {
             console.log (e.getAllResponseHeaders());
         });
     }
-    
+
     /**
      * redirects to url
      *
@@ -116,11 +120,11 @@ class bootstrap {
         if (/^(?:[a-z]+:)?\/\//i.test (url)) {
             // update window location
             window.location.href = url;
-            
+
             // return
             return;
         }
-        
+
         // load next redirect
         return this._load (url.indexOf ('/ajx') === 0 ? url : '/ajx' + url);
     }

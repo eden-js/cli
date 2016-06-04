@@ -267,6 +267,13 @@ class bootstrap {
 
         // run generator
         co (function * () {
+            // require user controller first
+            var userCtrl = '/bin/bundles/user/controller/userController';
+            var UserCtrl = yield that._require (global.appRoot + userCtrl);
+
+            // build required user controller
+            that._ctrl[userCtrl] = new UserCtrl (that.app);
+
             // loop priorities
             for (var i = 0; i < priorities.length; i ++) {
                 // let types
