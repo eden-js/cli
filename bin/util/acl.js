@@ -45,7 +45,7 @@ class aclUtil {
         }
 
         // check user acl
-        if (!Acl) return (Acl.fail || false);
+        if (!Acl) return (true);
 
         // check for user groups specific acl
         var aclTest = this._aclTest (userAcl, Acl);
