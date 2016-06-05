@@ -5,6 +5,7 @@
         </a>
         <menu name="MAIN" menu={ opts.menu } classes={ menuClass } />
     </nav>
+    <alert success={ opts.success } error={ opts.error } />
     <div class="container" name="page"></div>
 
     <script>
