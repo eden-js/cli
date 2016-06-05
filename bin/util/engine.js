@@ -55,7 +55,6 @@ class engine {
 
         // set menus
         options.menu = this._menus (options);
-        console.log (Object.keys (options.menu));
 
         // set layout
         options.layout = (options.layout ? options.layout : 'main') + '-layout';

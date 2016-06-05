@@ -40,7 +40,6 @@ class aclUtil {
 
         // check user specific acl
         var userTest = this._userTest (Acl, User);
-        console.log ('user test', userTest);
         if (userTest !== null) {
             return (userTest ? true : (Acl.fail || false));
         }
