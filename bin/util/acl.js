@@ -36,16 +36,16 @@ class aclUtil {
      */
     acl (userAcl, Acl, User) {
         // set default Acl
-        Acl = Acl || [];
+        Acl = Acl || false;
+
+        // check acl exists
+        if (!Acl) return true;
 
         // check user specific acl
         var userTest = this._userTest (Acl, User);
         if (userTest !== null) {
             return (userTest ? true : (Acl.fail || false));
         }
-
-        // check user acl
-        if (!Acl) return (true);
 
         // check for user groups specific acl
         var aclTest = this._aclTest (userAcl, Acl);
