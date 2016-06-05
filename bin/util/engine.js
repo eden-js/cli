@@ -55,6 +55,7 @@ class engine {
 
         // set menus
         options.menu = this._menus (options);
+        console.log (Object.keys (options.menu));
 
         // set layout
         options.layout = (options.layout ? options.layout : 'main') + '-layout';
@@ -95,6 +96,9 @@ class engine {
         page += options.body || '';
         page += '</body>';
         page += '</html>';
+
+        // delete post-render options
+        delete options.body;
 
         console.timeEnd ('render');
 
@@ -148,7 +152,7 @@ class engine {
         // loop menu children
         for (var i = 0; i < subs.length; i++) {
             // let child
-            var child = subs[i];
+            var child = Object.assign({}, subs[i]);
 
             // check child exists
             if (!child) {
@@ -185,9 +189,10 @@ class engine {
 
             // delete redundant fields
             delete child.acl;
+            delete child.name;
             delete child.menu;
             delete child.parent;
-            // delete child.priority;
+            delete child.priority;
 
             // add to array
             menu.push (child);
