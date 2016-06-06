@@ -2,11 +2,11 @@
 'use strict';
 
 // require dependencies
-var acl  = require ('acl-util');
 var riot = require ('riot');
 var glob = require ('glob');
 
 // require local dependencies
+var acl    = require (global.appRoot + '/bin/util/acl');
 var config = require (global.appRoot + '/cache/config.json');
 
 /**
