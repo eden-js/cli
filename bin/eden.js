@@ -173,6 +173,9 @@ class eden {
      * @private
      */
     _buildApp () {
+        // log building app
+        this.logger.log ('debug', 'building express app');
+
         // create express app
         this.app = (this.app ? this.app : express ());
 
@@ -235,6 +238,9 @@ class eden {
             // go to next
             next ();
         });
+
+        // log building app
+        this.logger.log ('debug', 'finished building express app');
     }
 
     /**
@@ -243,6 +249,9 @@ class eden {
      * @private
      */
     _buildLocals () {
+        // log building app
+        this.logger.log ('debug', 'building app locals');
+
         // set locals
         this.app.locals.title  = config.title;
     }
@@ -253,11 +262,17 @@ class eden {
      * @private
      */
     _buildServer () {
+        // log building app
+        this.logger.log ('debug', 'building app http server');
+
         // create http server
         this.server = (this.server ? this.server : http.createServer (this.app));
 
         // set port
         this.server.listen (this.port);
+
+        // log building app
+        this.logger.log ('debug', 'finished building app http server');
     }
 
     /**
@@ -421,7 +436,7 @@ class eden {
                 this.port = ports[0];
 
                 // log port
-                this.logger.log ('info', 'running express on port ' + this.port);
+                this.logger.log ('info', 'using express on port ' + this.port);
 
                 // resolve
                 resolve (this.port);
