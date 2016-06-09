@@ -121,6 +121,9 @@ class eden {
               })
             ]
         }));
+
+        // register as global
+        global.logger = this.logger;
     }
 
     /**

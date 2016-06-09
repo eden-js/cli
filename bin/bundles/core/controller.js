@@ -16,7 +16,8 @@ class controller {
      */
     constructor (eden) {
         // set eden
-        this.eden = eden;
+        this.eden   = eden;
+        this.logger = this.eden.logger;
     }
 }
 
