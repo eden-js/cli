@@ -41,16 +41,16 @@ if (global.environment == 'dev') {
       'logger' : logger
     });
 } else {
-    // run in production
-    logger.log ('info', 'Running eden in production environment!');
-
     // check if master
     if (cluster.isMaster) {
+        // run in production
+        logger.log ('info', 'Running eden in production environment!');
+
         // count CPUs
         var threads = config.threads ? config.threads : os.cpus ().length;
 
         // log spawning threads
-        logger.log ('info', 'Spawning ' + threads + ' eden threads!');
+        logger.log ('info', 'Spawning ' + threads + ' eden thread' + (threads > 1 ? 's' : '') + '!');
 
         // create new worker per cpu
         for (var i = 0; i < threads; i += 1) {
