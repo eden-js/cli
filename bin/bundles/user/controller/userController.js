@@ -29,9 +29,9 @@ class userController extends controller {
      *
      * @param app
      */
-    constructor (app) {
+    constructor (eden) {
         // run super
-        super (app);
+        super (eden);
 
         // bind methods
         this.loginAction        = this.loginAction.bind (this);
@@ -44,7 +44,7 @@ class userController extends controller {
         this.build = this.build.bind (this);
 
         // run
-        this.build (app);
+        this.build (eden.app);
     }
 
     /**

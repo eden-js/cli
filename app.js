@@ -3,38 +3,57 @@
 // use strict
 'use strict';
 
+// set global app root
+global.appRoot = __dirname;
+
 // require dependencies
 var os      = require ('os');
+var winston = require ('winston');
 var cluster = require ('cluster');
 
-// set global variables
-global.appRoot     = __dirname;
-global.envrionment = process.env.NODE_ENV || 'dev';
-
-// set global functions
-global.log = require (global.appRoot + '/bin/util/log');
-
 // require local dependencies
+var log    = require (global.appRoot + '/bin/util/log');
+var eden   = require (global.appRoot + '/bin/eden');
 var config = require (global.appRoot + '/config');
+
+// set global environment
+global.envrionment = process.env.NODE_ENV || config.environment;
+
+// create logger
+var logger = new winston.Logger ({
+    level      : 'info',
+    transports : [
+      new (winston.transports.Console) ({
+          colorize  : true,
+          formatter : log,
+          timestamp : true
+      })
+    ]
+});
 
 // check if environment
 if (global.environment == 'dev') {
     // run in dev
-    global.log ('running in development environment', 'server');
+    logger.log ('info', 'Running eden in development environment!');
 
     // run single instance
-    require (global.appRoot + '/bin/bootstrap');
+    new eden ({
+      'logger' : logger
+    });
 } else {
     // run in production
-    global.log ('running in production environment', 'server');
+    logger.log ('info', 'Running eden in production environment!');
 
     // check if master
     if (cluster.isMaster) {
         // count CPUs
-        var cpuCount = config.threads ? config.threads : os.cpus ().length;
+        var threads = config.threads ? config.threads : os.cpus ().length;
+
+        // log spawning threads
+        logger.log ('info', 'Spawning ' + threads + ' eden threads!');
 
         // create new worker per cpu
-        for (var i = 0; i < cpuCount; i += 1) {
+        for (var i = 0; i < threads; i += 1) {
             // timeout fork in line
             setTimeout (() => {
                 // fork new thread
@@ -42,17 +61,19 @@ if (global.environment == 'dev') {
             }, (i * 500));
         }
     } else {
-        // log forked
-        global.log ('forked process', 'server');
+        // log spawning threads
+        logger.log ('info', 'Spawned new eden thread!');
 
-        // fork boot
-        require (global.appRoot + '/bin/bootstrap');
+        // run single instance
+        new eden ({
+          'logger' : logger
+        });
     }
 
     // set on exit
     cluster.on ('exit', function (worker) {
-        // log and replace dead worker
-        global.log ('worker ' + worker.id + ' died', 'server');
+        // log spawning threads
+        logger.log ('warning', 'Worker ' + worker.id + ' died, forking new eden thread!');
 
         // fork new thread
         cluster.fork ();

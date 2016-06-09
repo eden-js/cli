@@ -11,9 +11,12 @@ var colors = require ('colors');
  * @param type
  * @param error
  */
-module.exports = (message, type, error) => {
-    // set date and date padding
-    var d = new Date();
+module.exports = (options) => {
+    // set message string
+    var message = '';
+
+    // Return string will be passed to logger.
+    var d = new Date ();
 
     // set timestamp strings
     var h = d.getHours()   + '';
@@ -24,12 +27,17 @@ module.exports = (message, type, error) => {
         s = s.length == 1 ? '0' + s : s;
 
     // set time
-    var t = '[' + colors.grey(h + ':' + m + ':' + s) + ']';
-    // set framework stamp
-    var f = '[' + colors.cyan('EdenFrame') + ']';
-    // set type stamp
-    var y = (type ? (' [' + (error ? colors.red(type) : colors.green(type)) + ']') : '');
+    if (options.timestamp) message += '[' + colors.grey (h + ':' + m + ':' + s) + '] ';
 
-    // actually log
-    console.log(t + ' ' + f + y + ' ' + message);
+    // set framework stamp
+    if (options.showLevel) message += '[' + colors.cyan (options.level.toUpperCase ()) + '] ';
+
+    // set meta tags
+    if (options.meta && options.meta.class) message+= '[' + colors.green (options.meta.class) + '] ';
+
+    // set message
+    message += options.message;
+
+    // return message
+    return message;
 };

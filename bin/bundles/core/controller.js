@@ -9,7 +9,15 @@
  * build controller class
  */
 class controller {
-
+    /**
+     * construct standard controller
+     *
+     * @param  {eden} eden
+     */
+    constructor (eden) {
+        // set eden
+        this.eden = eden;
+    }
 }
 
 /**
