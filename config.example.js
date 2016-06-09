@@ -15,10 +15,10 @@ var config = {};
  */
 
 // set application title
-config.title  = 'Baseplan API';
+config.title  = 'EdenJS';
 
 // set application domain
-config.domain = 'baseplan.api.dev';
+config.domain = 'edenjs.com';
 
 
 /**
@@ -48,12 +48,12 @@ config.database = {
     // dev database
     dev : {
         host : 'localhost',
-        db   : 'baseplanApi'
+        db   : 'edenjs'
     },
     // set live database
     live : {
         host : 'localhost',
-        db   : 'baseplanApi'
+        db   : 'edenjs'
     }
 };
 
@@ -65,7 +65,7 @@ config.database = {
 // set scss imports
 // these are imported into app.min.css by default
 config.sass = [
-    './node_modules/bootstrap/scss/bootstrap-flex.scss',
+    './node_modules/bootstrap/scss/bootstrap.scss',
     './node_modules/tether/src/css/tether.scss'
 ];
 
@@ -84,10 +84,10 @@ config.js = [
  */
 
 // secret for crypto
-config.secret = 'SECRET';
+config.secret = 'someStrongSecretHash';
 
 // secret for session
-config.session = config.secret;
+config.session = 'someStrongSessionHash';
 
 
 /**
