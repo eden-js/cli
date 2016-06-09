@@ -127,6 +127,13 @@ config.view = {
 };
 
 /**
+ * set misc settings
+ */
+
+// create log level setting
+config.logLevel = 'info';
+
+/**
  * export config
  *
  * @type {Object}

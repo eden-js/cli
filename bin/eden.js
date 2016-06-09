@@ -112,7 +112,7 @@ class eden {
     _registerLogger (opts) {
         // set logger
         this.logger = (opts.logger || new winston.Logger ({
-            level      : 'info',
+            level      : config.logLevel  || 'info',
             transports : [
               new (winston.transports.Console) ({
                   colorize  : true,
@@ -383,7 +383,7 @@ class eden {
                 that._daemon[daemons[i]] = new daemon (that);
 
                 // log daemon
-                that.logger.log ('info', 'Running daemon ' + that._daemon[daemons[i]].constructor.name);
+                that.logger.log ('info', 'running daemon ' + that._daemon[daemons[i]].constructor.name);
             }
         });
     }
@@ -421,7 +421,7 @@ class eden {
                 this.port = ports[0];
 
                 // log port
-                this.logger.log ('info', 'Running express on port ' + this.port);
+                this.logger.log ('info', 'running express on port ' + this.port);
 
                 // resolve
                 resolve (this.port);
@@ -489,7 +489,7 @@ class eden {
      */
     require (file) {
         // log which file to require
-        this.logger.log ('debug', 'Requiring ' + file);
+        this.logger.log ('debug', 'requiring ' + file);
 
         // return Promise
         return new Promise ((resolve, reject) => {

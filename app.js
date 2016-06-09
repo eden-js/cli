@@ -21,7 +21,7 @@ global.envrionment = process.env.NODE_ENV || config.environment;
 
 // create logger
 var logger = new winston.Logger ({
-    level      : 'info',
+    level      : config.logLevel  || 'info',
     transports : [
       new (winston.transports.Console) ({
           colorize  : true,
@@ -34,7 +34,7 @@ var logger = new winston.Logger ({
 // check if environment
 if (global.environment == 'dev') {
     // run in dev
-    logger.log ('info', 'Running eden in development environment!');
+    logger.log ('info', 'Running eden in development environment');
 
     // run single instance
     new eden ({
@@ -44,7 +44,7 @@ if (global.environment == 'dev') {
     // check if master
     if (cluster.isMaster) {
         // run in production
-        logger.log ('info', 'Running eden in production environment!');
+        logger.log ('info', 'Running eden in production environment');
 
         // count CPUs
         var threads = config.threads ? config.threads : os.cpus ().length;
@@ -62,7 +62,7 @@ if (global.environment == 'dev') {
         }
     } else {
         // log spawning threads
-        logger.log ('info', 'Spawned new eden thread!');
+        logger.log ('info', 'Spawned new eden thread');
 
         // run single instance
         new eden ({
@@ -73,7 +73,7 @@ if (global.environment == 'dev') {
     // set on exit
     cluster.on ('exit', function (worker) {
         // log spawning threads
-        logger.log ('warning', 'Worker ' + worker.id + ' died, forking new eden thread!');
+        logger.log ('warning', 'Worker ' + worker.id + ' died, forking new eden thread');
 
         // fork new thread
         cluster.fork ();
