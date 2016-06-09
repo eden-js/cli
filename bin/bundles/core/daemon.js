@@ -19,7 +19,7 @@ class daemon {
         // set variables
         this.app    = eden.app;
         this.logger = eden.logger;
-        // this.server = eden.;
+        this.server = eden.server;
     }
 }
 

@@ -30,9 +30,9 @@ class socketHelper extends helper {
     /**
      * construct socket helper class
      */
-    constructor (a, b) {
+    constructor () {
         // run super
-        super (a, b);
+        super ();
 
         // bind methods
         this.room  = this.room.bind (this);

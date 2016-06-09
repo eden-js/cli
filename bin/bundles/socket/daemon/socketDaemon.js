@@ -7,7 +7,6 @@
 
 // require dependencies
 var co           = require ('co');
-var log          = require ('log-util');
 var redis        = require ('socket.io-redis');
 var config       = require ('config');
 var daemon       = require ('daemon');
@@ -38,12 +37,11 @@ class socketDaemon extends daemon {
     /**
      * construct socket daemon
      *
-     * @param  {express4} app    express app
-     * @param  {Server}   server express server
+     * @param  {eden} eden    eden app
      */
-    constructor (app, server, ctrl) {
+    constructor (eden) {
         // run super
-        super (app, server);
+        super (eden);
 
         // bind variables
         this.io      = false;
@@ -51,14 +49,12 @@ class socketDaemon extends daemon {
         this.sockets = {};
         this.index   = 0;
 
-        // bind private variables
-        this._ctrl = ctrl;
-
         // bind methods
         this.build  = this.build.bind (this);
         this.socket = this.socket.bind (this);
 
         // bind private methods
+        this._ctrl        = eden._ctrl;
         this._route       = this._route.bind (this);
         this._connections = this._connections.bind (this);
 
@@ -128,6 +124,7 @@ class socketDaemon extends daemon {
                 }
             }
         });
+
         // subscribe to local redis
         sub.subscribe (config.domain + ':socket-message');
     }
@@ -152,7 +149,9 @@ class socketDaemon extends daemon {
          that.index++;
 
          // log connection
-         log ('client ' + socketid + ' connected');
+         this.logger.log ('debug', 'client ' + socketid + ' - ' + (User ? User.get ('username') : 'anonymous') + ' connected', {
+             'class' : 'socketDaemon'
+         });
 
          // add socket to sockets object
          that.sockets[socketid] = socket;
@@ -170,7 +169,9 @@ class socketDaemon extends daemon {
          // disconnect socket
          socket.on ('disconnect', () => {
              // log disconnected
-             log ('client ' + socketid + ' disconnected');
+             this.logger.log ('debug', 'client ' + socketid + ' - ' + (User ? User.get ('username') : 'anonymous') + ' disconnected', {
+                 'class' : 'socketDaemon'
+             });
 
              // publish connections
              that._connections ();

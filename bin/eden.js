@@ -362,7 +362,6 @@ class eden {
      * @private
      */
     _buildErrorHandler () {
-
         // 500 error handler
         this.app.use ((err, req, res, next) => {
             // set status
