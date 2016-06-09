@@ -59,8 +59,8 @@ class eden {
         // bind registration methods
         this._register = [
             '_registerLogger',
-            '_registerDatabase',
-            '_registerAliases'
+            '_registerAliases',
+            '_registerDatabase'
         ];
 
         // bind and run register methods
@@ -159,7 +159,6 @@ class eden {
 
         // register util aliases
         alias ('acl-util', global.appRoot + '/bin/util/acl.js');
-        alias ('log-util', global.appRoot + '/bin/util/log.js');
     }
 
     ////////////////////////////////////////////////////////////////////////////
