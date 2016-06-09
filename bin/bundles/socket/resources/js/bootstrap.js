@@ -36,13 +36,13 @@ class socket {
         var that = this;
 
         // run socket
-        this.socket = io.connect ('//' + window.eden.domain, {
+        this.socket = io.connect ('//' + window.edenState.domain, {
             secure    : true,
             reconnect : true
         });
 
         // build alerts
-        this.alerts();
+        this.alerts ();
     }
 
     /**

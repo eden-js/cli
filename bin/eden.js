@@ -13,8 +13,9 @@ var http         = require ('http');
 var alias        = require ('alias-module');
 var child        = require ('child_process');
 var colors       = require ('colors');
-var session      = require ('express-session');
 var express      = require ('express');
+var session      = require ('express-session');
+var winston      = require ('winston');
 var portastic    = require ('portastic');
 var mongorito    = require ('mongorito');
 var bodyParser   = require ('body-parser');
@@ -23,19 +24,20 @@ var prettyError  = require ('pretty-error');
 var cookieParser = require ('cookie-parser');
 
 // require local dependencies
-var view     = require (global.appRoot + '/bin/util/view');
+var log      = require (global.appRoot + '/bin/util/log');
 var config   = require (global.appRoot + '/config');
-var compiled = require (global.appRoot + '/cache/config.json');
+var engine   = require (global.appRoot + '/bin/util/engine');
 var daemons  = require (global.appRoot + '/cache/daemons.json');
+var compiled = require (global.appRoot + '/cache/config.json');
 
 /**
  * build bootstrap class
  */
-class bootstrap {
+class eden {
     /**
      * construct bootstrap class
      */
-    constructor () {
+    constructor (opts) {
         // bind variables
         this.app    = false;
         this.port   = false;
@@ -47,23 +49,24 @@ class bootstrap {
         this._daemon = {};
 
         // bind methods
+        this.require  = this.require.bind (this);
         this.onError  = this.onError.bind (this);
         this.onListen = this.onListen.bind (this);
 
         // bind private methods
-        this._require = this._require.bind (this);
         this._getPort = this._getPort.bind (this);
 
         // bind registration methods
         this._register = [
-            '_registerDatabase',
-            '_registerAliases'
+            '_registerLogger',
+            '_registerAliases',
+            '_registerDatabase'
         ];
 
         // bind and run register methods
         for (var i = 0; i < this._register.length; i ++) {
             this[this._register[i]] = this[this._register[i]].bind (this);
-            this[this._register[i]] ();
+            this[this._register[i]] (opts);
         }
 
         // bind build methods
@@ -100,6 +103,30 @@ class bootstrap {
     ////////////////////////////////////////////////////////////////////////////
 
     /**
+     * registers logger
+     *
+     * @param {Object} opts
+     *
+     * @private
+     */
+    _registerLogger (opts) {
+        // set logger
+        this.logger = (opts.logger || new winston.Logger ({
+            level      : config.logLevel  || 'info',
+            transports : [
+              new (winston.transports.Console) ({
+                  colorize  : true,
+                  formatter : log,
+                  timestamp : true
+              })
+            ]
+        }));
+
+        // register as global
+        global.logger = this.logger;
+    }
+
+    /**
      * registers mongodb database
      *
      * @private
@@ -132,7 +159,6 @@ class bootstrap {
 
         // register util aliases
         alias ('acl-util', global.appRoot + '/bin/util/acl.js');
-        alias ('log-util', global.appRoot + '/bin/util/log.js');
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -157,7 +183,7 @@ class bootstrap {
         this.app.use (bodyParser.json ());
         this.app.use (bodyParser.urlencoded ({extended : true}));
         this.app.use (cookieParser (config.session));
-        this.app.use (express.static('www'));
+        this.app.use (express.static ('www'));
         this.app.use (session ({
             store             : new redisStore (),
             secret            : config.session,
@@ -176,10 +202,8 @@ class bootstrap {
             res.header ('X-Powered-By', 'EdenFrame');
 
             // set variables
-            res.locals.eden  = {
-                'domain' : config.domain
-            };
-            res.locals.route = req.originalUrl;
+            res.locals.route  = req.originalUrl.replace ('ajx/', '');
+            res.locals.domain = config.domain;
 
             // go to next
             next ();
@@ -190,6 +214,23 @@ class bootstrap {
             // set headers
             res.header ('Access-Control-Allow-Origin',  '*');
             res.header ('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+
+            // go to next
+            next ();
+        });
+
+        // set CORS on api
+        this.app.all ('/ajx/*', (req, res, next) => {
+            // set response to json
+            res.locals.isJSON = true;
+
+            // set res.redirect
+            res.redirect = (url) => {
+                // render json
+                res.json ({
+                    'redirect' : url
+                });
+            };
 
             // go to next
             next ();
@@ -227,8 +268,8 @@ class bootstrap {
     _buildView () {
         // build view engine
         this.app.set ('views', global.appRoot + '/cache/view');
-        this.app.set ('view engine', 'hbs');
-        this.app.engine ('hbs', new view ().engine);
+        this.app.set ('view engine', 'tag');
+        this.app.engine ('tag', new engine ().render);
     }
 
     /**
@@ -251,6 +292,13 @@ class bootstrap {
 
         // run generator
         co (function * () {
+            // require user controller first
+            var userCtrl = '/bin/bundles/user/controller/userController';
+            var UserCtrl = yield that.require (global.appRoot + userCtrl);
+
+            // build required user controller
+            that._ctrl[userCtrl] = new UserCtrl (that);
+
             // loop priorities
             for (var i = 0; i < priorities.length; i ++) {
                 // let types
@@ -265,11 +313,10 @@ class bootstrap {
                         // check if controller registered
                         if (!that._ctrl[routeType[route].controller]) {
                             // require controller
-                            var ctrl = yield that._require (global.appRoot + routeType[route].controller);
+                            var ctrl = yield that.require (global.appRoot + routeType[route].controller);
 
                             // register controller
-                            console.log (routeType[route].controller);
-                            that._ctrl[routeType[route].controller] = new ctrl (that.app);
+                            that._ctrl[routeType[route].controller] = new ctrl (that);
                         }
 
                         // assign route to controller function
@@ -280,6 +327,7 @@ class bootstrap {
 
             // set routes to app
             that.app.use ('/', that.router);
+            that.app.use ('/ajx', that.router);
 
             // use 404 handler
             this.app.use ((req, res, next) => {
@@ -329,13 +377,13 @@ class bootstrap {
         co (function * () {
             for (var i = 0; i < daemons.length; i++) {
                 // require daemon
-                var daemon = yield that._require (global.appRoot + daemons[i]);
+                var daemon = yield that.require (global.appRoot + daemons[i]);
 
                 // run daemon
-                that._daemon[daemons[i]] = new daemon (that.app, that.server, that._ctrl);
+                that._daemon[daemons[i]] = new daemon (that);
 
                 // log daemon
-                that._log ('running', that._daemon[daemons[i]].constructor.name);
+                that.logger.log ('info', 'running daemon ' + that._daemon[daemons[i]].constructor.name);
             }
         });
     }
@@ -373,7 +421,7 @@ class bootstrap {
                 this.port = ports[0];
 
                 // log port
-                this._log ('using port ' + this.port, 'bootstrap');
+                this.logger.log ('info', 'running express on port ' + this.port);
 
                 // resolve
                 resolve (this.port);
@@ -437,10 +485,12 @@ class bootstrap {
      *
      * @param  {String} file
      *
-     * @private
      * @return {Promise}
      */
-    _require (file) {
+    require (file) {
+        // log which file to require
+        this.logger.log ('debug', 'requiring ' + file);
+
         // return Promise
         return new Promise ((resolve, reject) => {
             // try catch
@@ -461,22 +511,11 @@ class bootstrap {
             }
         });
     }
-
-    /**
-     * console logs
-     *
-     * @param message
-     * @param type
-     * @private
-     */
-    _log (message, type, error) {
-        return global.log (message, type, error);
-    }
 }
 
 /**
- * export bootstrap bootstrap
+ * export eden bootstrap
  *
- * @type {bootstrap}
+ * @type {eden}
  */
-module.exports = new bootstrap ();
+module.exports = eden;

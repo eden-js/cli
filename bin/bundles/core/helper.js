@@ -9,7 +9,13 @@
  * build helper class
  */
 class helper {
-
+    /**
+     * construct default helper
+     */
+    constructor () {
+        // set logger
+        this.logger = global.logger;
+    }
 }
 
 /**

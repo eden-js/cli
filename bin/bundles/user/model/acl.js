@@ -18,8 +18,8 @@ class acl extends model {
      * @param a
      * @param b
      */
-    constructor(a, b) {
-        super(a, b);
+    constructor (a, b) {
+        super (a, b);
 
         // set model location
         this._modelLocation = __filename.replace (global.appRoot, '');

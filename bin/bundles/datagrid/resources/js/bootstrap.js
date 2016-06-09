@@ -36,10 +36,12 @@ class datagrid {
         });
 
         // render grids
-        jQuery ('[data-grid]').each (function () {
-            jQuery (this).bootgrid ({
-                'ajax' : true,
-                'url'  : jQuery (this).attr ('data-grid')
+        jQuery ('body').on ('layout', function () {
+            jQuery ('[data-grid]').each (function () {
+                jQuery (this).bootgrid ({
+                    'ajax' : true,
+                    'url'  : jQuery (this).attr ('data-grid')
+                });
             });
         });
     }

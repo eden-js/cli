@@ -59,7 +59,11 @@ class socketDaemon extends daemon {
         this.socket = this.socket.bind (this);
 
         // bind private methods
+<<<<<<< HEAD
         this._route       = this._route.bind (this);
+=======
+        this._socket      = this._socket.bind (this);
+>>>>>>> 986ccb8cfc7977cbf3def4319f5995add76011d3
         this._connections = this._connections.bind (this);
 
         // check if socket enabled;

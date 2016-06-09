@@ -39,7 +39,7 @@ class defaultController extends controller {
     defaultAction (req, res) {
         // render home page
         res.render('home', {
-            'route' : '/'
+            'test' : 'testing'
         });
     }
 }

@@ -85,16 +85,12 @@ class gulpBuilder {
                     './app/bundles/*/helper/**/*Helper.js'
                 ],
             },
-            'view'   : {
-                'files' : [
-                    './bin/bundles/*/view/**/*.hbs',
-                    './app/bundles/*/view/**/*.hbs'
-                ],
-            },
             'tag'    : {
                 'files' : [
-                    './bin/bundles/*/view/tag/**/*.tag',
-                    './app/bundles/*/view/tag/**/*.tag'
+                    './bin/bundles/*/view/**/*.mixin.js',
+                    './app/bundles/*/view/**/*.mixin.js',
+                    './bin/bundles/*/view/**/*.tag',
+                    './app/bundles/*/view/**/*.tag'
                 ],
                 'dependencies' : [
                     'wait'
@@ -164,10 +160,7 @@ class gulpBuilder {
             nodemon ({
                 'script' : './app.js',
                 'ext'    : 'js json',
-                'ignore' : [
-                    'tags.min.js'
-                ],
-                'delay'  : this.wait,
+                'delay'  : this._wait,
                 'watch'  : [
                     'cache/'
                 ],
@@ -222,22 +215,22 @@ class gulpBuilder {
         // loop config sass files
         if (config.sass && config.sass.length) {
             for (var i = 0; i < config.sass.length; i ++) {
-                sassFiles.push(config.sass[i]);
+                sassFiles.push (config.sass[i]);
             }
         }
 
         // push local bootstrap files
-        sassFiles.push('./bin/bundles/*/resources/scss/bootstrap.scss');
-        sassFiles.push('./app/bundles/*/resources/scss/bootstrap.scss');
+        sassFiles.push ('./bin/bundles/*/resources/scss/bootstrap.scss');
+        sassFiles.push ('./app/bundles/*/resources/scss/bootstrap.scss');
 
         // run gulp
         return this.gulp.src (sassFiles)
             .pipe (through.obj (function (chunk, enc, cb) {
                 // run through callback
-                var type = chunk.path.split('.');
+                var type = chunk.path.split ('.');
                     type = type[type.length - 1];
                 if (type == 'css') {
-                    var prepend = fs.readFileSync(chunk.path, 'utf8');
+                    var prepend = fs.readFileSync (chunk.path, 'utf8');
                     this.push ({
                         'all' : prepend + os.EOL
                     });
@@ -354,37 +347,6 @@ class gulpBuilder {
     }
 
     /**
-     * view task
-     */
-    view () {
-        // set that
-        var that = this;
-
-        // ensure running only once
-        if (this._viewRunning) {
-            return;
-        }
-        this._viewRunning = true;
-
-        // move views into single folder
-        // do within setTimeout to remove empty files
-        // @todo bundle priority
-        return this.gulp.src (this._tasks.view.files)
-            .pipe (rename ((filePath) => {
-                var amended = filePath.dirname.split (path.sep);
-                amended.shift ();
-                amended.shift ();
-                filePath.dirname = amended.join (path.sep);
-            }))
-            .pipe (chmod (755))
-            .pipe (this.gulp.dest ('cache/view'))
-            .on('end', () => {
-                // reset view running
-                that._viewRunning = false;
-            });
-    }
-
-    /**
      * tag task
      */
     tag () {
@@ -397,18 +359,41 @@ class gulpBuilder {
         }
         this._tagRunning = true;
 
-        // move tags into javascript compiled file (riotjs)
-        return this.gulp.src (this._tasks.tag.files)
-            .pipe (riot ({
-                compact : true
-            }))
-            .pipe (concat ('tags.min.js'))
-            .pipe (header ('var riot = require(\'riot\');'))
-            .pipe (this.gulp.dest ('./cache/tag'))
-            .on ('end', () => {
-                // reset running flag
-                that._tagRunning = false;
-            });
+        // create header
+        var riotHeader = '';
+        for (var key in config.view.include) {
+            riotHeader += 'var ' + key + ' = require ("' + config.view.include[key] + '");';
+        }
+
+        // return promise
+        return new Promise ((resolve, reject) => {
+            // move views into single folder
+            this.gulp.src (this._tasks.tag.files)
+                .pipe (rename ((filePath) => {
+                    var amended = filePath.dirname.split (path.sep);
+                    amended.shift ();
+                    amended.shift ();
+                    filePath.dirname = amended.join (path.sep);
+                }))
+                .pipe (chmod (755))
+                .pipe (this.gulp.dest ('cache/view'))
+                .on ('end', () => {
+                    this.gulp.src (this._tasks.tag.files)
+                        .pipe (riot ({
+                            compact : true
+                        }))
+                        .pipe (concat ('tags.min.js'))
+                        .pipe (header (riotHeader))
+                        .pipe (this.gulp.dest ('./cache'))
+                        .on ('end', () => {
+                            // reset running flag
+                            that._tagRunning = false;
+
+                            // resolve
+                            return resolve (true);
+                        });
+                });
+        });
     }
 
     /**
@@ -426,8 +411,8 @@ class gulpBuilder {
 
         // create javascript array
         var js = [];
-        js     = js.concat (glob.sync ('./bin/bundles/*/resources/js/bootstrap.js'));
-        js     = js.concat (glob.sync ('./app/bundles/*/resources/js/bootstrap.js'));
+        js = js.concat (glob.sync ('./bin/bundles/*/resources/js/bootstrap.js'));
+        js = js.concat (glob.sync ('./app/bundles/*/resources/js/bootstrap.js'));
 
         // build vendor prepend
         var vendor = '';
@@ -440,13 +425,19 @@ class gulpBuilder {
         // browserfiy javascript
         // do within setTimeout to remove empty files
         return browserify ({
-            entries : js
+            entries : js,
+            paths   : [
+                './',
+                './app/bundles',
+                './bin/bundles',
+                './node_modules'
+            ]
         })
             .transform (babelify)
             .bundle ()
             .pipe (source ('app.min.js'))
-            .pipe (streamify (uglify ()))
             .pipe (streamify (header (vendor)))
+            .pipe (streamify (uglify ()))
             .pipe (this.gulp.dest ('./www/assets/js'))
             .on ('end', () => {
                 // reset running flag

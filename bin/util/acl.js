@@ -17,6 +17,7 @@ class aclUtil {
      */
     constructor() {
         // bind methods
+        this.acl  = this.acl.bind (this);
         this.test = this.test.bind (this);
 
         // bind private methods
@@ -25,13 +26,43 @@ class aclUtil {
     }
 
     /**
+     * test match existing acl
+     *
+     * @param {Object} userAcl ACL to check has permissions
+     * @param {Array}  Acl     permissions to match
+     * @param {user}   User
+     *
+     * @return {*}
+     */
+    acl (userAcl, Acl, User) {
+        // set default Acl
+        Acl = Acl || false;
+
+        // check acl exists
+        if (!Acl) return true;
+
+        // check user specific acl
+        var userTest = this._userTest (Acl, User);
+        if (userTest !== null) {
+            return (userTest ? true : (Acl.fail || false));
+        }
+
+        // check for user groups specific acl
+        var aclTest = this._aclTest (userAcl, Acl);
+
+        // return result
+        return (aclTest ? true : (Acl.fail || false));
+    }
+
+    /**
      * tests acl
      *
-     * @param acl
-     * @param User
+     * @param {Array}  Acl     permissions to match
+     * @param {user}   User
+     *
      * @returns {Promise}
      */
-    test (acl, User) {
+    test (Acl, User) {
         // set that
         var that = this;
 
@@ -39,23 +70,21 @@ class aclUtil {
         return new Promise ((resolve, reject) => {
             // do coroutine
             co (function * () {
-                // check user specific acl
-                var userTest = that._userTest (acl, User);
-                if (userTest !== null) {
-                    return resolve (userTest ? true : (acl.fail || false));
+                // set user acl
+                var test    = [];
+                var userAcl = [];
+
+                // check for user
+                if (User) test = yield User.model ('acl');
+
+                // loop user acl
+                for (var i = 0; i < test.length; i++) {
+                    // push into acl
+                    userAcl.push (test[i].sanitise ());
                 }
 
-                // check and get user acl
-                var userAcl = yield User.model ('acl');
-                if (!userAcl) {
-                    return resolve (acl.fail || false);
-                }
-
-                // check for user groups specific acl
-                var aclTest = that._aclTest (acl, userAcl);
-
-                // resolve result
-                return resolve (aclTest ? true : (acl.fail || false));
+                // resolve test match
+                resolve (that.acl (userAcl, Acl, User));
             });
         });
     }
@@ -63,30 +92,30 @@ class aclUtil {
     /**
      * tests for user login/logout specific acl
      *
-     * @param acl
-     * @param User
+     * @param {Object} Acl   acl to test
+     * @param {user}   User
      *
-     * @returns {boolean|null}
      * @private
+     * @returns {boolean|null}
      */
-    _userTest (acl, User) {
+    _userTest (Acl, User) {
         // check if user defined
-        if (!User || User === undefined) {
+        if (!User || typeof User === 'undefined') {
             User = false;
         }
 
         // check for acl
-        if (!acl) {
+        if (!Acl) {
             return true;
         }
 
         // check logged in specific acl
-        if ((!User && acl.test === false) || (User && acl.test === true)) {
+        if ((!User && Acl.test === false) || (User && Acl.test === true)) {
             return true;
         }
 
         // Check logged out for specific acl
-        if ((User && acl.test === false) || (!User && acl.test === true)) {
+        if ((User && Acl.test === false) || (!User && Acl.test === true)) {
             return false;
         }
 
@@ -102,40 +131,41 @@ class aclUtil {
     /**
      * tests for user groups specific acl
      *
-     * @param acl
-     * @param userAcl
+     * @param {Object} userAcl ACL to check has permissions
+     * @param {Object} Acl   acl to test
      *
-     * @returns {boolean}
      * @private
+     * @returns {boolean|null}
      */
-    _aclTest (acl, userAcl) {
+    _aclTest (userAcl, Acl) {
         // set variables
         var can     = false;
+        userAcl     = userAcl || [];
         var aclTest = [];
 
         // loop acl array
-        for (var i = 0; i < userAcl.length; i++) {
+        for (var a = 0; a < userAcl.length; a++) {
             // add acl to aclTest array
-            aclTest = aclTest.concat (userAcl[i].get ('value'));
+            aclTest = aclTest.concat (userAcl[a].value);
         }
 
         // Return true if acl is admin
         if (aclTest.indexOf (true) > -1) {
+            // return true
             return true;
         }
 
         // loop all acl
-        for (var x = 0; x < acl.test.length; x++) {
-            if (aclTest.indexOf (acl.test[x]) > -1) {
+        for (var b = 0; b < Acl.test.length; b++) {
+            // check if should return true
+            if (aclTest.indexOf (Acl.test[b]) > -1) {
                 // found the acl required, return true
-                can = true;
-            } else {
-                return false;
+                return true;
             }
         }
 
         // return found acl
-        return can;
+        return false;
     }
 }
 

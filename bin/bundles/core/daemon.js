@@ -15,10 +15,11 @@ class daemon {
      * @param  {express4} a  express app
      * @param  {Server}   b  express server
      */
-    constructor (a, b) {
+    constructor (eden) {
         // set variables
-        this.app    = a;
-        this.server = b;
+        this.app    = eden.app;
+        this.logger = eden.logger;
+        // this.server = eden.;
     }
 }
 

@@ -29,9 +29,9 @@ class userController extends controller {
      *
      * @param app
      */
-    constructor (app) {
+    constructor (eden) {
         // run super
-        super (app);
+        super (eden);
 
         // bind methods
         this.loginAction        = this.loginAction.bind (this);
@@ -44,7 +44,7 @@ class userController extends controller {
         this.build = this.build.bind (this);
 
         // run
-        this.build (app);
+        this.build (eden.app);
     }
 
     /**
@@ -57,6 +57,7 @@ class userController extends controller {
 
         // create local strategy
         passport.use (new local ((username, password, done) => {
+            // run coroutine
             co (function * () {
                 // find user
                 var User = yield user.where ({
@@ -80,38 +81,43 @@ class userController extends controller {
 
         // serializes user
         passport.serializeUser ((User, done) => {
+            // emit done
             done (null, User.get ('_id').toString ());
         });
 
         // deserialize user
         passport.deserializeUser ((id, done) => {
+            // run coroutine
             co (function * () {
+                // find user by id
                 var User = yield user.findById (id);
 
-                if (User) {
-                    done (null, User);
-                } else {
-                    done (null, false);
-                }
+                // callback done with user
+                done (null, User);
             });
         });
 
         // add user to locals
         app.use ((req, res, next) => {
+            // run coroutine
             co (function * () {
                 // get acls
                 var aclArr = [];
                 var acls   = [];
+
+                // check for req user
                 if (req.user) {
                     acls = yield req.user.model ('acl');
                 }
+
+                // loop acls for acl array
                 for (var i = 0; i < acls.length; i++) {
                     aclArr.push (acls[i].sanitise ());
                 }
+
                 // set user locally
-                res.locals.user      = req.user;
-                res.locals.eden.user = req.user ? req.user.sanitise () : false;
-                res.locals.eden.acl  = aclArr;
+                res.locals.acl  = aclArr;
+                res.locals.user = req.user ? req.user.sanitise () : false;
 
                 // run next
                 next ();
@@ -120,34 +126,35 @@ class userController extends controller {
 
         // check acl on run
         app.use ((req, res, next) => {
-            co (function * () {
-                // do route regex
-                var rt = '/' + res.locals.route.replace (/^\/|\/$/g, '');
+            // do route regex
+            var rt = '/' + res.locals.route.replace (/^\/|\/$/g, '');
 
-                // check route has acl
-                if (aclConfig[rt] && aclConfig[rt].length) {
-                    // loop acl for tests
-                    for (var i = 0; i < aclConfig[rt].length; i ++) {
-                        // check acl
-                        var check = yield aclUtil.test (aclConfig[rt][i], res.locals.user);
+            // check route has acl
+            if (!aclConfig[rt] || !aclConfig[rt].length) {
+                // return next
+                return next ();
+            }
 
-                        // check if true
-                        if (check !== true) {
-                            // check if redirect
-                            if (check.redirect) {
-                                // redirect to fail auth redirect
-                                return res.redirect (check.redirect);
-                            }
+            // loop acl for tests
+            for (var i = 0; i < aclConfig[rt].length; i ++) {
+                // check acl
+                var check = aclUtil.acl (res.locals.acl, aclConfig[rt][i], res.locals.user);
 
-                            // redirect home
-                            return res.redirect ('/');
-                        }
+                // check if true
+                if (check !== true) {
+                    // check if redirect
+                    if (check.redirect) {
+                        // redirect to fail auth redirect
+                        return res.redirect (check.redirect);
                     }
-                }
 
-                // do next
-                next ();
-            });
+                    // redirect home
+                    return res.redirect ('/');
+                }
+            }
+
+            // do next
+            next ();
         });
     }
 
@@ -164,6 +171,7 @@ class userController extends controller {
      * @priority 2
      */
     loginAction (req, res) {
+        // render login page
         res.render ('login', {});
     }
 
@@ -177,14 +185,20 @@ class userController extends controller {
      * @acl   {test:false,fail:{redirect:"/"}}
      */
     loginFormAction (req, res, next) {
+        // authenticate with passport
         passport.authenticate ('local', (err, User, info) => {
-            if (! User) {
+            // check user exists
+            if (!User) {
+                // render login page
                 return res.render ('login', {
                     'error' : info.message,
                     'old'   : req.body
                 });
             }
+
+            // do passport login
             req.login (User, {}, (err) => {
+                // redirect to home
                 res.redirect ('/');
             });
         }) (req, res, next);
@@ -203,7 +217,9 @@ class userController extends controller {
      * @priority 2
      */
     logoutAction (req, res) {
+        // logout
         req.logout ();
+        // redirect to home
         res.redirect ('/');
     }
 
@@ -217,6 +233,7 @@ class userController extends controller {
      * @acl   {test:false,fail:{redirect:"/"}}
      */
     registerAction (req, res) {
+        // render registration page
         res.render ('register', {});
     }
 
@@ -230,9 +247,11 @@ class userController extends controller {
      * @acl   {test:false,fail:{redirect:"/"}}
      */
     registerFormAction (req, res) {
+        // run coroutine
         co (function * () {
             // check username
             if (req.body.username.trim ().length < 5) {
+                // render registration page
                 return res.render ('register', {
                     'error' : 'your username must be at least 5 characters long',
                     'old'   : req.body
@@ -246,6 +265,7 @@ class userController extends controller {
 
             // check if user exists
             if (User) {
+                // render registration page
                 return res.render ('register', {
                     'error' : 'the username "' + req.body.username + '" is already taken',
                     'old'   : req.body
@@ -254,6 +274,7 @@ class userController extends controller {
 
             // check password length
             if (req.body.password.trim ().length < 5) {
+                // render registration page
                 return res.render ('register', {
                     'error' : 'your password must be at least 5 characters long',
                     'old'   : req.body
@@ -262,6 +283,7 @@ class userController extends controller {
 
             // check passwords match
             if (req.body.password != req.body.passwordb) {
+                // render registration page
                 return res.render ('register', {
                     'error' : 'your passwords do not match',
                     'old'   : req.body
@@ -284,6 +306,7 @@ class userController extends controller {
 
             // log user in
             req.login (User, (err) => {
+                // redirect to home
                 res.redirect ('/');
             });
         });
