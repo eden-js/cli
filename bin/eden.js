@@ -367,10 +367,8 @@ class eden {
             // set status
             res.status (err.status || 500);
 
-            // log error
-            var pe = new prettyError ();
-            // log error
-            console.log (pe.render (err));
+            // print error
+            that.error (err);
 
             // render error page
             res.render ('error', {
@@ -389,15 +387,24 @@ class eden {
 
         // run generator
         co (function * () {
+            console.log (daemons);
             for (var i = 0; i < daemons.length; i++) {
                 // require daemon
                 var daemon = yield that.require (global.appRoot + daemons[i]);
 
                 // run daemon
-                that._daemon[daemons[i]] = new daemon (that);
+                try {
+                    that._daemon[daemons[i]] = new daemon (that);
 
-                // log daemon
-                that.logger.log ('info', 'running daemon ' + that._daemon[daemons[i]].constructor.name);
+                    // log daemon
+                    that.logger.log ('info', 'running daemon ' + that._daemon[daemons[i]].constructor.name);
+                } catch (e) {
+                    // print error
+                    that.error (e);
+
+                    // log daemon
+                    that.logger.log ('error', 'daemon ' + that._daemon[daemons[i]].constructor.name + ' failed!');
+                }
             }
         });
     }
@@ -502,6 +509,9 @@ class eden {
      * @return {Promise}
      */
     require (file) {
+        // set that
+        var that = this;
+
         // log which file to require
         this.logger.log ('debug', 'requiring ' + file);
 
@@ -515,15 +525,25 @@ class eden {
                 // resolve
                 resolve (req);
             } catch (e) {
-                // log error
-                var pe = new prettyError ();
-                // log error
-                console.log (pe.render (e));
+                // print error
+                that.error (e);
 
                 // exit process
                 process.exit ();
             }
         });
+    }
+
+    /**
+     * pretty prints error
+     *
+     * @param  {Error} e
+     */
+    error (e) {
+        // log error
+        var pe = new prettyError ();
+        // log error
+        console.log (pe.render (e));
     }
 }
 
