@@ -387,7 +387,6 @@ class eden {
 
         // run generator
         co (function * () {
-            console.log (daemons);
             for (var i = 0; i < daemons.length; i++) {
                 // require daemon
                 var daemon = yield that.require (global.appRoot + daemons[i]);
