@@ -23,8 +23,8 @@ var watch      = require ('gulp-watch');
 var concat     = require ('gulp-concat');
 var header     = require ('gulp-header');
 var rename     = require ('gulp-rename');
+var server     = require ('gulp-develop-server');
 var uglify     = require ('gulp-uglify');
-var nodemon    = require ('gulp-nodemon');
 var streamify  = require ('gulp-streamify');
 var sourcemaps = require ('gulp-sourcemaps');
 
@@ -49,10 +49,12 @@ class gulpBuilder {
         }
 
         // bind private methods
-        this._watch = this._watch.bind (this);
+        this._watch   = this._watch.bind (this);
+        this._restart = this._restart.bind (this);
 
         // bind variables
-        this.gulp = require ('gulp');
+        this.gulp  = require ('gulp');
+        this.serve = false;
 
         // bind methods
         this._tasks = {
@@ -123,18 +125,22 @@ class gulpBuilder {
         for (var i = 0; i < keys.length; i++) {
             // set task
             let task = keys[i];
+
             // bind method
             this[task] = this[task].bind (this);
+
             // setup task
             if (this._tasks[task].dependencies) {
                 this.gulp.task (task, this._tasks[task].dependencies, this[task]);
             } else {
                 this.gulp.task (task, this[task]);
             }
+
             // check for skip
             if (this._tasks[task].skip) {
                 continue;
             }
+
             // setup watch task
             var files = this._tasks[task].files;
             if (this._tasks[task].dependencies) {
@@ -142,36 +148,40 @@ class gulpBuilder {
                     files = files.concat (this._tasks[this._tasks[task].dependencies[a]].files || []);
                 }
             }
+
             // create watch task
             this._watch (task, files);
+
             // push to install
             install.push (task);
+
             // add watch task to array
             watchers.push (task + ':watch');
         }
 
         // add install task
         this.gulp.task ('install', install);
+
         // add watch task
         this.gulp.task ('watch', watchers);
+
         // add dev server task
         this.gulp.task ('dev', ['install'], () => {
-            // run nodemon task
-            nodemon ({
-                'script' : './app.js',
-                'ext'    : 'js json',
-                'delay'  : this._wait,
-                'watch'  : [
-                    'cache/'
-                ],
-                'env'    : {
+            // run server task
+            server.listen ({
+                'path' : './app.js',
+                'env'  : {
                     'NODE_ENV' : 'development'
                 }
             });
 
+            // set serve
+            this.serve = true;
+
             // start watch task
             this.gulp.start ('watch');
         });
+
         // add default task
         this.gulp.task ('default', ['dev']);
     }
@@ -196,7 +206,6 @@ class gulpBuilder {
      */
     tmp () {
         // set variables
-        var that = this;
         var all  = '';
 
         // set running
@@ -248,12 +257,12 @@ class gulpBuilder {
                     all += data.all;
                 }
             })
-            .on ('end', function () {
+            .on ('end', () => {
                 // write temp sass file
                 fs.writeFileSync ('./cache/tmp.scss', all);
 
                 // reset running
-                that._tmpRunning = false;
+                this._tmpRunning = false;
             });
     }
 
@@ -261,9 +270,6 @@ class gulpBuilder {
      * sass task
      */
     sass () {
-        // set that
-        var that = this;
-
         // check running
         if (this._tmpRunning || this._sassRunning) {
             return;
@@ -278,10 +284,10 @@ class gulpBuilder {
             }))
             .pipe (rename ('app.min.css'))
             .pipe (sourcemaps.write ('./www/assets/css'))
-            .pipe (that.gulp.dest ('./www/assets/css'))
+            .pipe (this.gulp.dest ('./www/assets/css'))
             .on ('end', () => {
                 // reset running
-                that._sassRunning = false;
+                this._sassRunning = false;
             });
     }
 
@@ -302,6 +308,9 @@ class gulpBuilder {
 
         // write daemons cache file
         this._write ('daemons', daemons);
+
+        // restart server
+        this._restart ();
     }
 
     /**
@@ -309,7 +318,6 @@ class gulpBuilder {
      */
     config () {
         // set variables
-        var that = this;
         var all  = {};
 
         // set running
@@ -322,7 +330,10 @@ class gulpBuilder {
         // do within setTimeout to remove empty files
         return this.gulp.src (this._tasks.config.files)
             .pipe (through.obj (function (chunk, enc, cb) {
+                // set pipe
                 var pipe = this;
+
+                // run pipe chunk
                 configPipe.pipe (chunk).then (result => {
                     // push to pipe
                     pipe.push ({
@@ -335,14 +346,17 @@ class gulpBuilder {
             }))
             .on ('data', (data) => {
                 // merge config object
-                that._merge (all, data.result);
+                this._merge (all, data.result);
             })
-            .on ('end', function () {
+            .on ('end', () => {
                 // write config file
-                that._write ('config', all);
+                this._write ('config', all);
 
                 // reset running tag
-                that._configRunning = false;
+                this._configRunning = false;
+
+                // restart server
+                this._restart ();
             });
     }
 
@@ -350,9 +364,6 @@ class gulpBuilder {
      * tag task
      */
     tag () {
-        // set that
-        var that = this;
-
         // ensure running only once
         if (this._tagRunning) {
             return;
@@ -387,7 +398,7 @@ class gulpBuilder {
                         .pipe (this.gulp.dest ('./cache'))
                         .on ('end', () => {
                             // reset running flag
-                            that._tagRunning = false;
+                            this._tagRunning = false;
 
                             // resolve
                             return resolve (true);
@@ -400,9 +411,6 @@ class gulpBuilder {
      * javascript task
      */
     js () {
-        // set that
-        var that = this;
-
         // ensure running only once
         if (this._jsRunning) {
             return;
@@ -441,7 +449,10 @@ class gulpBuilder {
             .pipe (this.gulp.dest ('./www/assets/js'))
             .on ('end', () => {
                 // reset running flag
-                that._jsRunning = false;
+                this._jsRunning = false;
+
+                // restart server
+                this._restart ();
             });
     }
 
@@ -485,6 +496,21 @@ class gulpBuilder {
                 }
             });
         });
+    }
+
+    /**
+     * restarts dev server
+     *
+     * @private
+     */
+    _restart () {
+        // check if running
+        if (!this.serve) {
+            return;
+        }
+
+        // restart server
+        server.restart ();
     }
 
     /**
