@@ -16,8 +16,8 @@ npm-debug.log
 *.sentry
 
 # EdenFrame config
-config.js
-nginx.conf
+./config.js
+./nginx.conf
 
 # EdenFrame etc
 gulp
