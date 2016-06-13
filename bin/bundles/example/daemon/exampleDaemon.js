@@ -15,12 +15,11 @@ class exampleDaemon extends daemon {
     /**
      * construct example daemon class
      *
-     * @param {*} a
-     * @param {*} b
+     * @param {eden} eden
      */
-    constructor (a, b) {
-        // run super
-        super (a, b);
+    constructor (eden) {
+        // run super eden
+        super (eden);
     }
 }
 

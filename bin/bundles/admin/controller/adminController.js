@@ -18,12 +18,11 @@ class adminController extends controller {
     /**
      * construct admin controller
      *
-     * @param  {*} a
-     * @param  {*} b
+     * @param  {eden} eden
      */
-    constructor (a, b) {
+    constructor (eden) {
         // run super
-        super (a, b);
+        super (eden);
 
         // bind methods
         this.indexAction = this.indexAction.bind (this);

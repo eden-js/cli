@@ -27,7 +27,7 @@ class userController extends controller {
     /**
      * constructor for user controller
      *
-     * @param app
+     * @param {eden} eden
      */
     constructor (eden) {
         // run super

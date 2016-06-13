@@ -8,13 +8,13 @@
 /**
  * build commander class
  */
-class commander {
-    
+class command {
+
 }
 
 /**
- * export commander class
+ * export command class
  *
- * @type {commander}
+ * @type {command}
  */
-module.exports = commander;
+module.exports = command;

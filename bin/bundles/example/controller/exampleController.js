@@ -13,13 +13,13 @@ var controller = require ('controller');
  */
 class exampleController extends controller {
     /**
-     * construct props
+     * construct example controller class
      *
-     * @param {*} a
-     * @param {*} b
+     * @param {eden} eden
      */
-    constructor (a, b) {
-        super (a, b);
+    constructor (eden) {
+        // run super eden
+        super (eden);
     }
 }
 

@@ -20,11 +20,11 @@ class adminController extends controller {
     /**
      * construct user admin controller
      *
-     * @param props
+     * @param {eden} eden
      */
-    constructor (props) {
+    constructor (eden) {
         // run super
-        super (props);
+        super (eden);
 
         // bind methods
         this.indexAction    = this.indexAction.bind (this);
@@ -43,6 +43,7 @@ class adminController extends controller {
      * @priority 11
      */
     indexAction (req, res) {
+        // render user admin page
         res.render ('user-admin', {
             'layout' : 'admin'
         });

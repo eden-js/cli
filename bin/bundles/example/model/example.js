@@ -19,6 +19,7 @@ class example extends model {
      * @param b
      */
     constructor (a, b) {
+        // run super
         super (a, b);
 
         // set model location
