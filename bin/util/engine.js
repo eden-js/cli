@@ -46,7 +46,7 @@ class engine {
      */
     render (filePath, options, callback) {
         // require riot tag
-        options.mountPage = filePath.split ('/')[filePath.split ('/').length - 1].trim ().replace ('.tag', '') + '-page';
+        options.mountPage = filePath.split ('/')[filePath.split ('/').length - 1].trim ().replace ('.tag', '').replace ('-page', '') + '-page';
 
         // delete frontend options
         delete options.cache;
@@ -57,7 +57,7 @@ class engine {
         options.menu = this._menus (options);
 
         // set layout
-        options.layout = (options.layout ? options.layout : 'main') + '-layout';
+        options.layout = (options.layout ? options.layout : 'main').replace ('-layout', '') + '-layout';
 
         // check if should json
         if (options.isJSON) {
