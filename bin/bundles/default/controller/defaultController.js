@@ -38,7 +38,7 @@ class defaultController extends controller {
      */
     defaultAction (req, res) {
         // render home page
-        res.render('home', {
+        res.render ('home', {
             'test' : 'testing'
         });
     }

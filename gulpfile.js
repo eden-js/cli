@@ -30,7 +30,7 @@ var sourcemaps = require ('gulp-sourcemaps');
 
 // import local dependencies
 var config     = require ('./config');
-var configPipe = require ('./bin/util/gulp.config.pipe');
+var configUtil = require ('./bin/util/config');
 
 /**
  * build gulp builder class
@@ -334,7 +334,7 @@ class gulpBuilder {
                 var pipe = this;
 
                 // run pipe chunk
-                configPipe.pipe (chunk).then (result => {
+                configUtil.pipe (chunk).then (result => {
                     // push to pipe
                     pipe.push ({
                         'result' : result
