@@ -227,6 +227,9 @@ class eden {
             // set response to json
             res.locals.isJSON = true;
 
+            // set header
+            res.setHeader ('Content-Type', 'application/json');
+
             // set res.redirect
             res.redirect = (url) => {
                 // render json
