@@ -73,8 +73,6 @@ class engine {
         // set server option
         options.server = true;
 
-        console.time ('render');
-
         // render page
         var page = '<!DOCTYPE html>';
         page += '<html>';
@@ -98,8 +96,6 @@ class engine {
 
         // delete post-render options
         delete options.body;
-
-        console.timeEnd ('render');
 
         // return render callback
         return callback (null, page);
