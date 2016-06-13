@@ -1,3 +1,7 @@
 <example-page>
-    Hello World
+    <div>
+        Hello World
+    </div>
+
+    
 </example-page>
