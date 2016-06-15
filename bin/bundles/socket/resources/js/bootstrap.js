@@ -18,6 +18,7 @@ class socket {
     constructor () {
         // bind methods
         this.on     = this.on.bind (this);
+        this.off    = this.off.bind (this);
         this.build  = this.build.bind (this);
         this.alerts = this.alerts.bind (this);
 
@@ -79,6 +80,16 @@ class socket {
      */
     on (type, fn) {
         this.socket.on (type, fn);
+    }
+
+    /**
+     * off function
+     *
+     * @param type
+     * @param fn
+     */
+    off (type, fn) {
+        this.socket.off (type, fn);
     }
 
     /**
