@@ -151,7 +151,6 @@ class socketDaemon extends daemon {
 
          // check for user
          var User = (!socket.request.user || !socket.request.user.logged_in) ? false : socket.request.user;
-         console.log (User);
 
          // set socketid
          let socketid = that.index;
