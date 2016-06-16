@@ -85,8 +85,16 @@ class socketDaemon extends daemon {
         // use passport auth
         this.io.use (passport.authorize ({
             cookieParser : cookieParser,
+            success      : (data, accept) => {
+                // accept
+                accept (null, true);
+            },
             secret       : config.session,
             store        : new redisStore (),
+            fail         : (data, message, critical, accept) => {
+                // accept connection
+                accept (null, false);
+            },
             key          : 'eden.session.id'
         }));
 
@@ -142,7 +150,8 @@ class socketDaemon extends daemon {
          this._connections ();
 
          // check for user
-         var User = socket.request.user || false;
+         var User = (!socket.request.user || !socket.request.user.logged_in) ? false : socket.request.user;
+         console.log (User);
 
          // set socketid
          let socketid = that.index;
