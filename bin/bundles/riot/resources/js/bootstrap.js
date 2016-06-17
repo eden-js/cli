@@ -154,7 +154,7 @@ class bootstrap {
                 tag.replaceWith ('<' + layout + '></' + layout + '>');
 
                 // mount the tag
-                this._mount = riot.mount (layout, opts);
+                that._mount = riot.mount (layout, opts)[0];
 
                 // set remount
                 remount = true;

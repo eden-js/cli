@@ -25,14 +25,17 @@ class datagrid {
     _renderGrids () {
         // set default settings
         jQuery.extend (jQuery.fn.bootgrid.Constructor.defaults.css, {
-            icon             : 'icon fa',
-            iconColumns      : 'fa-th-list',
-            iconDown         : 'fa-sort-desc',
-            iconRefresh      : 'fa-refresh',
-            iconSearch       : 'fa-search',
-            iconUp           : 'fa-sort-asc',
-            pagination       : 'pagination pagination-sm',
-            paginationButton : 'page-link'
+            footer             : 'bootgrid-footer',
+            header             : 'bootgrid-header',
+            icon               : 'icon fa',
+            iconColumns        : 'fa-th-list',
+            iconDown           : 'fa-sort-desc',
+            iconRefresh        : 'fa-refresh',
+            iconSearch         : 'fa-search',
+            iconUp             : 'fa-sort-asc',
+            pagination         : 'pagination pagination-sm',
+            paginationButton   : 'page-link',
+            dropDownItemButton : 'btn-primary'
         });
 
         // render grids
