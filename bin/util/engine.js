@@ -46,7 +46,7 @@ class engine {
      */
     render (filePath, options, callback) {
         // require riot tag
-        options.mountPage = filePath.split ('/')[filePath.split ('/').length - 1].trim ().replace ('.tag', '').replace ('-page', '') + '-page';
+        options.mountPage = filePath.split ('/')[filePath.split ('/').length - 1].trim ().replace ('.tag', '') + '-page';
 
         // delete frontend options
         delete options.cache;
@@ -57,7 +57,7 @@ class engine {
         options.menu = this._menus (options);
 
         // set layout
-        options.layout = (options.layout ? options.layout : 'main').replace ('-layout', '') + '-layout';
+        options.layout = (options.layout ? options.layout : 'main') + '-layout';
 
         // check if should json
         if (options.isJSON) {
@@ -72,6 +72,17 @@ class engine {
 
         // set server option
         options.server = true;
+
+        // start timer
+        options.routeEnd = new Date ().getTime ();
+
+        // log timing
+        global.logger.log ('debug', 'loaded in ' + (options.routeEnd - options.routeStart) + 'ms', {
+            'class' : 'route ' + options.route
+        });
+
+        // log render start
+        var renderStart = options.routeEnd;
 
         // render page
         var page = '<!DOCTYPE html>';
@@ -96,6 +107,11 @@ class engine {
 
         // delete post-render options
         delete options.body;
+
+        // log rendered
+        global.logger.log ('debug', 'rendered in ' + (new Date ().getTime () - renderStart) + 'ms', {
+            'class' : 'route ' + options.route
+        });
 
         // return render callback
         return callback (null, page);

@@ -208,6 +208,9 @@ class eden {
             res.locals.route  = req.originalUrl.replace ('ajx/', '');
             res.locals.domain = config.domain;
 
+            // set route start
+            res.locals.routeStart = new Date ().getTime ();
+
             // go to next
             next ();
         });
