@@ -46,10 +46,12 @@ class datagridHelper extends helper {
                 'rows'     : [],
                 'total'    : 0
             };
+
             // set row count to all when 1
             if (response.rowCount === -1) {
                 response.rowCount = 10^10;
             }
+
             // set default where object
             var where = extra || {};
             // set default order
@@ -65,13 +67,13 @@ class datagridHelper extends helper {
                 var i = 0;
 
                 // check for search phrase
-                if (req.body.searchPhrase || filter) {
+                if (req.body.searchPhrase && req.body.searchPhrase.length && filter) {
                     where[type] = [];
                     for (i = 0; i < filter.length; i++) {
                         // create push object
                         var push        = {};
                         push[filter[i]] = {
-                            '$regex' : new RegExp('^' + req.body.searchPhrase.toLowerCase(), 'i')
+                            '$regex' : new RegExp ('^' + req.body.searchPhrase.toLowerCase (), 'i')
                         };
 
                         // push into where
@@ -90,11 +92,9 @@ class datagridHelper extends helper {
                 }
 
                 // set total in response
-                var result     = model.where (where);
-                response.total = yield result.count ();
-
+                response.total = yield model.count (where);
                 // set results
-                var results = yield result.sort (order).limit (response.rowCount).skip (response.rowCount * (response.current - 1)).find ();
+                var results = yield model.where (where).sort (order).limit (response.rowCount).skip (response.rowCount * (response.current - 1)).find ();
 
                 // loop results
                 for (i = 0; i < results.length; i++) {
