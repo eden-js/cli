@@ -90,7 +90,7 @@ class engine {
         page += '<head>';
         page += '<meta charset="utf-8">';
         page += '<title>' + options.title + '</title>';
-        page += '<link rel="stylesheet" href="/assets/css/app.min.css">';
+        page += '<link rel="stylesheet" href="/assets/css/app.min.css' + (config.version ? '?v=' + config.version : '') + '">';
         page += options.head || '';
         page += '</head>';
         page += '<body>';
@@ -100,7 +100,7 @@ class engine {
         delete options.server;
 
         page += '<script>var edenState = ' + JSON.stringify (options) + ';</script>';
-        page += '<script type="text/javascript" src="/assets/js/app.min.js"></script>';
+        page += '<script type="text/javascript" src="/assets/js/app.min.js' + (config.version ? '?v=' + config.version : '') + '"></script>';
         page += options.body || '';
         page += '</body>';
         page += '</html>';

@@ -20,6 +20,9 @@ config.title  = 'EdenJS';
 // set application domain
 config.domain = 'edenjs.com';
 
+// set application version
+config.version = '0.01';
+
 
 /**
  * set application server configuration
