@@ -21,6 +21,7 @@ var mongorito    = require ('mongorito');
 var bodyParser   = require ('body-parser');
 var redisStore   = require ('connect-redis') (session);
 var prettyError  = require ('pretty-error');
+var responseTime = require ('response-time');
 var cookieParser = require ('cookie-parser');
 
 // require local dependencies
@@ -183,6 +184,7 @@ class eden {
         this.app.set ('port', this.port);
 
         // set default uses
+        this.app.use (responseTime ());
         this.app.use (bodyParser.json ());
         this.app.use (bodyParser.urlencoded ({extended : true}));
         this.app.use (cookieParser (config.session));
