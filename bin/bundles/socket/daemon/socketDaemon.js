@@ -226,7 +226,7 @@ class socketDaemon extends daemon {
                  var can = yield aclUtil.test (route.acl, User);
 
                  // return if cant
-                 if (!can) {
+                 if (can !== true) {
                      return;
                  }
 
