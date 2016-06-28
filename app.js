@@ -12,8 +12,8 @@ var winston = require ('winston');
 var cluster = require ('cluster');
 
 // require local dependencies
-var log    = require (global.appRoot + '/bin/util/log');
-var eden   = require (global.appRoot + '/bin/eden');
+var log    = require (global.appRoot + '/lib/util/log');
+var eden   = require (global.appRoot + '/lib/eden');
 var config = require (global.appRoot + '/config');
 
 // set global environment

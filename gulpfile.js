@@ -30,7 +30,7 @@ var sourcemaps = require ('gulp-sourcemaps');
 
 // import local dependencies
 var config     = require ('./config');
-var configUtil = require ('./bin/util/config');
+var configUtil = require ('./lib/util/config');
 
 /**
  * build gulp builder class
@@ -66,7 +66,7 @@ class gulpBuilder {
             },
             'sass'   : {
                 'files' : [
-                    './bin/bundles/*/resources/scss/**/*.scss',
+                    './lib/bundles/*/resources/scss/**/*.scss',
                     './app/bundles/*/resources/scss/**/*.scss'
                 ],
                 'dependencies' : [
@@ -75,23 +75,23 @@ class gulpBuilder {
             },
             'daemon' : {
                 'files' : [
-                    './bin/bundles/*/daemon/**/*Daemon.js',
+                    './lib/bundles/*/daemon/**/*Daemon.js',
                     './app/bundles/*/daemon/**/*Daemon.js'
                 ],
             },
             'config' : {
                 'files' : [
-                    './bin/bundles/*/controller/**/*Controller.js',
+                    './lib/bundles/*/controller/**/*Controller.js',
                     './app/bundles/*/controller/**/*Controller.js',
-                    './bin/bundles/*/helper/**/*Helper.js',
+                    './lib/bundles/*/helper/**/*Helper.js',
                     './app/bundles/*/helper/**/*Helper.js'
                 ],
             },
             'tag'    : {
                 'files' : [
-                    './bin/bundles/*/view/**/*.mixin.js',
+                    './lib/bundles/*/view/**/*.mixin.js',
                     './app/bundles/*/view/**/*.mixin.js',
-                    './bin/bundles/*/view/**/*.tag',
+                    './lib/bundles/*/view/**/*.tag',
                     './app/bundles/*/view/**/*.tag'
                 ],
                 'dependencies' : [
@@ -101,7 +101,7 @@ class gulpBuilder {
             },
             'js'     : {
                 'files' : [
-                    './bin/bundles/*/resources/js/**/*.js',
+                    './lib/bundles/*/resources/js/**/*.js',
                     './app/bundles/*/resources/js/**/*.js'
                 ],
                 'dependencies' : [
@@ -110,7 +110,7 @@ class gulpBuilder {
             },
             'image'  : {
                 'files' : [
-                    './bin/bundles/*/resources/image/**/*',
+                    './lib/bundles/*/resources/image/**/*',
                     './app/bundles/*/resources/image/**/*'
                 ]
             }
@@ -217,7 +217,7 @@ class gulpBuilder {
         // grab gulp source for sass
         // create local variables array for sass files
         var sassFiles = [
-            './bin/bundles/*/resources/scss/variables.scss',
+            './lib/bundles/*/resources/scss/variables.scss',
             './app/bundles/*/resources/scss/variables.scss'
         ];
 
@@ -229,7 +229,7 @@ class gulpBuilder {
         }
 
         // push local bootstrap files
-        sassFiles.push ('./bin/bundles/*/resources/scss/bootstrap.scss');
+        sassFiles.push ('./lib/bundles/*/resources/scss/bootstrap.scss');
         sassFiles.push ('./app/bundles/*/resources/scss/bootstrap.scss');
 
         // run gulp
@@ -419,7 +419,7 @@ class gulpBuilder {
 
         // create javascript array
         var js = [];
-        js = js.concat (glob.sync ('./bin/bundles/*/resources/js/bootstrap.js'));
+        js = js.concat (glob.sync ('./lib/bundles/*/resources/js/bootstrap.js'));
         js = js.concat (glob.sync ('./app/bundles/*/resources/js/bootstrap.js'));
 
         // build vendor prepend
@@ -437,7 +437,7 @@ class gulpBuilder {
             paths   : [
                 './',
                 './app/bundles',
-                './bin/bundles',
+                './lib/bundles',
                 './node_modules'
             ]
         })
