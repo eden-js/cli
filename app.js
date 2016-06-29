@@ -14,7 +14,7 @@ var cluster = require ('cluster');
 // require local dependencies
 var log    = require (global.appRoot + '/lib/util/log');
 var eden   = require (global.appRoot + '/lib/eden');
-var config = require (global.appRoot + '/config');
+var config = require (global.appRoot + '/app/config');
 
 // set global environment
 global.envrionment = process.env.NODE_ENV || config.environment;

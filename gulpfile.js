@@ -29,7 +29,7 @@ var streamify  = require ('gulp-streamify');
 var sourcemaps = require ('gulp-sourcemaps');
 
 // import local dependencies
-var config     = require ('./config');
+var config     = require ('./app/config');
 var configUtil = require ('./lib/util/config');
 
 /**
@@ -44,8 +44,8 @@ class gulpBuilder {
         this._wait = (config.gulpDelay ? parseInt (config.gulpDelay) : 500);
 
         // check cache exists
-        if (!fs.existsSync ('./cache')) {
-            fs.mkdirSync ('./cache');
+        if (!fs.existsSync ('./app/cache')) {
+            fs.mkdirSync ('./app/cache');
         }
 
         // bind private methods
@@ -255,7 +255,7 @@ class gulpBuilder {
                     });
                 } else {
                     this.push ({
-                        'all' : '@import "..' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '";' + os.EOL
+                        'all' : '@import "../..' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '";' + os.EOL
                     });
                 }
 
@@ -269,7 +269,7 @@ class gulpBuilder {
             })
             .on ('end', () => {
                 // write temp sass file
-                fs.writeFileSync ('./cache/tmp.scss', all);
+                fs.writeFileSync ('./app/cache/tmp.scss', all);
 
                 // reset running
                 this._tmpRunning = false;
@@ -287,7 +287,7 @@ class gulpBuilder {
         this._sassRunning = true;
 
         // run gulp task
-        return this.gulp.src ('./cache/tmp.scss')
+        return this.gulp.src ('./app/cache/tmp.scss')
             .pipe (sourcemaps.init ())
             .pipe (sass ({
                 outputStyle : 'compressed'
@@ -397,7 +397,7 @@ class gulpBuilder {
                     filePath.dirname = amended.join (path.sep);
                 }))
                 .pipe (chmod (755))
-                .pipe (this.gulp.dest ('cache/views'))
+                .pipe (this.gulp.dest ('./app/cache/views'))
                 .on ('end', () => {
                     this.gulp.src (this._tasks.tags.files)
                         .pipe (riot ({
@@ -405,7 +405,7 @@ class gulpBuilder {
                         }))
                         .pipe (concat ('tags.min.js'))
                         .pipe (header (riotHeader))
-                        .pipe (this.gulp.dest ('./cache'))
+                        .pipe (this.gulp.dest ('./app/cache'))
                         .on ('end', () => {
                             // reset running flag
                             this._tagsRunning = false;
@@ -531,7 +531,7 @@ class gulpBuilder {
      * @param obj
      */
     _write (name, obj) {
-        fs.writeFile ('./cache/' + name + '.json', JSON.stringify (obj), function (err) {
+        fs.writeFile ('./app/cache/' + name + '.json', JSON.stringify (obj), function (err) {
             if (err) {
                 return console.log (err);
             }

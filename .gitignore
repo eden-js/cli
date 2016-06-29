@@ -16,17 +16,17 @@ npm-debug.log
 *.sentry
 
 # EdenFrame config
-/config.js
-/nginx.conf
+app/config.js
+nginx.conf
 
 # EdenFrame etc
 gulp
 
 # Cache Directory
-cache
+app/cache
 
 # Web Directory
 www
 
 # Application bundles
-app/bundles/*
+app/bundles
