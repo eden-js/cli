@@ -66,8 +66,9 @@ class gulpBuilder {
             },
             'sass'   : {
                 'files' : [
-                    './lib/bundles/*/resources/scss/**/*.scss',
-                    './app/bundles/*/resources/scss/**/*.scss'
+                    './lib/bundles/*/public/scss/**/*.scss',
+                    './node_modules/*/*/public/scss/**/*.scss',
+                    './app/bundles/*/public/scss/**/*.scss'
                 ],
                 'dependencies' : [
                     'tmp'
@@ -75,24 +76,29 @@ class gulpBuilder {
             },
             'daemon' : {
                 'files' : [
-                    './lib/bundles/*/daemon/**/*Daemon.js',
-                    './app/bundles/*/daemon/**/*Daemon.js'
+                    './lib/bundles/*/daemons/**/*.js',
+                    './node_modules/*/*/daemons/**/*.js',
+                    './app/bundles/*/daemons/**/*.js'
                 ],
             },
             'config' : {
                 'files' : [
-                    './lib/bundles/*/controller/**/*Controller.js',
-                    './app/bundles/*/controller/**/*Controller.js',
-                    './lib/bundles/*/helper/**/*Helper.js',
-                    './app/bundles/*/helper/**/*Helper.js'
+                    './lib/bundles/*/controllers/**/*.js',
+                    './node_modules/*/*/controllers/**/*.js',
+                    './app/bundles/*/controllers/**/*.js',
+                    './lib/bundles/*/helpers/**/*.js',
+                    './node_modules/*/*/helpers/**/*.js',
+                    './app/bundles/*/helpers/**/*.js'
                 ],
             },
             'tag'    : {
                 'files' : [
-                    './lib/bundles/*/view/**/*.mixin.js',
-                    './app/bundles/*/view/**/*.mixin.js',
-                    './lib/bundles/*/view/**/*.tag',
-                    './app/bundles/*/view/**/*.tag'
+                    './lib/bundles/*/views/**/*.mixin.js',
+                    './node_modules/*/*/public/js/**/*.mixin.js',
+                    './app/bundles/*/views/**/*.mixin.js',
+                    './lib/bundles/*/views/**/*.tag',
+                    './node_modules/*/*/public/js/**/*.tag',
+                    './app/bundles/*/views/**/*.tag'
                 ],
                 'dependencies' : [
                     'wait'
@@ -101,8 +107,9 @@ class gulpBuilder {
             },
             'js'     : {
                 'files' : [
-                    './lib/bundles/*/resources/js/**/*.js',
-                    './app/bundles/*/resources/js/**/*.js'
+                    './lib/bundles/*/public/js/**/*.js',
+                    './node_modules/*/*/public/js/**/*.js',
+                    './app/bundles/*/public/js/**/*.js'
                 ],
                 'dependencies' : [
                     'tag'
@@ -110,8 +117,9 @@ class gulpBuilder {
             },
             'image'  : {
                 'files' : [
-                    './lib/bundles/*/resources/image/**/*',
-                    './app/bundles/*/resources/image/**/*'
+                    './lib/bundles/*/public/image/**/*',
+                    './node_modules/*/*/public/image/**/*',
+                    './app/bundles/*/public/image/**/*'
                 ]
             }
         };
@@ -218,6 +226,7 @@ class gulpBuilder {
         // create local variables array for sass files
         var sassFiles = [
             './lib/bundles/*/resources/scss/variables.scss',
+            './node_modules/*/*/resources/scss/variables.scss',
             './app/bundles/*/resources/scss/variables.scss'
         ];
 
@@ -229,8 +238,9 @@ class gulpBuilder {
         }
 
         // push local bootstrap files
-        sassFiles.push ('./lib/bundles/*/resources/scss/bootstrap.scss');
-        sassFiles.push ('./app/bundles/*/resources/scss/bootstrap.scss');
+        sassFiles.push ('./lib/bundles/*/public/scss/bootstrap.scss');
+        sassFiles.push ('./node_modules/*/*/public/scss/bootstrap.scss');
+        sassFiles.push ('./app/bundles/*/public/scss/bootstrap.scss');
 
         // run gulp
         return this.gulp.src (sassFiles)
@@ -419,8 +429,9 @@ class gulpBuilder {
 
         // create javascript array
         var js = [];
-        js = js.concat (glob.sync ('./lib/bundles/*/resources/js/bootstrap.js'));
-        js = js.concat (glob.sync ('./app/bundles/*/resources/js/bootstrap.js'));
+        js = js.concat (glob.sync ('./lib/bundles/*/public/js/bootstrap.js'));
+        js = js.concat (glob.sync ('./node_modules/*/*/public/js/bootstrap.js'));
+        js = js.concat (glob.sync ('./app/bundles/*/public/js/bootstrap.js'));
 
         // build vendor prepend
         var vendor = '';
