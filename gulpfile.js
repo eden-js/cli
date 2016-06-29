@@ -30,7 +30,7 @@ var sourcemaps = require ('gulp-sourcemaps');
 
 // import local dependencies
 var config     = require ('./app/config');
-var configUtil = require ('./lib/util/config');
+var configUtil = require ('./lib/utilities/config');
 
 /**
  * build gulp builder class

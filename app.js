@@ -12,7 +12,7 @@ var winston = require ('winston');
 var cluster = require ('cluster');
 
 // require local dependencies
-var log    = require (global.appRoot + '/lib/util/log');
+var log    = require (global.appRoot + '/lib/utilities/log');
 var eden   = require (global.appRoot + '/lib/eden');
 var config = require (global.appRoot + '/app/config');
 
