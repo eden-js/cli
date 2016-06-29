@@ -18,7 +18,6 @@ var source     = require ('vinyl-source-stream');
 // require gulp dependencies
 var riot       = require ('gulp-riot');
 var sass       = require ('gulp-sass');
-var chmod      = require ('gulp-chmod');
 var watch      = require ('gulp-watch');
 var concat     = require ('gulp-concat');
 var header     = require ('gulp-header');
@@ -396,7 +395,6 @@ class gulpBuilder {
                     amended.shift ();
                     filePath.dirname = amended.join (path.sep);
                 }))
-                .pipe (chmod (755))
                 .pipe (this.gulp.dest ('./app/cache/views'))
                 .on ('end', () => {
                     this.gulp.src (this._tasks.tags.files)
@@ -483,7 +481,6 @@ class gulpBuilder {
                     amended.shift ();
                     filePath.dirname = amended.join (path.sep);
                 }))
-                .pipe (chmod (755))
                 .pipe (this.gulp.dest ('www/public/images'));
         }, this.wait);
     }

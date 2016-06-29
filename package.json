@@ -34,7 +34,6 @@
     "express": "~4.13.1",
     "express-session": "^1.13.0",
     "gulp": "^3.9.0",
-    "gulp-chmod": "^1.3.0",
     "gulp-concat": "^2.6.0",
     "gulp-develop-server": "^0.5.2",
     "gulp-header": "^1.7.1",
