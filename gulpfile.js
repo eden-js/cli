@@ -74,7 +74,7 @@ class gulpBuilder {
                     'tmp'
                 ]
             },
-            'daemon' : {
+            'daemons' : {
                 'files' : [
                     './lib/bundles/*/daemons/**/*.js',
                     './node_modules/*/*/daemons/**/*.js',
@@ -91,7 +91,7 @@ class gulpBuilder {
                     './app/bundles/*/helpers/**/*.js'
                 ],
             },
-            'tag'    : {
+            'tags'    : {
                 'files' : [
                     './lib/bundles/*/views/**/*.mixin.js',
                     './node_modules/*/*/public/js/**/*.mixin.js',
@@ -112,10 +112,10 @@ class gulpBuilder {
                     './app/bundles/*/public/js/**/*.js'
                 ],
                 'dependencies' : [
-                    'tag'
+                    'tags'
                 ]
             },
-            'image'  : {
+            'images'  : {
                 'files' : [
                     './lib/bundles/*/public/images/**/*',
                     './node_modules/*/*/public/images/**/*',
@@ -304,11 +304,11 @@ class gulpBuilder {
     /**
      * daemon task
      */
-    daemon () {
+    daemons () {
         // grab daemon controllers
         var daemons = [];
-        for (var i = 0; i < this._tasks.daemon.files.length; i++) {
-            daemons = daemons.concat (glob.sync (this._tasks.daemon.files[i]));
+        for (var i = 0; i < this._tasks.daemons.files.length; i++) {
+            daemons = daemons.concat (glob.sync (this._tasks.daemons.files[i]));
         }
 
         // loop daemons
@@ -373,12 +373,12 @@ class gulpBuilder {
     /**
      * tag task
      */
-    tag () {
+    tags () {
         // ensure running only once
-        if (this._tagRunning) {
+        if (this._tagsRunning) {
             return;
         }
-        this._tagRunning = true;
+        this._tagsRunning = true;
 
         // create header
         var riotHeader = '';
@@ -389,7 +389,7 @@ class gulpBuilder {
         // return promise
         return new Promise ((resolve, reject) => {
             // move views into single folder
-            this.gulp.src (this._tasks.tag.files)
+            this.gulp.src (this._tasks.tags.files)
                 .pipe (rename ((filePath) => {
                     var amended = filePath.dirname.split (path.sep);
                     amended.shift ();
@@ -397,9 +397,9 @@ class gulpBuilder {
                     filePath.dirname = amended.join (path.sep);
                 }))
                 .pipe (chmod (755))
-                .pipe (this.gulp.dest ('cache/view'))
+                .pipe (this.gulp.dest ('cache/views'))
                 .on ('end', () => {
-                    this.gulp.src (this._tasks.tag.files)
+                    this.gulp.src (this._tasks.tags.files)
                         .pipe (riot ({
                             compact : true
                         }))
@@ -408,7 +408,7 @@ class gulpBuilder {
                         .pipe (this.gulp.dest ('./cache'))
                         .on ('end', () => {
                             // reset running flag
-                            this._tagRunning = false;
+                            this._tagsRunning = false;
 
                             // resolve
                             return resolve (true);
@@ -470,12 +470,12 @@ class gulpBuilder {
     /**
      * image task
      */
-    image () {
+    images () {
         // move images into single folder
         // do within setTimeout to remove empty files
         // @todo bundle priority
         setTimeout (() => {
-            this.gulp.src (this._tasks.image.files)
+            this.gulp.src (this._tasks.images.files)
                 .pipe (rename ((filePath) => {
                     var amended = filePath.dirname.split (path.sep);
                     amended.shift ();
