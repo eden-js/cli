@@ -117,9 +117,9 @@ class gulpBuilder {
             },
             'image'  : {
                 'files' : [
-                    './lib/bundles/*/public/image/**/*',
-                    './node_modules/*/*/public/image/**/*',
-                    './app/bundles/*/public/image/**/*'
+                    './lib/bundles/*/public/images/**/*',
+                    './node_modules/*/*/public/images/**/*',
+                    './app/bundles/*/public/images/**/*'
                 ]
             }
         };
@@ -293,8 +293,8 @@ class gulpBuilder {
                 outputStyle : 'compressed'
             }))
             .pipe (rename ('app.min.css'))
-            .pipe (sourcemaps.write ('./www/assets/css'))
-            .pipe (this.gulp.dest ('./www/assets/css'))
+            .pipe (sourcemaps.write ('./www/public/css'))
+            .pipe (this.gulp.dest ('./www/public/css'))
             .on ('end', () => {
                 // reset running
                 this._sassRunning = false;
@@ -457,7 +457,7 @@ class gulpBuilder {
             .pipe (source ('app.min.js'))
             .pipe (streamify (header (vendor)))
             .pipe (streamify (uglify ()))
-            .pipe (this.gulp.dest ('./www/assets/js'))
+            .pipe (this.gulp.dest ('./www/public/js'))
             .on ('end', () => {
                 // reset running flag
                 this._jsRunning = false;
@@ -484,7 +484,7 @@ class gulpBuilder {
                     filePath.dirname = amended.join (path.sep);
                 }))
                 .pipe (chmod (755))
-                .pipe (this.gulp.dest ('www/image'));
+                .pipe (this.gulp.dest ('www/public/images'));
         }, this.wait);
     }
 
