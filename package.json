@@ -1,10 +1,10 @@
 {
-  "name": "EdenFrame",
-  "version": "0.0.1-alpha",
+  "name": "EdenJS",
+  "version": "0.1-beta",
   "description": "Web Application Framework built on Express.js, Redis and Mongorito",
   "main": "app.js",
   "license": "(MIT OR Apache-2.0)",
-  "author": "Alex Taylor",
+  "author": "EdenCoder",
   "homepage": "https://edenjs.com/",
   "readmeFilename": "README.md",
   "scripts": {
