@@ -72,6 +72,12 @@ class gulpBuilder {
                     'tmp'
                 ]
             },
+            'models' : {
+                'files' : [
+                    './lib/bundles/*/models/**/*.js',
+                    './app/bundles/*/models/**/*.js'
+                ]
+            },
             'daemons' : {
                 'files' : [
                     './lib/bundles/*/daemons/**/*.js',
@@ -288,6 +294,29 @@ class gulpBuilder {
                 // reset running
                 this._sassRunning = false;
             });
+    }
+
+    /**
+     * daemon task
+     */
+    models () {
+        // grab daemon controllers
+        var files = [];
+        for (var i = 0; i < this._tasks.models.files.length; i++) {
+            files = files.concat (glob.sync (this._tasks.models.files[i]));
+        }
+
+        // loop models
+        var models = {};
+        for (var key in files) {
+            models[files[key].split ('/')[(files[key].split ('/').length - 1)].split ('.')[0].toLowerCase ()] = files[key].replace ('./', '/');
+        }
+
+        // write daemons cache file
+        this._write ('models', models);
+
+        // restart server
+        this._restart ();
     }
 
     /**
