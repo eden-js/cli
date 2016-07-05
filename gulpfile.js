@@ -32,11 +32,11 @@ var config     = require ('./app/config');
 var configUtil = require ('./lib/utilities/config');
 
 /**
- * build gulp builder class
+ * build gulp class
  */
-class gulpBuilder {
+class edenGulp {
     /**
-     * construct gulp builder class
+     * construct gulp class
      */
     constructor () {
         // wait time
@@ -581,8 +581,8 @@ class gulpBuilder {
 }
 
 /**
- * export gulp builder class
+ * export eden gulp class
  *
- * @type {gulpBuilder}
+ * @type {edenGulp}
  */
-module.exports = new gulpBuilder ();
+module.exports = new edenGulp ();
