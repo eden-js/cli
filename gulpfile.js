@@ -32,11 +32,11 @@ var config     = require ('./app/config');
 var configUtil = require ('./lib/utilities/config');
 
 /**
- * build gulp builder class
+ * build gulp class
  */
-class gulpBuilder {
+class edenGulp {
     /**
-     * construct gulp builder class
+     * construct gulp class
      */
     constructor () {
         // wait time
@@ -113,10 +113,10 @@ class gulpBuilder {
                     'tags'
                 ]
             },
-            'images'  : {
+            'assets'  : {
                 'files' : [
-                    './lib/bundles/*/public/images/**/*',
-                    './app/bundles/*/public/images/**/*'
+                    './lib/bundles/*/public/assets/**/*',
+                    './app/bundles/*/public/assets/**/*'
                 ]
             }
         };
@@ -486,12 +486,12 @@ class gulpBuilder {
     /**
      * image task
      */
-    images () {
+    assets () {
         // move images into single folder
         // do within setTimeout to remove empty files
         // @todo bundle priority
         setTimeout (() => {
-            this.gulp.src (this._tasks.images.files)
+            this.gulp.src (this._tasks.assets.files)
                 .pipe (rename ((filePath) => {
                     var amended = filePath.dirname.split (path.sep);
                     amended.shift ();
@@ -499,7 +499,7 @@ class gulpBuilder {
                     amended.shift ();
                     filePath.dirname = amended.join (path.sep);
                 }))
-                .pipe (this.gulp.dest ('www/public/images'));
+                .pipe (this.gulp.dest ('www/public/assets'));
         }, this.wait);
     }
 
@@ -581,8 +581,8 @@ class gulpBuilder {
 }
 
 /**
- * export gulp builder class
+ * export eden gulp class
  *
- * @type {gulpBuilder}
+ * @type {edenGulp}
  */
-module.exports = new gulpBuilder ();
+module.exports = new edenGulp ();
