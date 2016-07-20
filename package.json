@@ -8,8 +8,7 @@
   "homepage": "https://edenjs.com/",
   "readmeFilename": "README.md",
   "scripts": {
-    "start-dev": "gulp",
-    "start": "node ./app.js"
+    "test": "mocha --require test/lib/env --reporter spec --bail --check-leaks test/ lib/bundles/*/test/ app/bundles/*/test/"
   },
   "engines": {
     "node": ">= 0.12.0",
@@ -48,6 +47,7 @@
     "install": "^0.6.1",
     "jquery": "^2.2.0",
     "jquery-bootgrid": "^1.3.1",
+    "mocha": "^2.5.3",
     "mongorito": "2.1.x",
     "nanobar": "^0.4.2",
     "npm": "^3.6.0",
