@@ -67,14 +67,6 @@ class edenGulp {
             'tmp'    : {
                 'skip' : true
             },
-            'tests'   : {
-                'skip' : true,
-                'files' : [
-                    './tests/**/*.js',
-                    './lib/bundles/*/tests/**/*.js',
-                    './app/bundles/*/tests/**/*.js'
-                ]
-            },
             'sass'   : {
                 'files' : [
                     './lib/bundles/*/public/scss/**/*.scss',
@@ -281,18 +273,6 @@ class edenGulp {
                 // reset running
                 this._tmpRunning = false;
             });
-    }
-
-    /**
-     * tests task
-     */
-    tests () {
-        return this.gulp.src (this._tasks.test.files, {
-            read: false
-        })
-            .pipe (mocha ({
-                reporter: 'nyan'
-            }));
     }
 
     /**
