@@ -2,8 +2,11 @@
  * Created by Awesome on 1/30/2016.
  */
 
-    // use strict
+// use strict
 'use strict';
+
+// set globals
+global.appRoot = __dirname;
 
 // require dependencies
 var fs         = require ('fs');
@@ -19,6 +22,7 @@ var source     = require ('vinyl-source-stream');
 var riot       = require ('gulp-riot');
 var sass       = require ('gulp-sass');
 var watch      = require ('gulp-watch');
+var mocha      = require ('gulp-mocha');
 var concat     = require ('gulp-concat');
 var header     = require ('gulp-header');
 var rename     = require ('gulp-rename');
@@ -62,6 +66,14 @@ class edenGulp {
             },
             'tmp'    : {
                 'skip' : true
+            },
+            'tests'   : {
+                'skip' : true,
+                'files' : [
+                    './tests/**/*.js',
+                    './lib/bundles/*/tests/**/*.js',
+                    './app/bundles/*/tests/**/*.js'
+                ]
             },
             'sass'   : {
                 'files' : [
@@ -269,6 +281,18 @@ class edenGulp {
                 // reset running
                 this._tmpRunning = false;
             });
+    }
+
+    /**
+     * tests task
+     */
+    tests () {
+        return this.gulp.src (this._tasks.test.files, {
+            read: false
+        })
+            .pipe (mocha ({
+                reporter: 'nyan'
+            }));
     }
 
     /**
