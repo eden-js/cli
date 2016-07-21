@@ -22,7 +22,6 @@ var source     = require ('vinyl-source-stream');
 var riot       = require ('gulp-riot');
 var sass       = require ('gulp-sass');
 var watch      = require ('gulp-watch');
-var mocha      = require ('gulp-mocha');
 var concat     = require ('gulp-concat');
 var header     = require ('gulp-header');
 var rename     = require ('gulp-rename');
