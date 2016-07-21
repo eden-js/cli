@@ -8,7 +8,7 @@
   "homepage": "https://edenjs.com/",
   "readmeFilename": "README.md",
   "scripts": {
-    "test": "mocha --require tests/lib/env --reporter spec --bail --check-leaks tests/ \"lib/bundles/*/tests/**/*.js\" \"app/bundles/*/tests/**/*.js\""
+    "test": "mocha --require tests/lib/env --reporter spec --check-leaks tests/ \"lib/bundles/*/tests/**/*.js\" \"app/bundles/*/tests/**/*.js\""
   },
   "engines": {
     "node": ">= 0.12.0",
