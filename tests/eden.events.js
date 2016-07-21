@@ -23,7 +23,7 @@ describe ('EdenJS Event Emitter', () => {
 
 
   // test redis event emitter functionality
-  it ('should alow event emitter via redis', (done) => {
+  it ('should allow event emitter via redis', (done) => {
     // set event function
     global.eden.on   ('eeredis', (channel, data) => {
       // stop listening
