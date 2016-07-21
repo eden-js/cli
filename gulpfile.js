@@ -13,10 +13,10 @@ var fs         = require ('fs');
 var os         = require ('os');
 var glob       = require ('glob');
 var path       = require ('path');
-var through    = require ('through2');
-var browserify = require ('browserify');
-var babelify   = require ('babelify');
 var source     = require ('vinyl-source-stream');
+var through    = require ('through2');
+var babelify   = require ('babelify');
+var browserify = require ('browserify');
 
 // require gulp dependencies
 var riot       = require ('gulp-riot');
