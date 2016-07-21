@@ -8,7 +8,7 @@
   "homepage": "https://edenjs.com/",
   "readmeFilename": "README.md",
   "scripts": {
-    "test": "mocha --require tests/lib/env --reporter spec --bail --check-leaks tests/"
+    "test": "mocha --require tests/lib/env --reporter spec --bail --check-leaks tests/ \"lib/bundles/*/tests/**/*.js\" \"app/bundles/*/tests/**/*.js\""
   },
   "engines": {
     "node": ">= 0.12.0",
@@ -57,7 +57,6 @@
     "portastic": "^1.0.1",
     "pretty-error": "^2.0.0",
     "redis": "^2.4.2",
-    "redis-eventemitter": "^1.0.1",
     "response-time": "^2.3.1",
     "riot": "^2.3.15",
     "safe-eval": "^0.2.0",
