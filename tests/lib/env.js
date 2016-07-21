@@ -21,7 +21,7 @@ global.envrionment = process.env.NODE_ENV || config.environment;
 
 // create logger
 var logger = new winston.Logger ({
-    level      : config.logLevel  || 'info',
+    level      : 'error',
     transports : [
       new (winston.transports.Console) ({
           colorize  : true,
