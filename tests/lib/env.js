@@ -17,6 +17,7 @@ var eden   = require (global.appRoot + '/lib/eden');
 var config = require (global.appRoot + '/app/config');
 
 // set global environment
+global.testing     = true;
 global.envrionment = process.env.NODE_ENV || config.environment;
 
 // create logger
