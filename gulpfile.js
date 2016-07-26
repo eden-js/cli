@@ -30,8 +30,13 @@ var uglify     = require ('gulp-uglify');
 var streamify  = require ('gulp-streamify');
 var sourcemaps = require ('gulp-sourcemaps');
 
-// import local dependencies
-var config     = require ('./app/config');
+// import and check existence of local dependencies
+try {
+    var config = require ('./app/config');
+} catch (err) {
+    console.error ('Failed to locate config: \'./app/config\'. Note: Make sure you have created the \'config.js\' in the \'./app\' folder');
+    process.exit ();
+}
 var configUtil = require ('./lib/utilities/config');
 
 /**
@@ -85,7 +90,7 @@ class edenGulp {
                 'files' : [
                     './lib/bundles/*/daemons/**/*.js',
                     './app/bundles/*/daemons/**/*.js'
-                ],
+                ]
             },
             'config' : {
                 'files' : [
@@ -93,7 +98,7 @@ class edenGulp {
                     './app/bundles/*/controllers/**/*.js',
                     './lib/bundles/*/helpers/**/*.js',
                     './app/bundles/*/helpers/**/*.js'
-                ],
+                ]
             },
             'tags'    : {
                 'files' : [
@@ -253,7 +258,7 @@ class edenGulp {
                     });
                 } else {
                     this.push ({
-                        'all' : '@import "../..' + chunk.path.replace (__dirname, '').split (path.delimiter).join ('/') + '";' + os.EOL
+                        'all' : '@import "../..' + chunk.path.replace (__dirname, '').split (path.sep).join ('/').split (path.delimiter).join ('/') + '";' + os.EOL
                     });
                 }
 
