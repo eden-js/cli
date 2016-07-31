@@ -49,6 +49,7 @@
 
             // check for opts class
             rtnClass.push (opts.classes && opts.classes.link ? opts.classes.link : 'nav-link');
+            rtnClass.push (item.active ? 'active' : '');
 
             // return joined class
             return rtnClass.join (' ');
