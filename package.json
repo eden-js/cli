@@ -51,6 +51,8 @@
     "mocha": "^2.5.3",
     "mongorito": "2.1.x",
     "nanobar": "^0.4.2",
+    "nodemailer": "^2.5.0",
+    "nodemailer-smtp-transport": "^2.6.0",
     "npm": "^3.6.0",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",

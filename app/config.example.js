@@ -60,6 +60,18 @@ config.database = {
     }
 };
 
+/**
+ * set email transport configuration
+ */
+
+// set SMTP config email object
+config.email = {
+    'service' : 'Zoho',
+    'auth'    : {
+        'user' : 'email@domain.com',
+        'pass' : 'supersecretemailpassword'
+    }
+};
 
 /**
  * set included files
