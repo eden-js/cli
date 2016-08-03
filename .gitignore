@@ -30,3 +30,6 @@ www
 
 # Application bundles
 app/bundles
+
+# Redis
+*.rdb
