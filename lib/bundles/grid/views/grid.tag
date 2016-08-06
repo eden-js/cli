@@ -1,5 +1,13 @@
 <grid>
     <div class={ 'grid' : true, 'loading' : !this.loaded }>
+        <div class="filters" if={ this.filters.length }>
+            <div class="filter form-group" each={ filter, i in this.filters }>
+                <label if={ filter.title }>
+                    { filter.title }
+                </label>
+                <input class={ 'form-control' : true } type={ filter.type } data-filter={ filter.id } value={ filterValue (filter) } placeholder={ filter.title } onchange={ onFilter } />
+            </div>
+        </div>
         <table class={ tableClass () }>
             <thead>
                 <tr>
@@ -38,6 +46,11 @@
                     </ul>
                 </nav>
             </div>
+            <div class="col-sm-6 text-sm-right">
+                <h4>
+                    Showing { (this.page - 1) * this.rows } - { (this.page * this.rows) > this.total ? this.total : (this.page * this.rows) } of { this.total }
+                </h4>
+            </div>
         </div>
     </div>
 
@@ -49,6 +62,8 @@
         this.route   = opts.grid && opts.grid.route ? opts.grid.route : '';
         this.total   = opts.grid && opts.grid.total ? opts.grid.total : 0;
         this.loaded  = opts.grid || false;
+        this.filter  = opts.grid && opts.grid.filter ? opts.grid.filter : {};
+        this.filters = opts.grid && opts.grid.filters ? opts.grid.filters : [];
         this.columns = opts.grid && opts.grid.columns ? opts.grid.columns : [];
 
         // set pages
@@ -63,6 +78,18 @@
         tableClass () {
             // return string
             return opts.table || 'table table-bordered';
+        }
+
+        /**
+         * returns filter value
+         *
+         * @param  {Object} filter
+         *
+         * @return {String}
+         */
+        filterValue (filter) {
+            // return filter value
+            return this.filter[filter.id] || '';
         }
 
         /**
@@ -111,6 +138,25 @@
                     break;
                 }
             }
+        }
+
+        /**
+         * on filter function
+         *
+         * @param  {Event} e
+         */
+        onFilter (e) {
+            // set filter value
+            var filter = e.target.dataset.filter;
+
+            // set filter
+            this.filter[filter] = jQuery (e.target).val ();
+
+            // load view
+            this.load ();
+
+            // update view
+            this.update ();
         }
 
         /**
@@ -173,7 +219,8 @@
                 type        : 'post',
                 data        : JSON.stringify ({
                     'page' : this.page,
-                    'rows' : this.rows
+                    'rows' : this.rows,
+                    'filter' : this.filter
                 }),
                 contentType : 'application/json; charset=utf-8',
                 traditional : true
