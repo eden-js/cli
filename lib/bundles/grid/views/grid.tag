@@ -1,5 +1,5 @@
 <grid>
-    <div class={ 'grid' : true, 'loading' : !this.loaded }>
+    <div class={ 'grid' : true, 'loading' : !this.loaded || this.loading }>
         <div class="filters" if={ this.filters.length }>
             <div class="filter form-group" each={ filter, i in this.filters }>
                 <label if={ filter.title }>
@@ -28,16 +28,16 @@
             <div class="col-sm-6">
                 <nav aria-label="Page navigation">
                     <ul class="pagination">
-                        <li class={ 'page-item' : true, 'disabled' : hasPrev () }>
+                        <li class={ 'page-item' : true, 'disabled' : !hasPrev () }>
                             <a class="page-link" href="#!" aria-label="Previous" onclick={ onPrev }>
                                 <span aria-hidden="true">&laquo;</span>
                                 <span class="sr-only">Previous</span>
                             </a>
                         </li>
-                        <li class={ 'page-item' : true, 'active' : this.page === page } each={ page, i in this.pages }>
-                            <a class="page-link" href="#!" data-page={ page } onclick={ onPage }>{ page }</a>
+                        <li each={ number, i in this.pages } class={ 'page-item' : true, 'active' : isActive (number) }>
+                            <a class="page-link" href="#!" data-page={ number } onclick={ onPage }>{ number }</a>
                         </li>
-                        <li class={ 'page-item' : true, 'disabled' : hasNext () }>
+                        <li class={ 'page-item' : true, 'disabled' : !hasNext () }>
                             <a class="page-link" href="#" aria-label="Next" onclick={ onNext }>
                                 <span aria-hidden="true">&raquo;</span>
                                 <span class="sr-only">Next</span>
@@ -63,6 +63,7 @@
         this.total   = opts.grid && opts.grid.total ? opts.grid.total : 0;
         this.loaded  = opts.grid || false;
         this.filter  = opts.grid && opts.grid.filter ? opts.grid.filter : {};
+        this.loading = false;
         this.filters = opts.grid && opts.grid.filters ? opts.grid.filters : [];
         this.columns = opts.grid && opts.grid.columns ? opts.grid.columns : [];
 
@@ -93,12 +94,32 @@
         }
 
         /**
+         * sets pages
+         */
+        setPages () {
+            // reset pages
+            this.pages = [];
+
+            // get page
+            var page = this.page || 1;
+
+            // set start
+            var min = (page - 3) < 1 ? 1 : (page - 3);
+            var max = ((page + 3) > (Math.ceil (this.total / this.rows))) ? (Math.ceil (this.total / this.rows)) : (page + 3);
+
+            // create pages
+            for (var i = min; i <= max; i++) {
+                this.pages.push (i);
+            }
+        }
+
+        /**
          * return has previous page
          *
          * @return {Boolean}
          */
         hasPrev () {
-            return this.page <= 1;
+            return this.page > 1;
         }
 
         /**
@@ -107,37 +128,7 @@
          * @return {Boolean}
          */
         hasNext () {
-            return this.page >= Math.floor (this.total / this.rows) + 1;
-        }
-
-        /**
-         * sets pages
-         */
-        setPages () {
-            // reset pages
-            this.pages = [];
-
-            // set start
-            var page  = (this.page - 5) < 1 ? 1 : (this.page - 5);
-            var main  = page;
-            var start = ((page - 1) * this.rows);
-
-            // while start less than pages
-            while (start < this.total) {
-                // add to pages
-                this.pages.push (page);
-
-                // add to page
-                page++;
-
-                // set start value
-                start = ((page - 1) * this.rows);
-
-                // check if should stop
-                if (main - page > 8) {
-                    break;
-                }
-            }
+            return this.page < Math.ceil (this.total / this.rows);
         }
 
         /**
@@ -154,9 +145,6 @@
 
             // load view
             this.load ();
-
-            // update view
-            this.update ();
         }
 
         /**
@@ -166,13 +154,13 @@
          */
         onPage (e) {
             // get page
-            this.page = e.target.dataset.page;
+            this.page = parseInt (e.target.dataset.page);
+
+            // set pages
+            this.setPages ();
 
             // load view
             this.load ();
-
-            // update view
-            this.update ();
         }
 
         /**
@@ -180,13 +168,13 @@
          */
         onNext () {
             // get page
-            this.page = this.hasPrev () ? 1 : (this.page - 1);
+            this.page = this.hasNext () ? (this.page + 1) : this.page;
+
+            // set pages
+            this.setPages ();
 
             // load view
             this.load ();
-
-            // update view
-            this.update ();
         }
 
         /**
@@ -194,13 +182,23 @@
          */
         onPrev () {
             // get page
-            this.page = this.hasNext () ? (this.page + 1) : this.page;
+            this.page = this.hasPrev () ? (this.page - 1) : this.page;
+
+            // set pages
+            this.setPages ();
 
             // load view
             this.load ();
+        }
 
-            // update view
-            this.update ();
+        /**
+         * returns true if page is active
+         *
+         * @param {Int} page
+         */
+        isActive (page) {
+            // return true if active
+            return page === this.page;
         }
 
         /**
@@ -218,8 +216,8 @@
                 url         : this.route,
                 type        : 'post',
                 data        : JSON.stringify ({
-                    'page' : this.page,
-                    'rows' : this.rows,
+                    'page'   : this.page,
+                    'rows'   : this.rows,
                     'filter' : this.filter
                 }),
                 contentType : 'application/json; charset=utf-8',
@@ -241,19 +239,25 @@
                     // set loading
                     this.loading = false;
 
+                    // set pages
+                    this.setPages ();
+
                     // update view
                     this.update ();
                 });
         }
 
         /**
-         * on update function
+         * on mount function
          *
-         * @param  {String} 'update'
+         * @param  {String} 'mount'
          */
-        this.on ('update', () => {
+        this.on ('mount', () => {
             // set pages
             this.setPages ();
+
+            // update view
+            this.update ();
         });
 
     </script>
