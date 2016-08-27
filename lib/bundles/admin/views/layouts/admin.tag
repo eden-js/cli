@@ -1,6 +1,6 @@
 <admin-layout>
     <div class="container">
-        <nav class="navbar navbar-dark bg-inverse">
+        <nav class="navbar navbar-dark navbar-admin bg-inverse">
             <a class="navbar-brand" href="#">
                 { opts.title }
             </a>
