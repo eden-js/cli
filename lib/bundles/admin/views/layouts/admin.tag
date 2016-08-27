@@ -1,15 +1,15 @@
 <admin-layout>
-    <nav class="navbar navbar-fixed-top navbar-dark bg-inverse">
+    <nav class="navbar navbar-dark bg-inverse">
         <a class="navbar-brand" href="#">
             { opts.title }
         </a>
-        <menu name="MAIN" menu={ opts.menu } classes={ menuClass } />
+        <menu name="MAIN" menu={ opts.menu } classes={ this.menuClass } />
     </nav>
     <div class="container">
         <div class="row">
             <div class="col-sm-3">
                 <div class="card">
-                    <menu name="ADMIN" menu={ opts.menu } classes={ menuClass } />
+                    <menu name="ADMIN" menu={ opts.menu } classes={ this.adminMenuClass } />
                 </div>
             </div>
             <div class="col-sm-9">
