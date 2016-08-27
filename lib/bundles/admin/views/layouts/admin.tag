@@ -1,11 +1,11 @@
 <admin-layout>
-    <nav class="navbar navbar-dark bg-inverse">
-        <a class="navbar-brand" href="#">
-            { opts.title }
-        </a>
-        <menu name="MAIN" menu={ opts.menu } classes={ this.menuClass } />
-    </nav>
     <div class="container">
+        <nav class="navbar navbar-dark bg-inverse">
+            <a class="navbar-brand" href="#">
+                { opts.title }
+            </a>
+            <menu name="MAIN" menu={ opts.menu } classes={ this.menuClass } />
+        </nav>
         <div class="row">
             <div class="col-sm-3">
                 <div class="card">
@@ -24,7 +24,7 @@
 
         // set menu class object
         this.menuClass = {
-            'main' : 'nav navbar-nav'
+            'main' : 'nav navbar-nav navbar-right'
         };
         this.adminMenuClass = {
             'main' : 'list-group list-group-flush',
