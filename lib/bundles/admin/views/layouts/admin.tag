@@ -1,6 +1,6 @@
 <admin-layout>
     <div class="container">
-        <nav class="navbar navbar-dark navbar-admin bg-inverse">
+        <nav class="navbar navbar-dark bg-inverse">
             <a class="navbar-brand" href="#">
                 { opts.title }
             </a>
@@ -13,6 +13,7 @@
                 </div>
             </div>
             <div class="col-sm-9">
+                <alert error={ opts.error } success={ opts.success } />
                 <div class="admin-page" name="page"></div>
             </div>
         </div>
@@ -28,8 +29,7 @@
         };
         this.adminMenuClass = {
             'main' : 'list-group list-group-flush',
-            'item' : '',
-            'link' : 'list-group-item'
+            'item' : 'list-group-item'
         };
 
     </script>
