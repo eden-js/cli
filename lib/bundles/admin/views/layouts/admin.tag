@@ -28,7 +28,8 @@
         };
         this.adminMenuClass = {
             'main' : 'list-group list-group-flush',
-            'item' : 'list-group-item'
+            'item' : '',
+            'link' : 'list-group-item'
         };
 
     </script>
