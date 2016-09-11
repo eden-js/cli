@@ -81,6 +81,7 @@ config.email = {
 // these are imported into app.min.css by default
 config.sass = [
     './node_modules/bootstrap/scss/bootstrap.scss',
+    './node_modules/toastr/toastr.scss',
     './node_modules/tether/src/css/tether.scss'
 ];
 
@@ -89,7 +90,7 @@ config.sass = [
 config.js = [
     './node_modules/jquery/dist/jquery.min.js',
     './node_modules/tether/dist/js/tether.min.js',
-    './node_modules/jquery-bootgrid/dist/jquery.bootgrid.min.js',
+    './node_modules/toastr/toastr.js',
     './node_modules/bootstrap/dist/js/bootstrap.js'
 ];
 
