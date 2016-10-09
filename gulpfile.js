@@ -305,10 +305,10 @@ class edenGulp {
     }
 
     /**
-     * daemon task
+     * models task
      */
     models () {
-        // grab daemon controllers
+        // grab model files
         var files = [];
         for (var i = 0; i < this._tasks.models.files.length; i++) {
             files = files.concat (glob.sync (this._tasks.models.files[i]));
@@ -320,7 +320,7 @@ class edenGulp {
             models[files[key].split ('/')[(files[key].split ('/').length - 1)].split ('.')[0].toLowerCase ()] = files[key].replace ('./', '/');
         }
 
-        // write daemons cache file
+        // write models cache file
         this._write ('models', models);
 
         // restart server
