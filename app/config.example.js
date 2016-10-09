@@ -35,8 +35,14 @@ config.port = '3001';
 // setting this as null will count your CPU cores
 config.threads = 1;
 
-// should the app use websockets
-config.socket = true;
+// websocket configuration
+config.socket = {
+    'url'    : '//' + config.domain,
+    'params' : {
+        secure    : true,
+        reconnect : true
+    }
+};
 
 // set app environment
 config.environment = 'dev';
@@ -81,8 +87,8 @@ config.email = {
 // these are imported into app.min.css by default
 config.sass = [
     './node_modules/bootstrap/scss/bootstrap.scss',
-    './node_modules/toastr/toastr.scss',
-    './node_modules/tether/src/css/tether.scss'
+    './node_modules/tether/src/css/tether.scss',
+    './node_modules/toastr/toastr.scss'
 ];
 
 // set js imports
@@ -90,7 +96,7 @@ config.sass = [
 config.js = [
     './node_modules/jquery/dist/jquery.min.js',
     './node_modules/tether/dist/js/tether.min.js',
-    './node_modules/toastr/toastr.js',
+    './node_modules/toastr/build/toastr.min.js',
     './node_modules/bootstrap/dist/js/bootstrap.js'
 ];
 
@@ -131,16 +137,20 @@ config.acl = {
  * set view import functionality
  */
 
-// create view object
-config.view = {
-    // modules will be required at the top of riots tags.min.js
-    'include' : {
-        // include riot module
-        'riot'   : 'riot',
-        // include socket module
-        'socket' : 'socket/public/js/bootstrap'
-    }
-};
+ // create view object
+ config.view = {
+     // modules will be required at the top of riots tags.min.js
+     'include' : {
+         // include riot module
+         'riot'    : 'riot',
+         // include alert module
+         'alert'   : 'alert/public/js/alert',
+         // include socket module
+         'socket'  : 'socket/public/js/bootstrap',
+         // require history
+         'history' : 'history'
+     }
+ };
 
 /**
  * set misc settings
