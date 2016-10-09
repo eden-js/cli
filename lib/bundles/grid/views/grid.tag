@@ -12,6 +12,11 @@
             <thead>
                 <tr>
                     <th each={ column, i in this.columns }>
+                        <a href="#!" if={ column.sort } class={ 'pull-right sort' : true, 'text-muted' : !isSort (column) }>
+                            <i class="fa fa-sort" aria-hidden="true" if={ this.way === false }></i>
+                            <i class="fa fa-sort-asc" aria-hidden="true" if={ this.way === 1 }></i>
+                            <i class="fa fa-sort-desc" aria-hidden="true" if={ this.way === -1 }></i>
+                        </a>
                         { column.title }
                     </th>
                 </tr>
@@ -57,9 +62,11 @@
 
     <script>
         // set variables
+        this.way     = opts.grid && opts.grid.way ? opts.grid.way : false;
         this.rows    = opts.grid && opts.grid.rows ? opts.grid.rows : 20;
         this.data    = opts.grid && opts.grid.data ? opts.grid.data : [];
         this.page    = opts.grid && opts.grid.page ? opts.grid.page : 1;
+        this.sort    = opts.grid && opts.grid.sort ? opts.grid.sort : false;
         this.route   = opts.grid && opts.grid.route ? opts.grid.route : '';
         this.total   = opts.grid && opts.grid.total ? opts.grid.total : 0;
         this.loaded  = opts.grid || false;
@@ -91,6 +98,16 @@
         filterValue (filter) {
             // return filter value
             return this.filter[filter.id] || '';
+        }
+
+        /**
+         * return is column currently sorted
+         *
+         * @return {Boolean}
+         */
+        isSort (column) {
+            // return boolean
+            return this.sort === column.id;
         }
 
         /**
@@ -205,6 +222,45 @@
         }
 
         /**
+         * on sort function
+         *
+         * @param {Event} e
+         */
+        onSort (e) {
+            // get link
+            var link = jQuery (e.target).is ('th') ? jQuery (e.target) : jQuery (e.target).closest ('th');
+
+            // get column
+            var column = this.columns[link.attr ('data-column')];
+
+            // check for id
+            if (column.id === this.sort) {
+                // set asc or desc
+                if (this.way === false) {
+                    // set way
+                    this.way = -1;
+                } else if (this.way === -1) {
+                    // set way
+                    this.way = 1;
+                } else if (this.way === 1) {
+                    // reset sort
+                    this.way  = false;
+                    this.sort = false;
+                }
+            } else {
+                // set sort
+                this.way  = -1;
+                this.sort = column.id;
+            }
+
+            // load view
+            this.load ();
+
+            // update view
+            this.update ();
+        }
+
+        /**
          * loads datagrid by params
          */
         load () {
@@ -219,8 +275,10 @@
                 url         : this.route,
                 type        : 'post',
                 data        : JSON.stringify ({
-                    'page' : this.page,
-                    'rows' : this.rows,
+                    'way'    : this.way,
+                    'page'   : this.page,
+                    'rows'   : this.rows,
+                    'sort'   : this.sort,
                     'filter' : this.filter
                 }),
                 contentType : 'application/json; charset=utf-8',
