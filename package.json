@@ -7,6 +7,10 @@
   "author": "EdenCoder",
   "homepage": "https://edenjs.com/",
   "readmeFilename": "README.md",
+  "nodent": {
+    "noUseDirective": true,
+    "ignoreNodeModules": true
+  },
   "scripts": {
     "test": "mocha --require tests/lib/env --reporter spec --check-leaks tests/ \"lib/bundles/*/tests/**/*.js\" \"app/bundles/*/tests/**/*.js\""
   },
@@ -56,6 +60,7 @@
     "nanobar": "^0.4.2",
     "nodemailer": "^2.6.0",
     "nodemailer-smtp-transport": "^2.7.2",
+    "nodent-rq": "^2.5.1",
     "npm": "^3.10.7",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",

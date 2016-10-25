@@ -458,10 +458,18 @@ class edenGulp {
         js = js.concat (glob.sync ('./app/bundles/*/public/js/bootstrap.js'));
 
         // build vendor prepend
-        var vendor = '';
-        if (config.js && config.js.length) {
-            for (var i = 0; i < config.js.length; i++) {
-                vendor += fs.readFileSync (config.js[i], 'utf8') + os.EOL;
+        var min = '';
+        if (config.js && config.js.min.length) {
+            for (var a = 0; a < config.js.min.length; a++) {
+                min += fs.readFileSync (config.js.min[a], 'utf8') + os.EOL;
+            }
+        }
+
+        // build vendor prepend
+        var max = '';
+        if (config.js && config.js.max.length) {
+            for (var b = 0; b < config.js.max.length; b++) {
+                max += fs.readFileSync (config.js.max[b], 'utf8') + os.EOL;
             }
         }
 
@@ -479,8 +487,9 @@ class edenGulp {
             .transform (babelify)
             .bundle ()
             .pipe (source ('app.min.js'))
-            .pipe (streamify (header (vendor)))
+            .pipe (streamify (header (max)))
             .pipe (streamify (uglify ()))
+            .pipe (streamify (header (min)))
             .pipe (this.gulp.dest ('./www/public/js'))
             .on ('end', () => {
                 // reset running flag
