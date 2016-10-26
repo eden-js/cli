@@ -19,7 +19,6 @@
     "npm": ">= 3.0.0"
   },
   "dependencies": {
-    "alias-module": "^1.0.1",
     "app-module-path": "^2.1.0",
     "assert": "^1.4.1",
     "babel-preset-es2015": "^6.14.0",
@@ -28,7 +27,6 @@
     "bootstrap": "^4.0.0-alpha.3",
     "browserify": "^13.1.0",
     "cluster": "^0.7.7",
-    "co": "^4.6.0",
     "colors": "^1.1.2",
     "comment-parser": "^0.4.0",
     "connect-redis": "^3.1.0",
@@ -54,7 +52,6 @@
     "html-to-text": "^2.1.3",
     "install": "^0.8.1",
     "jquery": "^3.1.0",
-    "jquery-bootgrid": "^1.3.1",
     "jquery-form": "^3.50.0",
     "mocha": "^3.0.2",
     "mongorito": "2.1.x",
@@ -76,8 +73,6 @@
     "socket.io": "^1.4.8",
     "socket.io-client": "1.x.x",
     "socket.io-redis": "1.x.x",
-    "socketio": "1.x.x",
-    "supertest": "^2.0.0",
     "tether": "^1.3.7",
     "through2": "^2.0.1",
     "toastr": "^2.1.2",
