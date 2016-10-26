@@ -11,13 +11,22 @@ var nodent = require ('nodent-rq/require-hook');
 
 // require dependencies
 var os      = require ('os');
+var addPath = require ('app-module-path').addPath;
 var winston = require ('winston');
 var cluster = require ('cluster');
 
+// add node paths
+addPath (global.appRoot);
+addPath (global.appRoot + '/lib/core');
+addPath (global.appRoot + '/app/bundles');
+addPath (global.appRoot + '/lib/bundles');
+addPath (global.appRoot + '/lib/aliases');
+addPath (global.appRoot + '/lib/utilities');
+
 // require local dependencies
-var log    = require (global.appRoot + '/lib/utilities/log');
-var eden   = require (global.appRoot + '/lib/eden');
-var config = require (global.appRoot + '/app/config');
+var log    = require ('lib/utilities/log');
+var eden   = require ('lib/eden');
+var config = require ('app/config');
 
 // set global environment
 global.envrionment = process.env.NODE_ENV || config.environment;
