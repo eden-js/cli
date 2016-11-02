@@ -93,13 +93,19 @@ config.sass = [
 
 // set js imports
 // these are imported into app.min.js at the top
-config.js = [
-    './node_modules/jquery/dist/jquery.min.js',
-    './node_modules/jquery-form/jquery.form.js',
-    './node_modules/tether/dist/js/tether.min.js',
-    './node_modules/toastr/build/toastr.min.js',
-    './node_modules/bootstrap/dist/js/bootstrap.js'
-];
+config.js = {
+    'min' : [
+        './node_modules/jquery/dist/jquery.min.js',
+        './node_modules/jquery-form/jquery.form.js',
+        './node_modules/tether/dist/js/tether.min.js',
+        './node_modules/toastr/build/toastr.min.js',
+        './node_modules/bootstrap/dist/js/bootstrap.js'
+
+    ],
+    'max' : [
+
+    ]
+};
 
 
 /**
@@ -145,7 +151,7 @@ config.acl = {
          // include riot module
          'riot'    : 'riot',
          // include alert module
-         'alert'   : 'alert/public/js/alert',
+         'alert'   : 'alert/public/js/bootstrap',
          // include socket module
          'socket'  : 'socket/public/js/bootstrap',
          // require history
