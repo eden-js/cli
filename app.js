@@ -7,7 +7,7 @@
 global.appRoot = __dirname;
 
 // enable async and await
-var nodent = require ('nodent-rq/require-hook');
+//var nodent = require ('nodent-rq/require-hook');
 
 // require dependencies
 var os      = require ('os');

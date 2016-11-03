@@ -182,10 +182,13 @@ class edenGulp {
         this.gulp.task ('dev', ['install'], () => {
             // run server task
             server.listen ({
-                'path' : './app.js',
-                'env'  : {
+                'env'      : {
                     'NODE_ENV' : 'development'
-                }
+                },
+                'path'     : './app.js',
+                'execArgv' : [
+                    '--harmony-async-await'
+                ]
             });
 
             // set serve
