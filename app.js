@@ -70,7 +70,7 @@ if (global.environment == 'dev') {
             setTimeout (() => {
                 // fork new thread
                 cluster.fork ();
-            }, (i * 500));
+            }, (i * 1000));
         }
     } else {
         // log spawning threads
