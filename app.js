@@ -53,6 +53,9 @@ if (global.environment == 'dev') {
       'logger' : logger
     });
 } else {
+    // set workers
+    var workers = {};
+
     // check if master
     if (cluster.isMaster) {
         // run in production
@@ -66,10 +69,16 @@ if (global.environment == 'dev') {
 
         // create new worker per cpu
         for (var i = 0; i < threads; i += 1) {
+            // creat environment info
+            let env = JSON.parse (JSON.stringify (process.env));
+                env.id   = i;
+                env.port = parseInt (config.port) + i;
+
             // timeout fork in line
             setTimeout (() => {
                 // fork new thread
-                cluster.fork ();
+                workers[i] = cluster.fork (env);
+                workers[i].process.env = env;
             }, (i * 500));
         }
     } else {
@@ -84,10 +93,18 @@ if (global.environment == 'dev') {
 
     // set on exit
     cluster.on ('exit', function (worker) {
+        // set i
+        var i = worker.process.env.id;
+
+        // creat environment info
+        let env = JSON.parse (JSON.stringify (process.env));
+            env.port = parseInt (config.port) + i;
+
         // log spawning threads
         logger.log ('warning', 'Worker ' + worker.id + ' died, forking new eden thread');
 
         // fork new thread
-        cluster.fork ();
+        worker[i] = cluster.fork (env);
+        workers[i].process.env = env;
     });
 }
