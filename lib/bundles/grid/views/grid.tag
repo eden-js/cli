@@ -1,7 +1,7 @@
 <grid>
     <div class={ 'grid' : true, 'loading' : !this.loaded }>
-        <div class="filters" if={ this.filters.length }>
-            <div class="filter form-group" each={ filter, i in this.filters }>
+        <div class="row filters" if={ this.filters.length }>
+            <div class="col-md-3 filter form-group" each={ filter, i in this.filters }>
                 <label if={ filter.title }>
                     { filter.title }
                 </label>
@@ -9,7 +9,7 @@
             </div>
         </div>
         <table class={ tableClass () }>
-            <thead>
+            <thead class="thead-inverse">
                 <tr>
                     <th each={ column, i in this.columns }>
                         <a href="#!" if={ column.sort } class={ 'pull-right sort' : true, 'text-muted' : !isSort (column) }>
@@ -32,7 +32,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <nav aria-label="Page navigation">
-                    <ul class="pagination">
+                    <ul class="pagination pagination-sm">
                         <li class={ 'page-item' : true, 'disabled' : hasPrev () }>
                             <a class="page-link" href="#!" aria-label="Previous" onclick={ onPrev }>
                                 <span aria-hidden="true">&laquo;</span>
@@ -52,9 +52,9 @@
                 </nav>
             </div>
             <div class="col-sm-6 text-sm-right">
-                <h4>
+                <small class="pagination-stats">
                     Showing { (this.page - 1) * this.rows } - { (this.page * this.rows) > this.total ? this.total : (this.page * this.rows) } of { this.total }
-                </h4>
+                </small>
             </div>
         </div>
     </div>
@@ -84,7 +84,7 @@
          */
         tableClass () {
             // return string
-            return opts.table || 'table table-bordered';
+            return opts.table || 'table table-striped';
         }
 
         /**

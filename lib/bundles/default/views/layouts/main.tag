@@ -23,7 +23,7 @@
 
         // set menu class object
         this.menuClass = {
-            'main' : 'nav navbar-nav float-xs-right'
+            'main' : 'nav navbar-nav navbar-right'
         };
     </script>
 </main-layout>
