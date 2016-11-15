@@ -31,7 +31,7 @@
 
         // set menu class object
         this.menuClass = {
-            'main' : 'nav navbar-nav navbar-right'
+            'main' : 'nav navbar-nav float-xs-right'
         };
         this.adminMenuClass = {
             'main' : 'nav nav-pills nav-stacked',
