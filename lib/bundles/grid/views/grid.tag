@@ -24,7 +24,6 @@
             <tbody>
                 <tr each={ data, i in this.data }>
                     <td each={ column, a in this.columns }>
-                        { console.log (data, data[column.id]) }
                         <raw html={ data[column.id] } />
                     </td>
                 </tr>
