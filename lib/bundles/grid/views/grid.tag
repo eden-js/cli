@@ -1,5 +1,5 @@
 <grid>
-    <div class={ 'grid' : true, 'loading' : !this.loaded }>
+    <div class={ 'grid' : true, 'loading' : !this.loaded || this.loading }>
         <div class="row filters" if={ this.filters.length }>
             <div class="col-md-3 filter form-group" each={ filter, i in this.filters }>
                 <label if={ filter.title }>
@@ -68,13 +68,16 @@
         this.sort    = opts.grid && opts.grid.sort ? opts.grid.sort : false;
         this.route   = opts.grid && opts.grid.route ? opts.grid.route : '';
         this.total   = opts.grid && opts.grid.total ? opts.grid.total : 0;
-        this.loaded  = opts.grid || false;
         this.filter  = opts.grid && opts.grid.filter ? opts.grid.filter : {};
         this.filters = opts.grid && opts.grid.filters ? opts.grid.filters : [];
         this.columns = opts.grid && opts.grid.columns ? opts.grid.columns : [];
 
         // set pages
         this.pages = [];
+
+        // set loading
+        this.loaded  = opts.grid || false;
+        this.loading = false;
 
 
         /**
