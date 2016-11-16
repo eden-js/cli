@@ -1,5 +1,5 @@
 <admin-layout>
-    <nav class="navbar navbar-dark navbar-admin bg-inverse">
+    <nav class="navbar navbar-full navbar-dark navbar-admin bg-inverse">
         <div class="container">
             <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#navbar-header" aria-controls="navbar-header">
               ☰

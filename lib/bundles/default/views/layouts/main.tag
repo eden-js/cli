@@ -1,5 +1,5 @@
 <main-layout>
-    <nav class="navbar navbar-light bg-faded">
+    <nav class="navbar navbar-full navbar-light bg-faded">
         <div class="container">
             <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#navbar-header" aria-controls="navbar-header">
               ☰
