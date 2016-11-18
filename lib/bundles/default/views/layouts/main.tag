@@ -1,6 +1,6 @@
 <main-layout>
-    <div class="container">
-        <nav class="navbar navbar-light bg-faded">
+    <nav class="navbar navbar-full navbar-light bg-faded">
+        <div class="container">
             <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#navbar-header" aria-controls="navbar-header">
               ☰
             </button>
@@ -10,10 +10,12 @@
                 </a>
                 <menu name="MAIN" menu={ opts.menu } classes={ menuClass } />
             </div>
-        </nav>
+        </div>
+    </nav>
+    <div class="container">
         <alert success={ opts.success } error={ opts.error } />
-        <div name="page"></div>
     </div>
+    <div name="page"></div>
 
     <script>
         // add layout mixin
@@ -21,7 +23,7 @@
 
         // set menu class object
         this.menuClass = {
-            'main' : 'nav navbar-nav'
+            'main' : 'nav navbar-nav float-xs-right'
         };
     </script>
 </main-layout>

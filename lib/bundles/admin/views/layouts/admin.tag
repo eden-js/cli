@@ -1,16 +1,24 @@
 <admin-layout>
-    <div class="container">
-        <nav class="navbar navbar-dark navbar-admin bg-inverse">
-            <a class="navbar-brand" href="#">
-                { opts.title }
-            </a>
-            <menu name="MAIN" menu={ opts.menu } classes={ this.menuClass } />
-        </nav>
-        <div class="row">
-            <div class="col-sm-3">
-                <menu name="ADMIN" menu={ opts.menu } classes={ this.adminMenuClass } />
+    <nav class="navbar navbar-full navbar-dark navbar-admin bg-inverse">
+        <div class="container">
+            <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#navbar-header" aria-controls="navbar-header">
+              ☰
+            </button>
+            <div class="collapse navbar-toggleable-xs" id="navbar-header">
+                <a class="navbar-brand" href="/">
+                    { opts.title }
+                </a>
+                <menu name="MAIN" menu={ opts.menu } classes={ menuClass } />
             </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <aside class="col-sm-3">
+                <menu name="ADMIN" menu={ opts.menu } classes={ this.adminMenuClass } />
+            </aside>
             <div class="col-sm-9">
+                <alert success={ opts.success } error={ opts.error } />
                 <alert error={ opts.error } success={ opts.success } />
                 <div class="admin-page" name="page"></div>
             </div>
@@ -23,12 +31,12 @@
 
         // set menu class object
         this.menuClass = {
-            'main' : 'nav navbar-nav navbar-right'
+            'main' : 'nav navbar-nav float-xs-right'
         };
         this.adminMenuClass = {
-            'main' : 'list-group list-group-flush',
-            'item' : '',
-            'link' : 'list-group-item'
+            'main' : 'nav nav-pills nav-stacked',
+            'item' : 'nav-item',
+            'link' : 'nav-link'
         };
 
     </script>

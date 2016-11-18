@@ -1,10 +1,14 @@
 <home-page>
-  <div class="jumbotron">
-      <h1>Welcome to { opts.title }</h1>
-      <p>This is a quick example of how an Eden bundle works. It's placed within a <code>app/bundles/[NAME]</code> to segregate it from the main application bundles.</p>
-      <p>If you are looking to overrite any default application teplates, you can find them within <code></code>.</p>
-      <p>
-          <a class="btn btn-lg btn-primary" href="//edenjs.com" role="button">View docs »</a>
-      </p>
-  </div>
+    <section class="jumbotron text-xs-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">Welcome to { opts.title }</h1>
+                <p class="lead text-muted">
+                    Let's call this "Hello World". You will need to create your own bundles within <code>app/bundles/[bundle name]</code> to start!
+                </p>
+            <p>
+                <a class="btn btn-primary" href="//edenjs.com" role="button">Read the docs »</a>
+                <a class="btn btn-secondary" href="//github.com/eden-js/eden" role="button">Read the source »</a>
+            </p>
+        </div>
+    </section>
 </home-page>

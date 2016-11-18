@@ -1,7 +1,7 @@
 <grid>
-    <div class={ 'grid' : true, 'loading' : !this.loaded }>
-        <div class="filters" if={ this.filters.length }>
-            <div class="filter form-group" each={ filter, i in this.filters }>
+    <div class={ 'grid' : true, 'loading' : !this.loaded || this.loading }>
+        <div class="row filters" if={ this.filters.length }>
+            <div class="col-md-3 filter form-group" each={ filter, i in this.filters }>
                 <label if={ filter.title }>
                     { filter.title }
                 </label>
@@ -9,7 +9,7 @@
             </div>
         </div>
         <table class={ tableClass () }>
-            <thead>
+            <thead class="thead-inverse">
                 <tr>
                     <th each={ column, i in this.columns }>
                         <a href="#!" if={ column.sort } class={ 'pull-right sort' : true, 'text-muted' : !isSort (column) }>
@@ -24,7 +24,6 @@
             <tbody>
                 <tr each={ data, i in this.data }>
                     <td each={ column, a in this.columns }>
-                        { console.log (data, data[column.id]) }
                         <raw html={ data[column.id] } />
                     </td>
                 </tr>
@@ -33,7 +32,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <nav aria-label="Page navigation">
-                    <ul class="pagination">
+                    <ul class="pagination pagination-sm">
                         <li class={ 'page-item' : true, 'disabled' : hasPrev () }>
                             <a class="page-link" href="#!" aria-label="Previous" onclick={ onPrev }>
                                 <span aria-hidden="true">&laquo;</span>
@@ -53,9 +52,9 @@
                 </nav>
             </div>
             <div class="col-sm-6 text-sm-right">
-                <h4>
+                <small class="pagination-stats">
                     Showing { (this.page - 1) * this.rows } - { (this.page * this.rows) > this.total ? this.total : (this.page * this.rows) } of { this.total }
-                </h4>
+                </small>
             </div>
         </div>
     </div>
@@ -69,13 +68,16 @@
         this.sort    = opts.grid && opts.grid.sort ? opts.grid.sort : false;
         this.route   = opts.grid && opts.grid.route ? opts.grid.route : '';
         this.total   = opts.grid && opts.grid.total ? opts.grid.total : 0;
-        this.loaded  = opts.grid || false;
         this.filter  = opts.grid && opts.grid.filter ? opts.grid.filter : {};
         this.filters = opts.grid && opts.grid.filters ? opts.grid.filters : [];
         this.columns = opts.grid && opts.grid.columns ? opts.grid.columns : [];
 
         // set pages
         this.pages = [];
+
+        // set loading
+        this.loaded  = opts.grid || false;
+        this.loading = false;
 
 
         /**
@@ -85,7 +87,7 @@
          */
         tableClass () {
             // return string
-            return opts.table || 'table table-bordered';
+            return opts.table || 'table table-striped';
         }
 
         /**
