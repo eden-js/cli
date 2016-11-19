@@ -18,7 +18,6 @@
                 <menu name="ADMIN" menu={ opts.menu } classes={ this.adminMenuClass } />
             </aside>
             <div class="col-sm-9">
-                <alert success={ opts.success } error={ opts.error } />
                 <alert error={ opts.error } success={ opts.success } />
                 <div class="admin-page" name="page"></div>
             </div>
