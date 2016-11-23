@@ -3,8 +3,8 @@
     <label if={ opts.filter.title }>
       { opts.filter.title }
     </label>
-    <select if={ opts.filter.options } class={ 'form-control' : true } value={ filterValue () } onchange={ onFilter } />
-      <option each={ option, i in opts.filter.options } value={ option.value }>
+    <select if={ opts.filter.options } class={ 'form-control' : true } onchange={ onFilter }>
+      <option each={ option, i in opts.filter.options } value={ option.value } selected={ option.value === filterValue () }>
         { option.name }
       </option>
     </select>
@@ -20,7 +20,7 @@
      */
     filterValue () {
       // return filter value
-      return opts.values[opts.filter.id] || '';
+      return opts.values[opts.filter.id].value || false;
     }
 
     /**
