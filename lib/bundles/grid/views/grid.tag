@@ -3,7 +3,7 @@
     <div class="row filters" if={ this.filters.length }>
       <div class="col-md-3 filter form-group" each={ f, i in this.filters }>
         <grid-filter-text if={ !f.type || f.type === 'text' } filter={ f } values={ this.filter } onfilter={ onFilter } />
-        <grid-filter-select if={ f.type === 'select' } filter={ f } onfilter={ onFilter } />
+        <grid-filter-select if={ f.type === 'select' } filter={ f } values={ this.filter } onfilter={ onFilter } />
       </div>
     </div>
     <table class={ tableClass () }>

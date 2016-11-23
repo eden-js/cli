@@ -20,7 +20,7 @@
      */
     filterValue () {
       // return filter value
-      return opts.values[opts.filter.id].value || false;
+      return opts.values[opts.filter.id] || false;
     }
 
     /**
