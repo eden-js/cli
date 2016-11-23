@@ -1,4 +1,4 @@
-<raw>
+<grid-raw>
     <span></span>
 
     <script>
@@ -8,4 +8,4 @@
             this.root.innerHTML = opts.html;
         });
     </script>
-</raw>
+</grid-raw>
