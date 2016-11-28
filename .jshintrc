@@ -1,4 +1,8 @@
 {
-  "node"   : true,
-  "esnext" : true
+  "node"         : true,
+  "esnext"       : true,
+  "experimental" : {
+    "expnt" : true,
+    "async" : true
+  }
 }
