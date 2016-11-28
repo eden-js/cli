@@ -29,7 +29,7 @@ var eden   = require ('lib/eden');
 var config = require ('app/config');
 
 // set global environment
-global.envrionment = process.env.NODE_ENV || config.environment;
+global.envrionment = process && process.env.NODE_ENV ? process.env.NODE_ENV : config.environment;
 
 // create logger
 var logger = new winston.Logger ({
@@ -53,9 +53,6 @@ if (global.environment == 'dev') {
       'logger' : logger
     });
 } else {
-    // set workers
-    var workers = {};
-
     // check if master
     if (cluster.isMaster) {
         // run in production
@@ -69,16 +66,10 @@ if (global.environment == 'dev') {
 
         // create new worker per cpu
         for (var i = 0; i < threads; i += 1) {
-            // creat environment info
-            let env = JSON.parse (JSON.stringify (process.env));
-                env.id   = i;
-                env.port = parseInt (config.port) + i;
-
             // timeout fork in line
             setTimeout (() => {
                 // fork new thread
-                workers[i] = cluster.fork (env);
-                workers[i].process.env = env;
+                cluster.fork ();
             }, (i * 500));
         }
     } else {
@@ -93,18 +84,10 @@ if (global.environment == 'dev') {
 
     // set on exit
     cluster.on ('exit', function (worker) {
-        // set i
-        var i = worker.process.env.id;
-
-        // creat environment info
-        let env = JSON.parse (JSON.stringify (process.env));
-            env.port = parseInt (config.port) + i;
-
         // log spawning threads
         logger.log ('warning', 'Worker ' + worker.id + ' died, forking new eden thread');
 
         // fork new thread
-        worker[i] = cluster.fork (env);
-        workers[i].process.env = env;
+        cluster.fork ();
     });
 }
