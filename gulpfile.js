@@ -39,7 +39,7 @@ try {
 }
 
 // require local dependencies
-var configParser = require ('./lib/utilities/config');
+var configParser = require ('./lib/utilities/parser');
 
 /**
  * build gulp class

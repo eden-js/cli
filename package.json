@@ -60,6 +60,7 @@
     "nodemailer-smtp-transport": "^2.7.2",
     "nodent-rq": "^2.5.1",
     "npm": "^3.10.7",
+    "parse-comments": "^0.4.3",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "passport.socketio": "^3.6.2",
