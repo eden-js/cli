@@ -30,14 +30,16 @@ var uglify     = require ('gulp-uglify');
 var streamify  = require ('gulp-streamify');
 var sourcemaps = require ('gulp-sourcemaps');
 
-// import and check existence of local dependencies
+// test config
 try {
     var config = require ('./app/config');
 } catch (err) {
     console.error ('Failed to locate config: \'./app/config\'. Note: Make sure you have created the \'config.js\' in the \'./app\' folder');
     process.exit ();
 }
-var configUtil = require ('./lib/utilities/config');
+
+// require local dependencies
+var configParser = require ('./lib/utilities/config');
 
 /**
  * build gulp class
@@ -356,47 +358,40 @@ class edenGulp {
      * route task
      */
     config () {
-        // set variables
-        var all  = {};
+      // set variables
+      var all  = {};
 
-        // set running
-        if (this._configRunning) {
-            return;
-        }
-        this._configRunning = true;
+      // get all routes
+      return this.gulp.src (this._tasks.config.files)
+        .pipe (through.obj (function (chunk, enc, cb) {
+          // set pipe
+          var pipe = this;
 
-        // get all routes
-        // do within setTimeout to remove empty files
-        return this.gulp.src (this._tasks.config.files)
-            .pipe (through.obj (function (chunk, enc, cb) {
-                // set pipe
-                var pipe = this;
-
-                // run pipe chunk
-                configUtil.pipe (chunk).then (result => {
-                    // push to pipe
-                    pipe.push ({
-                        'result' : result
-                    });
-
-                    // run callback
-                    cb (null, chunk);
-                });
-            }))
-            .on ('data', (data) => {
-                // merge config object
-                this._merge (all, data.result);
-            })
-            .on ('end', () => {
-                // write config file
-                this._write ('config', all);
-
-                // reset running tag
-                this._configRunning = false;
-
-                // restart server
-                this._restart ();
+          // run pipe chunk
+          configParser.pipe (chunk).then (result => {
+            // push to pipe
+            pipe.push ({
+              'result' : result
             });
+
+            // run callback
+            cb (null, chunk);
+          });
+        }))
+        .on ('data', (data) => {
+          // merge config object
+          this._merge (all, data.result);
+        })
+        .on ('end', () => {
+          // write config file
+          this._write ('config', all);
+
+          // reset running tag
+          this._configRunning = false;
+
+          // restart server
+          this._restart ();
+        });
     }
 
     /**
