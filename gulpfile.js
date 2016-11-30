@@ -359,35 +359,38 @@ class edenGulp {
      */
     config () {
       // set variables
-      var all  = {};
+      var parsedConfig = {};
 
       // get all routes
-      return this.gulp.src (this._tasks.config.files)
+      return this.gulp.src ([
+        './lib/bundles/*/controllers/**/*.js',
+        './app/bundles/*/controllers/**/*.js',
+      ])
         .pipe (through.obj (function (chunk, enc, cb) {
           // set pipe
           var pipe = this;
 
           // run pipe chunk
-          configParser.pipe (chunk).then (result => {
-            // push to pipe
-            pipe.push ({
-              'result' : result
-            });
+          var result = configParser.parse (chunk);
 
-            // run callback
-            cb (null, chunk);
+          // push to pipe
+          pipe.push ({
+            'result' : result
           });
+
+          // run callback
+          cb (null, chunk);
         }))
         .on ('data', (data) => {
           // merge config object
-          this._merge (all, data.result);
+          this._merge (parsedConfig, data.result);
         })
         .on ('end', () => {
-          // write config file
-          this._write ('config', all);
-
-          // reset running tag
-          this._configRunning = false;
+          // write types
+          for (var type in parsedConfig) {
+            // write config file
+            this._write (type, parsedConfig[type]);
+          }
 
           // restart server
           this._restart ();
@@ -577,21 +580,23 @@ class edenGulp {
      * @private
      */
     _merge (obj1, obj2) {
-        for (var p in obj2) {
-            try {
-                // Property in destination object set; update its value.
-                if (obj2[p].constructor == Object) {
-                    obj1[p] = this._merge (obj1[p], obj2[p]);
-                } else {
-                    obj1[p] = obj2[p];
-                }
-            } catch (e) {
-                // Property in destination object not set; create it and set its value.
-                obj1[p] = obj2[p];
-            }
+      for (var p in obj2) {
+        try {
+          // Property in destination object set; update its value.
+          if (obj2[p].constructor == Object) {
+            obj1[p] = this._merge (obj1[p], obj2[p]);
+          } else if (obj2[p].constructor == Array) {
+            obj1[p] = obj1[p].concat (obj2[p]);
+          } else {
+            obj1[p] = obj2[p];
+          }
+        } catch (e) {
+          // Property in destination object not set; create it and set its value.
+          obj1[p] = obj2[p];
         }
+      }
 
-        return obj1;
+      return obj1;
     }
 }
 
