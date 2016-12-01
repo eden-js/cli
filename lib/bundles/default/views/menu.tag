@@ -98,7 +98,7 @@
          */
         this.on ('update mount', () => {
             // set subs
-            this.menu = opts.menu[opts.name.toUpperCase ()] || [];
+            this.menu = opts.menu && opts.menu[opts.name.toUpperCase ()] || [];
         });
     </script>
 </menu>
