@@ -8,7 +8,7 @@
                 <a class="navbar-brand" href="/">
                     { opts.title }
                 </a>
-                <menu name="MAIN" menu={ opts.menu } classes={ menuClass } />
+                <menu name="MAIN" menu={ opts.menus } path={ opts.path } classes={ menuClass } />
             </div>
         </div>
     </nav>

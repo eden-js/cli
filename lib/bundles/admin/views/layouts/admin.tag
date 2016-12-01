@@ -8,14 +8,14 @@
                 <a class="navbar-brand" href="/">
                     { opts.title }
                 </a>
-                <menu name="MAIN" menu={ opts.menu } classes={ menuClass } />
+                <menu name="MAIN" menu={ opts.menus } path={ opts.path } classes={ menuClass } />
             </div>
         </div>
     </nav>
     <div class="container">
         <div class="row">
             <aside class="col-sm-3">
-                <menu name="ADMIN" menu={ opts.menu } classes={ this.adminMenuClass } />
+                <menu name="ADMIN" menu={ opts.menus } path={ opts.path } classes={ this.adminMenuClass } />
             </aside>
             <div class="col-sm-9">
                 <alert error={ opts.error } success={ opts.success } />

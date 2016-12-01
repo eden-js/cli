@@ -24,7 +24,7 @@
     "babel-preset-es2015": "^6.14.0",
     "babelify": "^7.3.0",
     "body-parser": "^1.15.2",
-    "bootstrap": "^4.0.0-alpha.3",
+    "bootstrap": "^4.0.0-alpha.5",
     "browserify": "^13.1.0",
     "cluster": "^0.7.7",
     "colors": "^1.1.2",
