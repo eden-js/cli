@@ -37,8 +37,8 @@
                 <span class="sr-only">Previous</span>
               </a>
             </li>
-            <li class={ 'page-item' : true, 'active' : this.page === page } each={ page, i in this.pages }>
-              <a class="page-link" href="#!" data-page={ page } onclick={ onPage }>{ page }</a>
+            <li each={ p, i in this.pages } class={ 'page-item' : true, 'active' : this.page === p }>
+              <a class="page-link" href="#!" data-page={ p } onclick={ onPage }>{ p }</a>
             </li>
             <li class={ 'page-item' : true, 'disabled' : !hasNext () }>
               <a class="page-link" href="#" aria-label="Next" onclick={ onNext }>
