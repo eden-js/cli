@@ -104,7 +104,7 @@
      * @return {Boolean}
      */
     hasPrev () {
-      return this.page >= 1;
+      return this.page > 1;
     }
 
     /**

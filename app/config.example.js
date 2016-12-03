@@ -37,11 +37,11 @@ config.threads = 1;
 
 // websocket configuration
 config.socket = {
-    'url'    : '//' + config.domain,
-    'params' : {
-        secure    : true,
-        reconnect : true
-    }
+  'url'    : '//' + config.domain,
+  'params' : {
+    secure    : true,
+    reconnect : true
+  }
 };
 
 // set app environment
@@ -54,16 +54,16 @@ config.environment = 'dev';
 
 // set config database object
 config.database = {
-    // dev database
-    dev : {
-        host : 'localhost',
-        db   : 'edenjs'
-    },
-    // set live database
-    live : {
-        host : 'localhost',
-        db   : 'edenjs'
-    }
+  // dev database
+  dev : {
+    host : 'localhost',
+    db   : config.domain.split ('.')[0]
+  },
+  // set live database
+  live : {
+    host : 'localhost',
+    db   : config.domain.split ('.')[0]
+  }
 };
 
 /**
@@ -72,11 +72,11 @@ config.database = {
 
 // set SMTP config email object
 config.email = {
-    'service' : 'Zoho',
-    'auth'    : {
-        'user' : 'email@domain.com',
-        'pass' : 'supersecretemailpassword'
-    }
+  'service' : 'Zoho',
+  'auth'    : {
+    'user' : 'email@domain.com',
+    'pass' : 'supersecretemailpassword'
+  }
 };
 
 /**
@@ -86,26 +86,20 @@ config.email = {
 // set scss imports
 // these are imported into app.min.css by default
 config.sass = [
-    './node_modules/bootstrap/scss/bootstrap.scss',
-    './node_modules/tether/src/css/tether.scss',
-    './node_modules/toastr/toastr.scss'
+  './node_modules/bootstrap/scss/bootstrap.scss',
+  './node_modules/tether/src/css/tether.scss',
+  './node_modules/toastr/toastr.scss'
 ];
 
 // set js imports
 // these are imported into app.min.js at the top
-config.js = {
-    'min' : [
-        './node_modules/jquery/dist/jquery.min.js',
-        './node_modules/jquery-form/jquery.form.js',
-        './node_modules/tether/dist/js/tether.min.js',
-        './node_modules/toastr/build/toastr.min.js',
-        './node_modules/bootstrap/dist/js/bootstrap.js'
-
-    ],
-    'max' : [
-
-    ]
-};
+config.js = [
+  './node_modules/jquery/dist/jquery.min.js',
+  './node_modules/jquery-form/jquery.form.js',
+  './node_modules/tether/dist/js/tether.min.js',
+  './node_modules/toastr/build/toastr.min.js',
+  './node_modules/bootstrap/dist/js/bootstrap.js'
+];
 
 
 /**
@@ -125,18 +119,18 @@ config.session = 'someStrongSessionHash';
 
 // set acl object
 config.acl = {
-    // default acl per user
-    'default' : {
-        name  : 'user',
-        value : [
-            'loggedIn'
-        ]
-    },
-    // default acl for first user (admin)
-    'first'   : {
-        name  : 'admin',
-        value : true
-    }
+  // default acl per user
+  'default' : {
+    name  : 'user',
+    value : [
+      'loggedIn'
+    ]
+  },
+  // default acl for first user (admin)
+  'first'   : {
+    name  : 'admin',
+    value : true
+  }
 };
 
 
@@ -144,20 +138,20 @@ config.acl = {
  * set view import functionality
  */
 
- // create view object
- config.view = {
-     // modules will be required at the top of riots tags.min.js
-     'include' : {
-         // include riot module
-         'riot'    : 'riot',
-         // include alert module
-         'alert'   : 'alert/public/js/bootstrap',
-         // include socket module
-         'socket'  : 'socket/public/js/bootstrap',
-         // require history
-         'history' : 'history'
-     }
- };
+// create view object
+config.view = {
+  // modules will be required at the top of riots tags.min.js
+  'include' : {
+    // include riot module
+    'riot'    : 'riot',
+    // include alert module
+    'alert'   : 'alert/public/js/bootstrap',
+    // include socket module
+    'socket'  : 'socket/public/js/bootstrap',
+    // require history
+    'history' : 'history'
+  }
+};
 
 /**
  * set misc settings

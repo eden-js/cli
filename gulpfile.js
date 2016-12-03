@@ -435,7 +435,9 @@ class edenGulp {
         .on ('end', () => {
           // run on new source
           this.gulp.src (this._tasks.tags.files)
-            .pipe (riot ())
+            .pipe (riot ({
+                compact : true
+            }))
             .pipe (concat ('tags.min.js'))
             .pipe (header (riotHeader))
             .pipe (this.gulp.dest ('./app/cache'))
@@ -468,18 +470,10 @@ class edenGulp {
     js = js.concat (glob.sync ('./app/bundles/*/public/js/bootstrap.js'));
 
     // build vendor prepend
-    var min = '';
-    if (config.js && config.js.min.length) {
-      for (var a = 0; a < config.js.min.length; a++) {
-        min += fs.readFileSync (config.js.min[a], 'utf8') + os.EOL;
-      }
-    }
-
-    // build vendor prepend
-    var max = '';
-    if (config.js && config.js.max.length) {
-      for (var b = 0; b < config.js.max.length; b++) {
-        max += fs.readFileSync (config.js.max[b], 'utf8') + os.EOL;
+    var include = '';
+    if (config.js && config.js.length) {
+      for (var a = 0; a < config.js.length; a++) {
+        include += fs.readFileSync (config.js[a], 'utf8') + os.EOL;
       }
     }
 
@@ -497,9 +491,8 @@ class edenGulp {
       .transform (babelify)
       .bundle ()
       .pipe (source ('app.min.js'))
-      .pipe (streamify (header (max)))
+      .pipe (streamify (header (include)))
       .pipe (streamify (uglify ()))
-      .pipe (streamify (header (min)))
       .pipe (this.gulp.dest ('./www/public/js'))
       .on ('end', () => {
         // reset running flag
