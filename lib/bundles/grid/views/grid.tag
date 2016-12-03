@@ -31,7 +31,7 @@
       <div class="col-sm-6">
         <nav aria-label="Page navigation">
           <ul class="pagination pagination-sm">
-            <li class={ 'page-item' : true, 'disabled' : hasPrev () }>
+            <li class={ 'page-item' : true, 'disabled' : !hasPrev () }>
               <a class="page-link" href="#!" aria-label="Previous" onclick={ onPrev }>
                 <span aria-hidden="true">&laquo;</span>
                 <span class="sr-only">Previous</span>
@@ -40,7 +40,7 @@
             <li class={ 'page-item' : true, 'active' : this.page === page } each={ page, i in this.pages }>
               <a class="page-link" href="#!" data-page={ page } onclick={ onPage }>{ page }</a>
             </li>
-            <li class={ 'page-item' : true, 'disabled' : hasNext () }>
+            <li class={ 'page-item' : true, 'disabled' : !hasNext () }>
               <a class="page-link" href="#" aria-label="Next" onclick={ onNext }>
                 <span aria-hidden="true">&raquo;</span>
                 <span class="sr-only">Next</span>
@@ -104,7 +104,7 @@
      * @return {Boolean}
      */
     hasPrev () {
-      return this.page <= 1;
+      return this.page >= 1;
     }
 
     /**
@@ -113,7 +113,7 @@
      * @return {Boolean}
      */
     hasNext () {
-      return this.page >= Math.floor (this.total / this.rows) + 1;
+      return this.page < Math.floor (this.total / this.rows) + 1;
     }
 
     /**
@@ -183,7 +183,7 @@
      */
     onNext () {
       // get page
-      this.page = this.hasPrev () ? 1 : (this.page - 1);
+      this.page = this.hasNext () ? (this.page + 1) : this.page;
 
       // load view
       this.load ();
@@ -197,7 +197,7 @@
      */
     onPrev () {
       // get page
-      this.page = this.hasNext () ? (this.page + 1) : this.page;
+      this.page = this.hasPrev () ? (this.page - 1) : 1;
 
       // load view
       this.load ();
@@ -289,6 +289,19 @@
           this.update ();
         });
     }
+
+    /**
+     * on update function
+     *
+     * @param  {String} 'mount'
+     */
+    this.on ('mount', () => {
+      // set pages
+      this.setPages ();
+
+      // update
+      this.update ();
+    });
 
     /**
      * on update function

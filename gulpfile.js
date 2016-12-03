@@ -435,9 +435,7 @@ class edenGulp {
         .on ('end', () => {
           // run on new source
           this.gulp.src (this._tasks.tags.files)
-            .pipe (riot ({
-                compact : true
-            }))
+            .pipe (riot ())
             .pipe (concat ('tags.min.js'))
             .pipe (header (riotHeader))
             .pipe (this.gulp.dest ('./app/cache'))
