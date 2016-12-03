@@ -19,7 +19,7 @@
             </aside>
             <div class="col-sm-9">
                 <alert error={ opts.error } success={ opts.success } />
-                <div class="admin-page" name="page"></div>
+                <div class="admin-page" ref="page"></div>
             </div>
         </div>
     </div>

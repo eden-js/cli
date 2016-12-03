@@ -15,7 +15,7 @@
     <div class="container">
         <alert success={ opts.success } error={ opts.error } />
     </div>
-    <div name="page"></div>
+    <div ref="page"></div>
 
     <script>
         // add layout mixin
