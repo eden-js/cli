@@ -140,7 +140,7 @@
         start = ((page - 1) * this.rows);
 
         // check if should stop
-        if (main - page > 8) {
+        if (main - page > 8 || this.pages.length > 9) {
           break;
         }
       }

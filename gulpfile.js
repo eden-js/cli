@@ -492,7 +492,9 @@ class edenGulp {
       .bundle ()
       .pipe (source ('app.min.js'))
       .pipe (streamify (header (include)))
-      .pipe (streamify (uglify ()))
+      .pipe (streamify (uglify ({
+        'compress' : true
+      })))
       .pipe (this.gulp.dest ('./www/public/js'))
       .on ('end', () => {
         // reset running flag
