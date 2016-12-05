@@ -354,7 +354,7 @@ class edenBuilder {
 
     // loop daemons
     for (var key in daemons) {
-      daemons[key] = daemons[key].split ('bundles/')[1];
+      daemons[key] = daemons[key].split ('bundles/')[1].replace ('.js', '');
     }
 
     // write daemons cache file
