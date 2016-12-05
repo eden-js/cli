@@ -567,7 +567,7 @@ class edenBuilder {
    */
   _write (name, obj) {
     // write file
-    fs.writeFile ('./app/cache/' + name + '.json', JSON.stringify (obj), (err) {
+    fs.writeFile ('./app/cache/' + name + '.json', JSON.stringify (obj), (err) => {
       // check if error
       if (err) console.error (err);
     });
