@@ -1,4 +1,4 @@
-# EdenFrame
+# EdenJS
 
 [![bitHound Overall Score](https://www.bithound.io/github/Alex-iFactory/eden/badges/score.svg?style=flat-square)](https://www.bithound.io/github/eden-js/eden)
 [![issues](https://img.shields.io/github/issues/eden-js/eden.svg?style=flat-square)](https://github.com/eden-js/eden/issues)
@@ -6,32 +6,82 @@
 [![license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/eden-js/eden)
 [![Awesome](https://img.shields.io/badge/awesome-true-green.svg?style=flat-square)](https://github.com/eden-js/eden)
 
-#### EdenFrame: A **complete MVC component based framework** for building **express** web applications.
+Awesome isomorphic NodeJS skeleton for structured applications.
+Just take a look at its bundles.
 
-There are a variety of very good Node/Express/Mongo frameworks around. There is no true "correct" way of build your applications skeleton, what EdenFrame tries to do is give you a boilerplate bootstrap/express/mongoDB base for large component based NodeJS applications.
+## Quick Router
 
-This framework has been inspired by the conventions of  [Symfony2 and standard PHP MVC](http://symfony.com/blog/introducing-the-symfony-demo-application) based frameworks, but written on a NodeJS base. You will find bundles laid out in a very similar fashon to what you would find in most standard MVC frameworks.
+```js
+// use strict
+'use strict';
 
-Dependencies
---------
+// require local dependencies
+var alert      = require ('alert');
+var controller = require ('controller');
 
-This framework has been built with a few required dependencies of the server:
+/**
+ * build example controller
+ */
+class example extends controller {
+  /**
+   * get index action
+   *
+   * @route {get} /
+   */
+  indexAction (req, res, next) {
+    // the same as router.get ('/', example.indexAction)
+    // uses standard expressJS router
+    // SSR with riotJS
+    res.render ('home');
 
-- MongoDB
-- Redis
-- Nginx _or any other webserver, however configuration needs to be converted_
+    // alert user
+    alert.user (req.user, 'success', 'successfully loaded index');
+  }
 
-Configuration
---------
+  /**
+   * socketio event emit
+   *
+   * @socket event
+   */
+  eventSocket (Socket, data, User) {
+    // out of the box socket transport with authentication
 
-All base configuration information is found in `config.js` and example configuration in `config.example.js` in the root of the project. Please update this with MongoDB/bootstrap/other information before installing
+    // emit directly
+    Socket.emit ('data', {});
 
-Installation
---------
+    // alert socket
+    alert.socket (Socket, 'success', 'successfully received event');
+  }
+}
+
+/**
+ * export example controller
+ * @type {example}
+ */
+module.exports = example;
+```
+
+## Features
+
+- Based on ES6 async/await
+- Out of the box MVC structured development environment
+- Established [expressJS](https://github.com/expressjs/express) application base that you're already used to
+- Fully real time with [socketio](https://github.com/socketio/socket.io)
+- Extremely fast isomorphic rendering with [riotJS](https://github.com/riot/riot)
+- Extensible models with [mongorito](https://github.com/vadimdemedes/mongorito)
+
+## Why
+
+There are many very good Node/Express/Mongo frameworks around. There is no true "correct" way of build your applications skeleton, what EdenJS tries to do is give you a boilerplate bootstrap/express/mongoDB base for large bundled NodeJS applications.
+
+## Installation
 
 The entire framework has been written to be built and compiled with gulp. To install and run the boilerplate is as simple as:
 
 ```
+// deploy EdenJS
+git init; git remote add origin https://github.com/eden-js/eden.git; git pull;
+
 // development
 npm install; gulp;
 
