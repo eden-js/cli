@@ -110,7 +110,12 @@ config.js = [
 config.secret = 'someStrongSecretHash';
 
 // secret for session
-config.session = 'someStrongSessionHash';
+config.session = {
+  'key'    : 'eden.session.id',
+  'cookie' : {
+    secure : true
+  }
+};
 
 
 /**

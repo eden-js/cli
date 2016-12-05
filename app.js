@@ -32,11 +32,11 @@ global.envrionment = process.env.NODE_ENV || config.environment;
 var logger = new winston.Logger ({
   level      : config.logLevel  || 'info',
   transports : [
-  new (winston.transports.Console) ({
-    colorize  : true,
-    formatter : log,
-    timestamp : true
-  })
+    new (winston.transports.Console) ({
+      colorize  : true,
+      formatter : log,
+      timestamp : true
+    })
   ]
 });
 
