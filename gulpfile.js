@@ -42,9 +42,9 @@ try {
 var configParser = require ('./lib/utilities/parser');
 
 /**
- * build gulp class
+ * build edenBuilder class
  */
-class edenGulp {
+class edenBuilder {
   /**
    * construct gulp class
    */
@@ -261,11 +261,15 @@ class edenGulp {
 
         // check type
         if (type == 'css') {
+          // prepend
           var prepend = fs.readFileSync (chunk.path, 'utf8');
+
+          // push to this
           this.push ({
             'all' : prepend + os.EOL
           });
         } else {
+          // push to this
           this.push ({
             'all' : '@import "../..' + chunk.path.replace (__dirname, '').split (path.sep).join ('/').split (path.delimiter).join ('/') + '";' + os.EOL
           });
@@ -562,11 +566,8 @@ class edenGulp {
    * @param obj
    */
   _write (name, obj) {
-    fs.writeFile ('./app/cache/' + name + '.json', JSON.stringify (obj), function (err) {
-      if (err) {
-        return console.log (err);
-      }
-    });
+    // write file
+    fs.writeFile ('./app/cache/' + name + '.json', JSON.stringify (obj), console.error);
   }
 
   /**
@@ -599,8 +600,8 @@ class edenGulp {
 }
 
 /**
- * export eden gulp class
+ * export eden builder class
  *
- * @type {edenGulp}
+ * @type {edenBuilder}
  */
-module.exports = new edenGulp ();
+module.exports = new edenBuilder ();

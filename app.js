@@ -18,7 +18,6 @@ addPath (global.appRoot + '/lib/core');
 addPath (global.appRoot + '/app/bundles');
 addPath (global.appRoot + '/lib/bundles');
 addPath (global.appRoot + '/lib/aliases');
-addPath (global.appRoot + '/lib/utilities');
 
 // require local dependencies
 var log    = require ('lib/utilities/log');
