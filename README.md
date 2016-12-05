@@ -9,7 +9,20 @@
 Awesome isomorphic NodeJS skeleton for structured applications.
 Just take a look at its bundles.
 
-## Quick Router
+## Why
+
+There are many very good Node/Express/Mongo frameworks around. There is no true "correct" way of build your applications skeleton, what EdenJS tries to do is give you a boilerplate bootstrap/express/mongoDB base for large bundled NodeJS applications.
+
+## Features
+
+- Based on ES6 async/await
+- Out of the box MVC structured development environment
+- Established [expressJS](https://github.com/expressjs/express) application base that you're already used to
+- Fully real time with [socketio](https://github.com/socketio/socket.io)
+- Extremely fast isomorphic rendering with [riotJS](https://github.com/riot/riot)
+- Extensible models with [mongorito](https://github.com/vadimdemedes/mongorito)
+
+## Quick Development
 
 ```js
 // use strict
@@ -60,19 +73,6 @@ class example extends controller {
  */
 module.exports = example;
 ```
-
-## Features
-
-- Based on ES6 async/await
-- Out of the box MVC structured development environment
-- Established [expressJS](https://github.com/expressjs/express) application base that you're already used to
-- Fully real time with [socketio](https://github.com/socketio/socket.io)
-- Extremely fast isomorphic rendering with [riotJS](https://github.com/riot/riot)
-- Extensible models with [mongorito](https://github.com/vadimdemedes/mongorito)
-
-## Why
-
-There are many very good Node/Express/Mongo frameworks around. There is no true "correct" way of build your applications skeleton, what EdenJS tries to do is give you a boilerplate bootstrap/express/mongoDB base for large bundled NodeJS applications.
 
 ## Installation
 
