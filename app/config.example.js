@@ -23,6 +23,9 @@ config.domain = 'edenjs.com';
 // set application version
 config.version = '0.01';
 
+// set logo
+config.logo = '/public/assets/images/logo.svg';
+
 
 /**
  * set application server configuration
