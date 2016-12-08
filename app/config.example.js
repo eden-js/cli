@@ -155,9 +155,7 @@ config.view = {
     // include alert module
     'alert'   : 'alert/public/js/bootstrap',
     // include socket module
-    'socket'  : 'socket/public/js/bootstrap',
-    // require history
-    'history' : 'history'
+    'socket'  : 'socket/public/js/bootstrap'
   }
 };
 
