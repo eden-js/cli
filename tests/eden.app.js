@@ -7,7 +7,7 @@ var assert  = require ('assert');
 // describe eden
 describe ('EdenJS Express App', () => {
   // test standard event emitter functionality
-  it ('should pass express as app', (done) => {
+  it ('pass express as app', (done) => {
     // assert express
     assert.equal (typeof global.eden.app, 'function');
 

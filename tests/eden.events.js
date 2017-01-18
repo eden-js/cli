@@ -7,7 +7,7 @@ var assert  = require ('assert');
 // describe eden
 describe ('EdenJS Event Emitter', () => {
   // test standard event emitter functionality
-  it ('should allow event emitter functionality', (done) => {
+  it ('enable event emitter functionality', (done) => {
     // set event function
     global.eden.on ('eefn', (data) => {
       // stop listening
@@ -23,7 +23,7 @@ describe ('EdenJS Event Emitter', () => {
 
 
   // test redis event emitter functionality
-  it ('should allow event emitter via redis', (done) => {
+  it ('enable event emitter via redis', (done) => {
     // set event function
     global.eden.on ('eeredis', (channel, data) => {
       // stop listening
@@ -39,7 +39,7 @@ describe ('EdenJS Event Emitter', () => {
 
 
   // test standard event emitter functionality
-  it ('should allow event emitter to pass strings', (done) => {
+  it ('allow event emitter to pass strings', (done) => {
     // set event function
     global.eden.on ('eestring', (data) => {
       // stop listening
@@ -58,7 +58,7 @@ describe ('EdenJS Event Emitter', () => {
 
 
   // test standard event emitter functionality
-  it ('should allow event emitter to pass strings via redis', (done) => {
+  it ('allow event emitter to pass strings via redis', (done) => {
     // set event function
     global.eden.on ('eestringredis', (channel, data) => {
       // stop listening
@@ -77,7 +77,7 @@ describe ('EdenJS Event Emitter', () => {
 
 
   // test standard event emitter functionality
-  it ('should allow event emitter to pass objects', (done) => {
+  it ('allow event emitter to pass objects', (done) => {
     // set event function
     global.eden.on ('eeobject', (data) => {
       // stop listening
@@ -98,7 +98,7 @@ describe ('EdenJS Event Emitter', () => {
 
 
   // test standard event emitter functionality
-  it ('should allow event emitter to pass objects via redis', (done) => {
+  it ('allow event emitter to pass objects via redis', (done) => {
     // set event function
     global.eden.on ('eeobjectredis', (channel, data) => {
       // stop listening
