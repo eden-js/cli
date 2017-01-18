@@ -104,8 +104,8 @@ class edenBuilder {
         },
         'tags'    : {
           'files' : [
-            './lib/bundles/*/views/**/*.mixin.js',
-            './app/bundles/*/views/**/*.mixin.js',
+            './lib/bundles/*/views/**/*.js',
+            './app/bundles/*/views/**/*.js',
             './lib/bundles/*/views/**/*.tag',
             './app/bundles/*/views/**/*.tag'
           ],
