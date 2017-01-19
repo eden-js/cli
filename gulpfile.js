@@ -114,13 +114,17 @@ class edenBuilder {
           ],
           'skip' : true
         },
+        'serviceworker' : {
+          'skip' : true
+        },
         'js'     : {
           'files' : [
             './lib/bundles/*/public/js/**/*.js',
             './app/bundles/*/public/js/**/*.js'
           ],
           'dependencies' : [
-            'tags'
+            'tags',
+            'serviceworker'
           ]
         },
         'assets'  : {
@@ -459,6 +463,47 @@ class edenBuilder {
   /**
    * javascript task
    */
+  serviceworker () {
+    // ensure running only once
+    if (this._serviceworkerRunning) {
+      return;
+    }
+
+    // set js running
+    this._serviceworkerRunning = true;
+
+    // create javascript array
+    var entries = [];
+        entries = entries.concat (glob.sync ('./lib/bundles/*/public/js/serviceworker.js'));
+        entries = entries.concat (glob.sync ('./app/bundles/*/public/js/serviceworker.js'));
+
+    // browserfiy javascript
+    // do within setTimeout to remove empty files
+    return browserify ({
+      entries : entries,
+      paths   : [
+        './',
+        './app/bundles',
+        './lib/bundles',
+        './node_modules'
+      ]
+    })
+      .transform (babelify)
+      .bundle ()
+      .pipe (source ('sw.min.js'))
+      .pipe (streamify (uglify ({
+        'compress' : true
+      })))
+      .pipe (this.gulp.dest ('./www/public/js'))
+      .on ('end', () => {
+        // reset running flag
+        this._serviceworkerRunning = false;
+      });
+  }
+
+  /**
+   * javascript task
+   */
   js () {
     // ensure running only once
     if (this._jsRunning) {
@@ -469,9 +514,9 @@ class edenBuilder {
     this._jsRunning = true;
 
     // create javascript array
-    var js = [];
-    js = js.concat (glob.sync ('./lib/bundles/*/public/js/bootstrap.js'));
-    js = js.concat (glob.sync ('./app/bundles/*/public/js/bootstrap.js'));
+    var entries = [];
+        entries = entries.concat (glob.sync ('./lib/bundles/*/public/js/bootstrap.js'));
+        entries = entries.concat (glob.sync ('./app/bundles/*/public/js/bootstrap.js'));
 
     // build vendor prepend
     var include = '';
@@ -484,7 +529,7 @@ class edenBuilder {
     // browserfiy javascript
     // do within setTimeout to remove empty files
     return browserify ({
-      entries : js,
+      entries : entries,
       paths   : [
         './',
         './app/bundles',
