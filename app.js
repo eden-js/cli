@@ -68,7 +68,8 @@ if (global.environment == 'dev') {
       // creat environment info
       let env = JSON.parse (JSON.stringify (process.env));
           env.id   = i;
-          env.port = parseInt (config.port) + i;
+          env.main = i === 0;
+          env.port = (env.main && config.main) ? false : (parseInt (config.port) + (config.main ? (i - 1) : i));
 
       // timeout fork in line
       setTimeout (() => {

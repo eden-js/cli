@@ -32,11 +32,16 @@ config.logo = '/public/assets/images/logo.svg';
  */
 
 // set starting port
-config.port = '3001';
+config.port = 1337;
 
 // set amount of instances to run
 // setting this as null will count your CPU cores
 config.threads = 1;
+
+// set main is app
+// if true, the main app thread will not bind to a port
+// and will only run daemon processes
+config.main = false;
 
 // websocket configuration
 config.socket = {
@@ -45,6 +50,12 @@ config.socket = {
     secure    : true,
     reconnect : true
   }
+};
+
+// redis configuration
+config.redis = {
+  'host' : 'localhost',
+  'port' : 6379
 };
 
 // set app environment
