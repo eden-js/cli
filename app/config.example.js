@@ -38,10 +38,9 @@ config.port = 1337;
 // setting this as null will count your CPU cores
 config.threads = 1;
 
-// set main is app
-// if true, the main app thread will not bind to a port
-// and will only run daemon processes
-config.main = false;
+// create main app thread that will not run the frontend
+// generally used for doing sensitive calculations outside of running threads
+config.main = true;
 
 // websocket configuration
 config.socket = {

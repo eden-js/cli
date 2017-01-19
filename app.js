@@ -55,20 +55,25 @@ if (global.environment == 'dev') {
   // check if master
   if (cluster.isMaster) {
     // run in production
-    logger.log ('info', 'Running eden in production environment');
+    logger.log ('info', 'Running eden in production environment', {
+      'class' : 'app'
+    });
 
     // count CPUs
     var threads = config.threads ? config.threads : os.cpus ().length;
+        threads = config.main ? (threads + 1) : threads;
 
     // log spawning threads
-    logger.log ('info', 'Spawning ' + threads + ' eden thread' + (threads > 1 ? 's' : '') + '!');
+    logger.log ('info', 'Spawning ' + threads + ' eden thread' + (threads > 1 ? 's' : '') + '!', {
+      'class' : 'app'
+    });
 
     // create new worker per cpu
     for (var i = 0; i < threads; i += 1) {
       // creat environment info
       let env = JSON.parse (JSON.stringify (process.env));
           env.id   = i;
-          env.main = i === 0;
+          env.main = (config.main && (i === 0));
           env.port = (env.main && config.main) ? false : (parseInt (config.port) + (config.main ? (i - 1) : i));
 
       // timeout fork in line
@@ -80,7 +85,9 @@ if (global.environment == 'dev') {
     }
   } else {
     // log spawning threads
-    logger.log ('info', 'Spawned new eden thread');
+    logger.log ('info', 'spawned new ' + ((process.env.main === 'true') ? 'main' : 'sub') + ' thread', {
+      'class' : 'app'
+    });
 
     // run single instance
     new eden ({
@@ -98,7 +105,9 @@ if (global.environment == 'dev') {
         env.port = parseInt (config.port) + i;
 
     // log spawning threads
-    logger.log ('warning', 'Worker ' + worker.id + ' died, forking new eden thread');
+    logger.log ('warning', 'Worker ' + worker.id + ' died, forking new eden thread', {
+      'class' : 'app'
+    });
 
     // fork new thread
     worker[i] = cluster.fork (env);
