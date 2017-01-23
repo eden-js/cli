@@ -1,9 +1,5 @@
 /**
- * Created by Awesome on 2/27/2016.
- */
-
-/**
- * create initial config Object
+ * Create initial config Object
  *
  * @type {Object}
  */
@@ -11,68 +7,68 @@ var config = {};
 
 
 /**
- * set application page information
+ * Set application page information
  */
 
-// set application title
+// Set application title
 config.title  = 'EdenJS';
 
-// set application domain
+// Set application domain
 config.domain = 'edenjs.com';
 
-// set application version
+// Set application version
 config.version = '0.01';
 
-// set logo
+// Set logo
 config.logo = '/public/assets/images/logo.svg';
 
 
 /**
- * set application server configuration
+ * Set application server configuration
  */
 
-// set starting port
+// Set app environment
+config.environment = 'dev';
+
+// Set starting port
 config.port = 1337;
 
-// set amount of instances to run
-// setting this as null will count your CPU cores
+// Set amount of instances to run
+// Setting this as null will count your CPU cores
 config.threads = 1;
 
-// create main app thread that will not run the frontend
-// generally used for doing sensitive calculations outside of running threads
+// Create main app thread that will not run the frontend
+// Generally used for doing sensitive calculations outside of running threads
 config.main = true;
 
-// websocket configuration
+// Websocket configuration
 config.socket = {
-  'url'    : '//' + config.domain,
-  'params' : {
-    secure    : true,
-    reconnect : true
+  url:    '//' + config.domain + (config.environment === 'dev' ? ':' + config.port : ''),
+  params: {
+    secure:    true,
+    reconnect: true
   }
 };
 
-// redis configuration
+// Redis configuration
 config.redis = {
-  'host' : 'localhost',
-  'port' : 6379
+  host: 'localhost',
+  port: 6379
 };
-
-// set app environment
-config.environment = 'dev';
 
 
 /**
- * set database configuration
+ * Set database configuration
  */
 
-// set config database object
+// Set config database object
 config.database = {
-  // dev database
+  // Set dev database
   dev : {
     host : 'localhost',
     db   : config.domain.split ('.')[0]
   },
-  // set live database
+  // Set live database
   live : {
     host : 'localhost',
     db   : config.domain.split ('.')[0]
@@ -80,32 +76,32 @@ config.database = {
 };
 
 /**
- * set email transport configuration
+ * Set email transport configuration
  */
 
-// set SMTP config email object
+// Set SMTP config email object
 config.email = {
-  'service' : 'Zoho',
-  'auth'    : {
-    'user' : 'email@domain.com',
-    'pass' : 'supersecretemailpassword'
+  service: 'Zoho',
+  auth   : {
+    user: 'email@domain.com',
+    pass: 'supersecretemailpassword'
   }
 };
 
 /**
- * set included files
+ * Set included files
  */
 
-// set scss imports
-// these are imported into app.min.css by default
+// Set scss imports
+// These are imported into app.min.css by default
 config.sass = [
   './node_modules/bootstrap/scss/bootstrap.scss',
   './node_modules/tether/src/css/tether.scss',
   './node_modules/toastr/toastr.scss'
 ];
 
-// set js imports
-// these are imported into app.min.js at the top
+// Set js imports
+// These are imported into app.min.js at the top
 config.js = [
   './node_modules/jquery/dist/jquery.min.js',
   './node_modules/jquery-form/jquery.form.js',
@@ -116,68 +112,70 @@ config.js = [
 
 
 /**
- * set application session secret
+ * Set application session secret
  */
 
-// secret for crypto
+// Secret for crypto
 config.secret = 'someStrongSecretHash';
 
-// secret for session
+// Secret for session
 config.session = {
-  'key'    : 'eden.session.id',
-  'cookie' : {
-    secure : true
+  key:    config.domain.split ('.')[0] + '.session.id',
+  cookie: {
+    // Setting secure to true allows for secure sessions over HTTPS;
+    // if you are not using https then sessions will break
+    secure: true
   }
 };
 
 
 /**
- * set default ACL information
+ * Set default ACL information
  */
 
-// set acl object
+// Set acl object
 config.acl = {
-  // default acl per user
-  'default' : {
-    name  : 'user',
-    value : [
-      'loggedIn'
+  // Default acl per user
+  default: {
+    name:  'user',
+    value: [
+      'user.registered'
     ]
   },
-  // default acl for first user (admin)
-  'first'   : {
-    name  : 'admin',
-    value : true
+  // Default acl for first user (admin)
+  first: {
+    name:  'admin',
+    value: true
   }
 };
 
 
 /**
- * set view import functionality
+ * Set view import functionality
  */
 
-// create view object
+// Create view object
 config.view = {
-  // modules will be required at the top of riots tags.min.js
-  'include' : {
-    // include riot module
-    'riot'    : 'riot',
-    // include alert module
-    'alert'   : 'alert/public/js/bootstrap',
-    // include socket module
-    'socket'  : 'socket/public/js/bootstrap'
+  // Modules will be required at the top of riot's tags.min.js
+  include: {
+    // Include riot module
+    riot:   'riot',
+    // Include alert module
+    alert:  'alert/public/js/bootstrap',
+    // Include socket module
+    socket: 'socket/public/js/bootstrap'
   }
 };
 
 /**
- * set misc settings
+ * Set misc settings
  */
 
-// create log level setting
+// Create log level setting
 config.logLevel = 'info';
 
 /**
- * export config
+ * Export config
  *
  * @type {Object}
  */
