@@ -47,7 +47,7 @@ config.computeThreads = 1;
 config.socket = {
   'url'    :    '//' + config.domain + (config.environment === 'dev' ? ':' + config.port : ''),
   'params' : {
-    'secure'    :    true,
+    'secure'    : true,
     'reconnect' : true
   }
 };
@@ -122,7 +122,7 @@ config.secret = 'someStrongSecretHash';
 
 // Secret for session
 config.session = {
-  'key'    :    config.domain.split ('.')[0] + '.session.id',
+  'key'    : config.domain.split ('.')[0] + '.session.id',
   'cookie' : {
     // Setting secure to true allows for secure sessions over HTTPS;
     // if you are not using https then sessions will break
@@ -139,14 +139,14 @@ config.session = {
 config.acl = {
   // Default acl per user
   'default' : {
-    'name'  :  'user',
+    'name'  : 'user',
     'value' : [
       'user.registered'
     ]
   },
   // Default acl for first user (admin)
   'first' : {
-    'name'  :  'admin',
+    'name'  : 'admin',
     'value' : true
   }
 };
@@ -161,9 +161,9 @@ config.view = {
   // Modules will be required at the top of riot's tags.min.js
   'include' : {
     // Include riot module
-    'riot'   :   'riot',
+    'riot'   : 'riot',
     // Include alert module
-    'alert'  :  'alert/public/js/bootstrap',
+    'alert'  : 'alert/public/js/bootstrap',
     // Include socket module
     'socket' : 'socket/public/js/bootstrap'
   }
