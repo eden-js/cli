@@ -83,7 +83,7 @@ class app {
     let express = worker.process.env.express === 'true';
 
     // spawn new thread
-    this.spawn (a, true, (parseInt (config.port) + parseInt (id)));
+    this.spawn (parseInt (id), true, (parseInt (config.port) + parseInt (id)));
   }
 
   /**
@@ -158,9 +158,9 @@ class app {
     });
 
     // loop compute threads
-    for (var a = 0; a < computeThreads; a++) {
+    for (var b = 0; b < computeThreads; b++) {
       // spawn new thread
-      this.spawn (a, false);
+      this.spawn (b, false);
     }
 
     // on cluster exit
