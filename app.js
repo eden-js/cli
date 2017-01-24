@@ -60,7 +60,7 @@ class app {
   run () {
     // log spawning threads
     this._logger.log ('info', 'spawned new ' + ((process.env.express === 'true') ? 'express' : 'compute') + ' thread', {
-      'class' : 'app'
+      'class' : 'eden'
     });
 
     // run single instance
@@ -143,7 +143,7 @@ class app {
 
     // log spawning threads
     this._logger.log ('info', 'Spawning ' + expressThreads + ' eden express thread' + (expressThreads > 1 ? 's' : ''), {
-      'class' : 'app'
+      'class' : 'eden'
     });
 
     // loop express threads
@@ -154,7 +154,7 @@ class app {
 
     // log spawning threads
     this._logger.log ('info', 'Spawning ' + computeThreads + ' eden compute thread' + (computeThreads > 1 ? 's' : ''), {
-      'class' : 'app'
+      'class' : 'eden'
     });
 
     // loop compute threads
