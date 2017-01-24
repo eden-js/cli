@@ -350,22 +350,37 @@ class edenBuilder {
    * daemon task
    */
   daemons () {
-    // grab daemon controllers
-    var daemons = [];
-    for (var i = 0; i < this._tasks.daemons.files.length; i++) {
-      daemons = daemons.concat (glob.sync (this._tasks.daemons.files[i]));
-    }
+    // set variables
+    var parsedDaemons = {};
 
-    // loop daemons
-    for (var key in daemons) {
-      daemons[key] = daemons[key].split ('bundles/')[1].replace ('.js', '');
-    }
+    // get all routes
+    return this.gulp.src (this._tasks.daemons.files)
+      .pipe (through.obj (function (chunk, enc, cb) {
+        // set pipe
+        var pipe = this;
 
-    // write daemons cache file
-    this._write ('daemons', daemons);
+        // run pipe chunk
+        var result = configParser.daemon (chunk);
 
-    // restart server
-    this._restart ();
+        // push to pipe
+        pipe.push ({
+          'result' : result
+        });
+
+        // run callback
+        cb (null, chunk);
+      }))
+      .on ('data', (data) => {
+        // merge config object
+        this._merge (parsedDaemons, data.result);
+      })
+      .on ('end', () => {
+        // write config file
+        this._write ('daemons', parsedDaemons.daemons);
+
+        // restart server
+        this._restart ();
+      });
   }
 
   /**
