@@ -9,8 +9,8 @@ global.appRoot = __dirname;
 // require dependencies
 var os      = require ('os');
 var addPath = require ('app-module-path').addPath;
-var winston = require ('winston');
 var cluster = require ('cluster');
+var winston = require ('winston');
 
 // add node paths
 addPath (global.appRoot);
@@ -27,90 +27,150 @@ var config = require ('app/config');
 // set global environment
 global.envrionment = process.env.NODE_ENV || config.environment;
 
-// create logger
-var logger = new winston.Logger ({
-  level      : config.logLevel  || 'info',
-  transports : [
-    new (winston.transports.Console) ({
-      colorize  : true,
-      formatter : log,
-      timestamp : true
-    })
-  ]
-});
+/**
+ * build app class
+ */
+class app {
+  /**
+   * construct app class
+   */
+  constructor () {
+    // bind private variables
+    this._master  = cluster.isMaster;
+    this._logger  = false;
+    this._workers = {};
 
-// check if environment
-if (global.environment == 'dev') {
-  // run in dev
-  logger.log ('info', 'Running eden in development environment');
+    // bind variables
+    this.run      = this.run.bind (this);
+    this.exit     = this.exit.bind (this);
+    this.spawn    = this.spawn.bind (this);
+    this.logger   = this.logger.bind (this);
+    this.children = this.children.bind (this);
 
-  // run single instance
-  new eden ({
-    'logger' : logger
-  });
-} else {
-  // set workers
-  var workers = {};
+    // build logger
+    this.logger ();
 
-  // check if master
-  if (cluster.isMaster) {
-    // run in production
-    logger.log ('info', 'Running eden in production environment', {
-      'class' : 'app'
-    });
+    // spawn children
+    this._master ? this.children () : this.run ();
+  }
 
-    // count CPUs
-    var threads = config.threads ? config.threads : os.cpus ().length;
-        threads = config.main ? (threads + 1) : threads;
-
+  /**
+   * runs edenJS
+   */
+  run () {
     // log spawning threads
-    logger.log ('info', 'Spawning ' + threads + ' eden thread' + (threads > 1 ? 's' : '') + '!', {
-      'class' : 'app'
-    });
-
-    // create new worker per cpu
-    for (var i = 0; i < threads; i += 1) {
-      // creat environment info
-      let env = JSON.parse (JSON.stringify (process.env));
-          env.id   = i;
-          env.main = (config.main && (i === 0));
-          env.port = (env.main && config.main) ? false : (parseInt (config.port) + (config.main ? (i - 1) : i));
-
-      // timeout fork in line
-      setTimeout (() => {
-        // fork new thread
-        workers[i] = cluster.fork (env);
-        workers[i].process.env = env;
-      }, (i * 500));
-    }
-  } else {
-    // log spawning threads
-    logger.log ('info', 'spawned new ' + ((process.env.main === 'true') ? 'main' : 'sub') + ' thread', {
+    this._logger.log ('info', 'spawned new ' + ((process.env.express === 'true') ? 'express' : 'compute') + ' thread', {
       'class' : 'app'
     });
 
     // run single instance
     new eden ({
-      'logger' : logger
+      'id'      : process.env.id,
+      'port'    : parseInt (process.env.port),
+      'logger'  : this._logger,
+      'express' : (process.env.express === 'true')
     });
   }
 
-  // set on exit
-  cluster.on ('exit', function (worker) {
-    // set i
-    var i = worker.process.env.id;
+  /**
+   * on cluster worker exit
+   *
+   * @param {Object} worker
+   */
+  exit (worker) {
+    // set id
+    let id      = worker.process.env.id;
+    let express = worker.process.env.express === 'true';
 
-    // creat environment info
+    // spawn new thread
+    this.spawn (a, true, (parseInt (config.port) + parseInt (id)));
+  }
+
+  /**
+   * spawns new app thread
+   *
+   * @param {Integer} id
+   * @param {Boolean} express
+   * @param {Mixed}   port
+   */
+  spawn (id, express, port) {
+    // clone environment
     let env = JSON.parse (JSON.stringify (process.env));
-        env.port = parseInt (config.port) + i;
+
+    // set thread id
+    env.id      = id;
+    env.express = express ? 'true' : 'false';
+
+    // check port
+    if (port) env.port = port;
+
+    // fork new thread
+    this._workers[(express ? 'express' : 'compute') + ':' + id] = cluster.fork (env);
+    this._workers[(express ? 'express' : 'compute') + ':' + id].process.env = env;
+  }
+
+  /**
+   * builds logger
+   */
+  logger () {
+    // set logger
+    this._logger = new winston.Logger ({
+      level      : config.logLevel  || 'info',
+      transports : [
+        new (winston.transports.Console) ({
+          colorize  : true,
+          formatter : log,
+          timestamp : true
+        })
+      ]
+    });
+  }
+
+  /**
+   * spawns child processes
+   */
+  children () {
+    // run in production
+    this._logger.log ('info', 'Running edenJS', {
+      'class' : 'eden'
+    });
+
+    // count frontend threads
+    var expressThreads = config.expressThreads || config.expressThreads === 0 ? config.expressThreads : os.cpus ().length;
+
+    // count backend threads
+    var computeThreads = config.computeThreads || config.computeThreads === 0 ? config.computeThreads : 1;
 
     // log spawning threads
-    logger.log ('warning', 'Worker ' + worker.id + ' died, forking new eden thread', {
+    this._logger.log ('info', 'Spawning ' + expressThreads + ' eden express thread' + (expressThreads > 1 ? 's' : ''), {
       'class' : 'app'
     });
 
-    // fork new thread
-    worker[i] = cluster.fork (env);
-    workers[i].process.env = env;
-  });
+    // loop express threads
+    for (var a = 0; a < expressThreads; a++) {
+      // spawn new thread
+      this.spawn (a, true, (parseInt (config.port) + a));
+    }
+
+    // log spawning threads
+    this._logger.log ('info', 'Spawning ' + computeThreads + ' eden compute thread' + (computeThreads > 1 ? 's' : ''), {
+      'class' : 'app'
+    });
+
+    // loop compute threads
+    for (var a = 0; a < computeThreads; a++) {
+      // spawn new thread
+      this.spawn (a, false);
+    }
+
+    // on cluster exit
+    cluster.on ('exit', this.exit);
+  }
 }
+
+/**
+ * create eden app
+ *
+ * @type {app}
+ */
+module.exports = new app ();
