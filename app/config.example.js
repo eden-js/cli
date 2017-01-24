@@ -33,13 +33,15 @@ config.environment = 'dev';
 // Set starting port
 config.port = 1337;
 
-// Set amount of instances to run
-// Setting this as null will count your CPU cores
-config.threads = 1;
+// set amount of express threads to run
+// setting this as null will count your CPU cores
+config.expressThreads = 1;
 
-// Create main app thread that will not run the frontend
-// Generally used for doing sensitive calculations outside of running threads
-config.main = true;
+// set amount of compute threads to run
+// setting this as null will use 1 compute thread
+// compute threads are threads used for backend processes they do not run
+// the express application, but do run all daemons
+config.computeThreads = 1;
 
 // Websocket configuration
 config.socket = {
