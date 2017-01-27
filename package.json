@@ -40,7 +40,7 @@
     "gulp-develop-server": "^0.5.2",
     "gulp-header": "^1.8.8",
     "gulp-rename": "^1.2.2",
-    "gulp-riot": "^1.0.1",
+    "gulp-riot": "^1.0.6",
     "gulp-sass": "^2.3.2",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-streamify": "^1.0.2",
