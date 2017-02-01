@@ -9,37 +9,30 @@
 global.appRoot = __dirname;
 
 // require dependencies
-var fs         = require ('fs');
-var os         = require ('os');
-var glob       = require ('glob');
-var path       = require ('path');
-var source     = require ('vinyl-source-stream');
-var through    = require ('through2');
-var babelify   = require ('babelify');
-var browserify = require ('browserify');
+const fs         = require ('fs');
+const os         = require ('os');
+const glob       = require ('glob');
+const path       = require ('path');
+const source     = require ('vinyl-source-stream');
+const through    = require ('through2');
+const babelify   = require ('babelify');
+const browserify = require ('browserify');
 
 // require gulp dependencies
-var riot       = require ('gulp-riot');
-var sass       = require ('gulp-sass');
-var watch      = require ('gulp-watch');
-var concat     = require ('gulp-concat');
-var header     = require ('gulp-header');
-var rename     = require ('gulp-rename');
-var server     = require ('gulp-develop-server');
-var uglify     = require ('gulp-uglify');
-var streamify  = require ('gulp-streamify');
-var sourcemaps = require ('gulp-sourcemaps');
-
-// test config
-try {
-  var config = require ('./app/config');
-} catch (err) {
-  console.error ('Failed to locate config: \'./app/config\'. Note: Make sure you have created the \'config.js\' in the \'./app\' folder');
-  process.exit ();
-}
+const riot       = require ('gulp-riot');
+const sass       = require ('gulp-sass');
+const watch      = require ('gulp-watch');
+const config     = require ('./app/config');
+const concat     = require ('gulp-concat');
+const header     = require ('gulp-header');
+const rename     = require ('gulp-rename');
+const server     = require ('gulp-develop-server');
+const uglify     = require ('gulp-uglify');
+const streamify  = require ('gulp-streamify');
+const sourcemaps = require ('gulp-sourcemaps');
 
 // require local dependencies
-var configParser = require ('./lib/utilities/parser');
+const configParser = require ('./lib/utilities/parser');
 
 /**
  * build edenBuilder class
@@ -49,163 +42,163 @@ class edenBuilder {
    * construct gulp class
    */
   constructor () {
-      // wait time
-      this._wait = (config.gulpDelay ? parseInt (config.gulpDelay) : 500);
+    // wait time
+    this._wait = (config.gulpDelay ? parseInt (config.gulpDelay) : 500);
 
-      // check cache exists
-      if (!fs.existsSync ('./app/cache')) {
-        fs.mkdirSync ('./app/cache');
+    // check cache exists
+    if (!fs.existsSync ('./app/cache')) {
+      fs.mkdirSync ('./app/cache');
+    }
+
+    // bind private methods
+    this._watch   = this._watch.bind (this);
+    this._restart = this._restart.bind (this);
+
+    // bind variables
+    this.gulp  = require ('gulp');
+    this.serve = false;
+
+    // bind methods
+    this._tasks = {
+      'wait'   : {
+        'skip' : true
+      },
+      'tmp'    : {
+        'skip' : true
+      },
+      'sass'   : {
+        'files' : [
+          './lib/bundles/*/public/scss/**/*.scss',
+          './app/bundles/*/public/scss/**/*.scss'
+        ],
+        'dependencies' : [
+          'tmp'
+        ]
+      },
+      'models' : {
+        'files' : [
+          './lib/bundles/*/models/**/*.js',
+          './app/bundles/*/models/**/*.js'
+        ]
+      },
+      'daemons' : {
+        'files' : [
+          './lib/bundles/*/daemons/**/*.js',
+          './app/bundles/*/daemons/**/*.js'
+        ]
+      },
+      'config' : {
+        'files' : [
+          './lib/bundles/*/controllers/**/*.js',
+          './app/bundles/*/controllers/**/*.js',
+          './lib/bundles/*/helpers/**/*.js',
+          './app/bundles/*/helpers/**/*.js'
+        ]
+      },
+      'tags'    : {
+        'files' : [
+          './lib/bundles/*/views/**/*.js',
+          './app/bundles/*/views/**/*.js',
+          './lib/bundles/*/views/**/*.tag',
+          './app/bundles/*/views/**/*.tag'
+        ],
+        'dependencies' : [
+          'wait'
+        ],
+        'skip' : true
+      },
+      'serviceworker' : {
+        'skip' : true
+      },
+      'js'     : {
+        'files' : [
+          './lib/bundles/*/public/js/**/*.js',
+          './app/bundles/*/public/js/**/*.js'
+        ],
+        'dependencies' : [
+          'tags',
+          'serviceworker'
+        ]
+      },
+      'assets'  : {
+        'files' : [
+          './lib/bundles/*/public/assets/**/*',
+          './app/bundles/*/public/assets/**/*'
+        ]
+      }
+    };
+
+    // set keys array
+    let keys     = Object.keys (this._tasks);
+    let install  = [];
+    let watchers = [];
+
+    // bind and add gulp task methods
+    for (var i = 0; i < keys.length; i++) {
+      // set task
+      let task = keys[i];
+
+      // bind method
+      this[task] = this[task].bind (this);
+
+      // setup task
+      if (this._tasks[task].dependencies) {
+        this.gulp.task (task, this._tasks[task].dependencies, this[task]);
+      } else {
+        this.gulp.task (task, this[task]);
       }
 
-      // bind private methods
-      this._watch   = this._watch.bind (this);
-      this._restart = this._restart.bind (this);
-
-      // bind variables
-      this.gulp  = require ('gulp');
-      this.serve = false;
-
-      // bind methods
-      this._tasks = {
-        'wait'   : {
-          'skip' : true
-        },
-        'tmp'    : {
-          'skip' : true
-        },
-        'sass'   : {
-          'files' : [
-            './lib/bundles/*/public/scss/**/*.scss',
-            './app/bundles/*/public/scss/**/*.scss'
-          ],
-          'dependencies' : [
-            'tmp'
-          ]
-        },
-        'models' : {
-          'files' : [
-            './lib/bundles/*/models/**/*.js',
-            './app/bundles/*/models/**/*.js'
-          ]
-        },
-        'daemons' : {
-          'files' : [
-            './lib/bundles/*/daemons/**/*.js',
-            './app/bundles/*/daemons/**/*.js'
-          ]
-        },
-        'config' : {
-          'files' : [
-            './lib/bundles/*/controllers/**/*.js',
-            './app/bundles/*/controllers/**/*.js',
-            './lib/bundles/*/helpers/**/*.js',
-            './app/bundles/*/helpers/**/*.js'
-          ]
-        },
-        'tags'    : {
-          'files' : [
-            './lib/bundles/*/views/**/*.js',
-            './app/bundles/*/views/**/*.js',
-            './lib/bundles/*/views/**/*.tag',
-            './app/bundles/*/views/**/*.tag'
-          ],
-          'dependencies' : [
-            'wait'
-          ],
-          'skip' : true
-        },
-        'serviceworker' : {
-          'skip' : true
-        },
-        'js'     : {
-          'files' : [
-            './lib/bundles/*/public/js/**/*.js',
-            './app/bundles/*/public/js/**/*.js'
-          ],
-          'dependencies' : [
-            'tags',
-            'serviceworker'
-          ]
-        },
-        'assets'  : {
-          'files' : [
-            './lib/bundles/*/public/assets/**/*',
-            './app/bundles/*/public/assets/**/*'
-          ]
-        }
-      };
-
-      // set keys array
-      var keys     = Object.keys (this._tasks);
-      var install  = [];
-      var watchers = [];
-
-      // bind and add gulp task methods
-      for (var i = 0; i < keys.length; i++) {
-        // set task
-        let task = keys[i];
-
-        // bind method
-        this[task] = this[task].bind (this);
-
-        // setup task
-        if (this._tasks[task].dependencies) {
-          this.gulp.task (task, this._tasks[task].dependencies, this[task]);
-        } else {
-          this.gulp.task (task, this[task]);
-        }
-
-        // check for skip
-        if (this._tasks[task].skip) {
-          continue;
-        }
-
-        // setup watch task
-        var files = this._tasks[task].files;
-        if (this._tasks[task].dependencies) {
-          for (var a = 0; a < this._tasks[task].dependencies.length; a++) {
-            files = files.concat (this._tasks[this._tasks[task].dependencies[a]].files || []);
-          }
-        }
-
-        // create watch task
-        this._watch (task, files);
-
-        // push to install
-        install.push (task);
-
-        // add watch task to array
-        watchers.push (task + ':watch');
+      // check for skip
+      if (this._tasks[task].skip) {
+        continue;
       }
 
-      // add install task
-      this.gulp.task ('install', install);
+      // setup watch task
+      var files = this._tasks[task].files;
+      if (this._tasks[task].dependencies) {
+        for (var a = 0; a < this._tasks[task].dependencies.length; a++) {
+          files = files.concat (this._tasks[this._tasks[task].dependencies[a]].files || []);
+        }
+      }
 
-      // add watch task
-      this.gulp.task ('watch', watchers);
+      // create watch task
+      this._watch (task, files);
 
-      // add dev server task
-      this.gulp.task ('dev', ['install'], () => {
-        // run server task
-        server.listen ({
-          'env'      : {
-            'NODE_ENV' : 'development'
-          },
-          'path'     : './app.js',
-          'execArgv' : [
-            '--harmony-async-await'
-          ]
-        });
+      // push to install
+      install.push (task);
 
-        // set serve
-        this.serve = true;
+      // add watch task to array
+      watchers.push (task + ':watch');
+    }
 
-        // start watch task
-        this.gulp.start ('watch');
+    // add install task
+    this.gulp.task ('install', install);
+
+    // add watch task
+    this.gulp.task ('watch', watchers);
+
+    // add dev server task
+    this.gulp.task ('dev', ['install'], () => {
+      // run server task
+      server.listen ({
+        'env'      : {
+          'NODE_ENV' : 'development'
+        },
+        'path'     : './app.js',
+        'execArgv' : [
+          '--harmony-async-await'
+        ]
       });
 
-      // add default task
-      this.gulp.task ('default', ['dev']);
+      // set serve
+      this.serve = true;
+
+      // start watch task
+      this.gulp.start ('watch');
+    });
+
+    // add default task
+    this.gulp.task ('default', ['dev']);
   }
 
   /**
@@ -228,11 +221,11 @@ class edenBuilder {
    */
   tmp () {
     // set variables
-    var all  = '';
+    let all  = '';
 
     // set running
     if (this._tmpRunning || this._sassRunning) {
-        return;
+      return;
     }
 
     // set tmp running
@@ -240,7 +233,7 @@ class edenBuilder {
 
     // grab gulp source for sass
     // create local variables array for sass files
-    var sassFiles = [
+    let sassFiles = [
       './lib/bundles/*/public/scss/variables.scss',
       './app/bundles/*/public/scss/variables.scss'
     ];
@@ -260,13 +253,13 @@ class edenBuilder {
     return this.gulp.src (sassFiles)
       .pipe (through.obj (function (chunk, enc, cb) {
         // run through callback
-        var type = chunk.path.split ('.');
+        let type = chunk.path.split ('.');
             type = type[type.length - 1];
 
         // check type
         if (type == 'css') {
           // prepend
-          var prepend = fs.readFileSync (chunk.path, 'utf8');
+          let prepend = fs.readFileSync (chunk.path, 'utf8');
 
           // push to this
           this.push ({
@@ -328,13 +321,13 @@ class edenBuilder {
    */
   models () {
     // grab model files
-    var files = [];
+    let files = [];
     for (var i = 0; i < this._tasks.models.files.length; i++) {
       files = files.concat (glob.sync (this._tasks.models.files[i]));
     }
 
     // loop models
-    var models = {};
+    let models = {};
     for (var key in files) {
       models[files[key].split ('/')[(files[key].split ('/').length - 1)].split ('.')[0].toLowerCase ()] = files[key].replace ('./', '/');
     }
@@ -351,16 +344,16 @@ class edenBuilder {
    */
   daemons () {
     // set variables
-    var parsedDaemons = {};
+    let parsedDaemons = {};
 
     // get all routes
     return this.gulp.src (this._tasks.daemons.files)
       .pipe (through.obj (function (chunk, enc, cb) {
         // set pipe
-        var pipe = this;
+        let pipe = this;
 
         // run pipe chunk
-        var result = configParser.daemon (chunk);
+        let result = configParser.daemon (chunk);
 
         // push to pipe
         pipe.push ({
@@ -388,7 +381,7 @@ class edenBuilder {
    */
   config () {
     // set variables
-    var parsedConfig = {};
+    let parsedConfig = {};
 
     // get all routes
     return this.gulp.src ([
@@ -397,10 +390,10 @@ class edenBuilder {
     ])
       .pipe (through.obj (function (chunk, enc, cb) {
         // set pipe
-        var pipe = this;
+        let pipe = this;
 
         // run pipe chunk
-        var result = configParser.parse (chunk);
+        let result = configParser.parse (chunk);
 
         // push to pipe
         pipe.push ({
@@ -439,9 +432,9 @@ class edenBuilder {
     this._tagsRunning = true;
 
     // create header
-    var riotHeader = '';
+    let riotHeader = '';
     for (var key in config.view.include) {
-        riotHeader += 'var ' + key + ' = require ("' + config.view.include[key] + '");';
+      riotHeader += 'const ' + key + ' = require ("' + config.view.include[key] + '");';
     }
 
     // return promise
@@ -461,15 +454,22 @@ class edenBuilder {
             .pipe (riot ({
                 compact : true
             }))
-            .pipe (concat ('tags.min.js'))
-            .pipe (header (riotHeader))
+            .pipe (concat ('tags.js'))
+            .pipe (header ('const riot = require ("riot");'))
             .pipe (this.gulp.dest ('./app/cache'))
             .on ('end', () => {
-              // reset running flag
-              this._tagsRunning = false;
+              // create min.js
+              this.gulp.src ('./app/cache/tags.js')
+                .pipe (header (riotHeader))
+                .pipe (rename ('tags.min.js'))
+                .pipe (this.gulp.dest ('./app/cache'))
+                .on ('end', () => {
+                  // reset running flag
+                  this._tagsRunning = false;
 
-              // resolve
-              return resolve (true);
+                  // resolve
+                  return resolve (true);
+                });
             });
           });
     });
@@ -488,7 +488,7 @@ class edenBuilder {
     this._serviceworkerRunning = true;
 
     // create javascript array
-    var entries = [];
+    let entries = [];
         entries = entries.concat (glob.sync ('./lib/bundles/*/public/js/serviceworker.js'));
         entries = entries.concat (glob.sync ('./app/bundles/*/public/js/serviceworker.js'));
 
@@ -529,12 +529,12 @@ class edenBuilder {
     this._jsRunning = true;
 
     // create javascript array
-    var entries = [];
+    let entries = [];
         entries = entries.concat (glob.sync ('./lib/bundles/*/public/js/bootstrap.js'));
         entries = entries.concat (glob.sync ('./app/bundles/*/public/js/bootstrap.js'));
 
     // build vendor prepend
-    var include = '';
+    let include = '';
     if (config.js && config.js.length) {
       for (var a = 0; a < config.js.length; a++) {
         include += fs.readFileSync (config.js[a], 'utf8') + os.EOL;
@@ -573,17 +573,17 @@ class edenBuilder {
    * image task
    */
   assets () {
-      // move images into single folder
-      // @todo bundle priority
-      return this.gulp.src (this._tasks.assets.files)
-        .pipe (rename ((filePath) => {
-          var amended = filePath.dirname.split (path.sep);
-          amended.shift ();
-          amended.shift ();
-          amended.shift ();
-          filePath.dirname = amended.join (path.sep);
-        }))
-        .pipe (this.gulp.dest ('www/public/assets'));
+    // move images into single folder
+    // @todo bundle priority
+    return this.gulp.src (this._tasks.assets.files)
+      .pipe (rename ((filePath) => {
+        let amended = filePath.dirname.split (path.sep);
+        amended.shift ();
+        amended.shift ();
+        amended.shift ();
+        filePath.dirname = amended.join (path.sep);
+      }))
+      .pipe (this.gulp.dest ('www/public/assets'));
   }
 
   /**

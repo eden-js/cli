@@ -160,8 +160,6 @@ config.acl = {
 config.view = {
   // Modules will be required at the top of riot's tags.min.js
   'include' : {
-    // Include riot module
-    'riot'   : 'riot',
     // Include alert module
     'alert'  : 'alert/public/js/bootstrap',
     // Include socket module
