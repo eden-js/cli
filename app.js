@@ -7,10 +7,10 @@
 global.appRoot = __dirname;
 
 // require dependencies
-var os      = require ('os');
-var addPath = require ('app-module-path').addPath;
-var cluster = require ('cluster');
-var winston = require ('winston');
+const os      = require ('os');
+const addPath = require ('app-module-path').addPath;
+const cluster = require ('cluster');
+const winston = require ('winston');
 
 // add node paths
 addPath (global.appRoot);
@@ -20,9 +20,9 @@ addPath (global.appRoot + '/lib/bundles');
 addPath (global.appRoot + '/lib/aliases');
 
 // require local dependencies
-var log    = require ('lib/utilities/log');
-var eden   = require ('lib/eden');
-var config = require ('app/config');
+const log    = require ('lib/utilities/log');
+const eden   = require ('lib/eden');
+const config = require ('app/config');
 
 // set global environment
 global.envrionment = process.env.NODE_ENV || config.environment;
@@ -136,10 +136,10 @@ class app {
     });
 
     // count frontend threads
-    var expressThreads = config.expressThreads || config.expressThreads === 0 ? config.expressThreads : os.cpus ().length;
+    let expressThreads = config.expressThreads || config.expressThreads === 0 ? config.expressThreads : os.cpus ().length;
 
     // count backend threads
-    var computeThreads = config.computeThreads || config.computeThreads === 0 ? config.computeThreads : 1;
+    let computeThreads = config.computeThreads || config.computeThreads === 0 ? config.computeThreads : 1;
 
     // log spawning threads
     this._logger.log ('info', 'Spawning ' + expressThreads + ' eden express thread' + (expressThreads > 1 ? 's' : ''), {
