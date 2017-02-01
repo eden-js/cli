@@ -10,7 +10,7 @@
       if (!opts.image) return false;
 
       // build url
-      var url  = (eden.config || opts).cdn && (eden.config || opts).cdn.url || '/public/';
+      let url  = (eden.config || opts).cdn && (eden.config || opts).cdn.url || '/public/';
           url += opts.image.path;
 
       // check if label
