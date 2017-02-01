@@ -452,7 +452,8 @@ class edenBuilder {
           // run on new source
           this.gulp.src (this._tasks.tags.files)
             .pipe (riot ({
-                compact : true
+              'compact'    : true,
+              'whitespace' : false
             }))
             .pipe (concat ('tags.js'))
             .pipe (header ('const riot = require ("riot");'))
