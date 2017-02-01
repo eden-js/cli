@@ -1,8 +1,6 @@
-// use strict
-'use strict';
 
 // create eden
-var assert  = require ('assert');
+const assert = require ('assert');
 
 // describe eden
 describe ('EdenJS Logger', () => {
