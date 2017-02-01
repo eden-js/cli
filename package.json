@@ -42,7 +42,6 @@
     "gulp-riot": "^1.0.6",
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.4.0",
-    "gulp-streamify": "^1.0.2",
     "gulp-uglify": "^2.0.1",
     "gulp-watch": "^4.3.11",
     "history": "^4.5.1",
@@ -74,6 +73,7 @@
     "tether": "^1.4.0",
     "through2": "^2.0.3",
     "toastr": "^2.1.2",
+    "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "winston": "^2.3.1"
   }

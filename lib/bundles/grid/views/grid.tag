@@ -257,17 +257,17 @@
 
       // log data
       jQuery.ajax ({
-        url         : this.route,
-        type        : 'post',
-        data        : JSON.stringify ({
+        'url'         : this.route,
+        'type'        : 'post',
+        'data'        : JSON.stringify ({
           'way'    : this.way,
           'page'   : this.page,
           'rows'   : this.rows,
           'sort'   : this.sort,
           'filter' : this.filter
         }),
-        contentType : 'application/json; charset=utf-8',
-        traditional : true
+        'contentType' : 'application/json; charset=utf-8',
+        'traditional' : true
       })
         .fail (() => {
           // set registering to false

@@ -9,7 +9,7 @@
 global.appRoot = __dirname;
 
 // require dependencies
-const fs         = require ('fs');
+const fs         = require ('fs-extra');
 const os         = require ('os');
 const glob       = require ('glob');
 const path       = require ('path');
@@ -22,16 +22,16 @@ const browserify = require ('browserify');
 const riot       = require ('gulp-riot');
 const sass       = require ('gulp-sass');
 const watch      = require ('gulp-watch');
-const config     = require ('./app/config');
+const buffer     = require ('vinyl-buffer');
 const concat     = require ('gulp-concat');
 const header     = require ('gulp-header');
 const rename     = require ('gulp-rename');
 const server     = require ('gulp-develop-server');
 const uglify     = require ('gulp-uglify');
-const streamify  = require ('gulp-streamify');
 const sourcemaps = require ('gulp-sourcemaps');
 
 // require local dependencies
+const config       = require ('./app/config');
 const configParser = require ('./lib/utilities/parser');
 
 /**
@@ -95,7 +95,7 @@ class edenBuilder {
           './app/bundles/*/helpers/**/*.js'
         ]
       },
-      'tags'    : {
+      'views'    : {
         'files' : [
           './lib/bundles/*/views/**/*.js',
           './app/bundles/*/views/**/*.js',
@@ -104,6 +104,18 @@ class edenBuilder {
         ],
         'dependencies' : [
           'wait'
+        ],
+        'skip' : true
+      },
+      'tags'    : {
+        'files' : [
+          './lib/bundles/*/views/**/*.js',
+          './app/bundles/*/views/**/*.js',
+          './lib/bundles/*/views/**/*.tag',
+          './app/bundles/*/views/**/*.tag'
+        ],
+        'dependencies' : [
+          'views'
         ],
         'skip' : true
       },
@@ -420,13 +432,43 @@ class edenBuilder {
   }
 
   /**
+   * views task
+   */
+  views () {
+    // ensure running only once
+    if (this._viewsRunning) {
+      return;
+    }
+
+    // set tags running
+    this._viewsRunning = true;
+
+    // remove views cache directory
+    fs.removeSync ('./app/cache/views');
+
+    // return running
+    return this.gulp.src (this._tasks.tags.files)
+      .pipe (sourcemaps.init ())
+      .pipe (rename ((filePath) => {
+        var amended = filePath.dirname.split (path.sep);
+        amended.shift ();
+        amended.shift ();
+        filePath.dirname = amended.join (path.sep);
+      }))
+      .pipe (sourcemaps.write ('./app/cache/views'))
+      .pipe (this.gulp.dest ('./app/cache/views'))
+      .on ('end', () => {
+        // reset running flag
+        this._viewsRunning = false;
+      });
+  }
+
+  /**
    * tag task
    */
   tags () {
     // ensure running only once
-    if (this._tagsRunning) {
-      return;
-    }
+    if (this._tagsRunning) return;
 
     // set tags running
     this._tagsRunning = true;
@@ -438,42 +480,28 @@ class edenBuilder {
     }
 
     // return promise
-    return new Promise ((resolve, reject) => {
-      // move views into single folder
-      this.gulp.src (this._tasks.tags.files)
-        .pipe (rename ((filePath) => {
-          var amended = filePath.dirname.split (path.sep);
-          amended.shift ();
-          amended.shift ();
-          filePath.dirname = amended.join (path.sep);
-        }))
-        .pipe (this.gulp.dest ('./app/cache/views'))
-        .on ('end', () => {
-          // run on new source
-          this.gulp.src (this._tasks.tags.files)
-            .pipe (riot ({
-              'compact'    : true,
-              'whitespace' : false
-            }))
-            .pipe (concat ('tags.js'))
-            .pipe (header ('const riot = require ("riot");'))
-            .pipe (this.gulp.dest ('./app/cache'))
-            .on ('end', () => {
-              // create min.js
-              this.gulp.src ('./app/cache/tags.js')
-                .pipe (header (riotHeader))
-                .pipe (rename ('tags.min.js'))
-                .pipe (this.gulp.dest ('./app/cache'))
-                .on ('end', () => {
-                  // reset running flag
-                  this._tagsRunning = false;
-
-                  // resolve
-                  return resolve (true);
-                });
-            });
-          });
-    });
+    return this.gulp.src ([
+      './app/cache/views/**/*.js',
+      './app/cache/views/**/*.tag'
+    ])
+      .pipe (sourcemaps.init ({
+        'loadMaps' : true
+      }))
+      .pipe (riot ({
+        'compact'    : true,
+        'whitespace' : false
+      }))
+      .pipe (concat ('tags.js'))
+      .pipe (header ('const riot = require ("riot"); const riotcontrol = require ("riotcontrol");'))
+      .pipe (this.gulp.dest ('./app/cache'))
+      .pipe (header (riotHeader))
+      .pipe (rename ('tags.min.js'))
+      .pipe (this.gulp.dest ('./app/cache'))
+      .pipe (sourcemaps.write ('./app/cache'))
+      .on ('end', () => {
+        // reset running flag
+        this._tagsRunning = false;
+      });
   }
 
   /**
@@ -507,9 +535,14 @@ class edenBuilder {
       .transform (babelify)
       .bundle ()
       .pipe (source ('sw.min.js'))
-      .pipe (streamify (uglify ({
+      .pipe (buffer ())
+      .pipe (sourcemaps.init ({
+        'loadMaps' : true
+      }))
+      .pipe (uglify ({
         'compress' : true
-      })))
+      }))
+      .pipe (sourcemaps.write ('./www/public/js'))
       .pipe (this.gulp.dest ('./www/public/js'))
       .on ('end', () => {
         // reset running flag
@@ -545,8 +578,9 @@ class edenBuilder {
     // browserfiy javascript
     // do within setTimeout to remove empty files
     return browserify ({
-      entries : entries,
-      paths   : [
+      'debug'   : true,
+      'entries' : entries,
+      'paths'   : [
         './',
         './app/bundles',
         './lib/bundles',
@@ -556,10 +590,15 @@ class edenBuilder {
       .transform (babelify)
       .bundle ()
       .pipe (source ('app.min.js'))
-      .pipe (streamify (header (include)))
-      .pipe (streamify (uglify ({
+      .pipe (buffer ())
+      .pipe (sourcemaps.init ({
+        'loadMaps' : true
+      }))
+      .pipe (header (include))
+      .pipe (uglify ({
         'compress' : true
-      })))
+      }))
+      .pipe (sourcemaps.write ('./www/public/js'))
       .pipe (this.gulp.dest ('./www/public/js'))
       .on ('end', () => {
         // reset running flag

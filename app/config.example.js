@@ -161,11 +161,9 @@ config.view = {
   // Modules will be required at the top of riot's tags.min.js
   'include' : {
     // Include alert module
-    'alert'       : 'alert/public/js/bootstrap',
+    'alert'  : 'alert/public/js/bootstrap',
     // Include socket module
-    'socket'      : 'socket/public/js/bootstrap',
-    // Include alert module
-    'riotcontrol' : 'riotcontrol'
+    'socket' : 'socket/public/js/bootstrap'
   }
 };
 
