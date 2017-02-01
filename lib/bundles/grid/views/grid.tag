@@ -124,9 +124,9 @@
       this.pages = [];
 
       // set start
-      var page  = (this.page - 5) < 1 ? 1 : (this.page - 5);
-      var main  = page;
-      var start = ((page - 1) * this.rows);
+      let page  = (this.page - 5) < 1 ? 1 : (this.page - 5);
+      let main  = page;
+      let start = ((page - 1) * this.rows);
 
       // while start less than pages
       while (start < this.total) {
@@ -213,10 +213,10 @@
      */
     onSort (e) {
       // get link
-      var th = jQuery (e.target).is ('th') ? jQuery (e.target) : jQuery (e.target).closest ('th');
+      let th = jQuery (e.target).is ('th') ? jQuery (e.target) : jQuery (e.target).closest ('th');
 
       // get column
-      var column = this.columns[th.attr ('data-column')];
+      let column = this.columns[th.attr ('data-column')];
 
       // check for id
       if (column.id === this.sort) {
