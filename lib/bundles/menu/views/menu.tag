@@ -1,6 +1,6 @@
 <menu>
-  <ul class="{ opts.classes && opts.classes.main ? opts.classes.main : 'nav' }" if={ this.menu.length }>
-    <li each={ item, i in this.menu } class={ renderMainClass (item) }>
+  <ul class="{ opts.classes && opts.classes.main ? opts.classes.main : 'nav' }" if={ this.menu }>
+    <li each={ item, i in this.menu[opts.name] } class={ renderMainClass (item) }>
       <a class={ renderLinkClass (item) } href={ item.route } data-toggle={ hasChildren (item) ? 'dropdown' : false }>
         { item.title }
       </a>
@@ -8,8 +8,9 @@
   </ul>
 
   <script>
-    // set this menu
-    this.menu = opts.menu && opts.menu[opts.name.toUpperCase ()] || [];
+    // add menu mixin
+    this.mixin ('menu');
+    this.mixin ('page');
 
     /**
      * check if item has children
@@ -18,9 +19,9 @@
      */
     hasChildren (item) {
       // loop menu
-      for (var i = 0; i < this.menu.length; i++) {
+      for (var i = 0; i < this.menu[opts.name].length; i++) {
         // check if has children
-        if (this.menu[i].parent && this.menu[i].parent === item.route) {
+        if (this.menu[opts.name][i].parent && this.menu[opts.name][i].parent === item.route) {
           return true;
         }
       }
@@ -38,12 +39,12 @@
      */
     renderMainClass (item) {
       // set class
-      let rtnClass = [];
+      var rtnClass = [];
 
       // check for opts class
       rtnClass.push (opts.classes && opts.classes.item ? opts.classes.item : 'nav-item');
       rtnClass.push (this.hasChildren (item) ? 'dropdown' : '');
-      rtnClass.push (item.route === opts.path ? 'active' : '');
+      rtnClass.push (item.route === this.page.path ? 'active' : '');
 
       // join class
       return rtnClass.join (' ').split ('  ').join (' ');
@@ -58,11 +59,11 @@
      */
     renderLinkClass (item) {
       // set class
-      let rtnClass = [];
+      var rtnClass = [];
 
       // check for opts class
       rtnClass.push (opts.classes && opts.classes.link ? opts.classes.link : 'nav-link');
-      rtnClass.push (item.route === opts.path ? 'active' : '');
+      rtnClass.push (item.route === this.page.path ? 'active' : '');
 
       // return joined class
       return rtnClass.join (' ');
@@ -77,7 +78,7 @@
      */
     renderDropdownClass (item) {
       // set class
-      let rtnClass = [];
+      var rtnClass = [];
 
       // check for opts class
       rtnClass.push (opts.classes && opts.classes.dropdown ? opts.classes.dropdown : 'dropdown-menu');
@@ -95,7 +96,7 @@
      */
     renderDropdownLink (item) {
       // set class
-      let rtnClass = [];
+      var rtnClass = [];
 
       // check for opts class
       rtnClass.push (opts.classes && opts.classes.sub ? opts.classes.sub : 'dropdown-menu');
@@ -103,15 +104,5 @@
       // return joined class
       return rtnClass.join (' ');
     }
-
-    /**
-     * on update or mount event listener
-     *
-     * @param  {String} 'update mount'
-     */
-    this.on ('update', () => {
-      // set subs
-      this.menu = opts.menu && opts.menu[opts.name.toUpperCase ()] || [];
-    });
   </script>
 </menu>
