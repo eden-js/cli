@@ -47,7 +47,6 @@ config.computeThreads = 1;
 config.socket = {
   'url'    :    '//' + config.domain + (config.environment === 'dev' ? ':' + config.port : ''),
   'params' : {
-    'secure'    : true,
     'reconnect' : true
   }
 };
@@ -126,7 +125,8 @@ config.session = {
   'cookie' : {
     // Setting secure to true allows for secure sessions over HTTPS;
     // if you are not using https then sessions will break
-    'secure' : true
+    'secure'   : false,
+    'httpOnly' : false
   }
 };
 
