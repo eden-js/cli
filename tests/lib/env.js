@@ -41,5 +41,6 @@ global.logger = logger;
 
 // setup eden
 global.eden = new eden ({
-  'logger' : logger
+  'logger'  : logger,
+  'express' : true
 });
