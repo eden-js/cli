@@ -448,14 +448,12 @@ class edenBuilder {
 
     // return running
     return this.gulp.src (this._tasks.tags.files)
-      .pipe (sourcemaps.init ())
       .pipe (rename ((filePath) => {
         var amended = filePath.dirname.split (path.sep);
         amended.shift ();
         amended.shift ();
         filePath.dirname = amended.join (path.sep);
       }))
-      .pipe (sourcemaps.write ('./app/cache/views'))
       .pipe (this.gulp.dest ('./app/cache/views'))
       .on ('end', () => {
         // reset running flag
