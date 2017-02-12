@@ -10,7 +10,7 @@
   <script>
     // add menu mixin
     this.mixin ('menu');
-    this.mixin ('page');
+    this.mixin ('mount');
 
     /**
      * check if item has children
@@ -44,7 +44,7 @@
       // check for opts class
       rtnClass.push (opts.classes && opts.classes.item ? opts.classes.item : 'nav-item');
       rtnClass.push (this.hasChildren (item) ? 'dropdown' : '');
-      rtnClass.push (item.route === this.page.path ? 'active' : '');
+      rtnClass.push (item.route === this.mnt.path ? 'active' : '');
 
       // join class
       return rtnClass.join (' ').split ('  ').join (' ');
@@ -63,7 +63,7 @@
 
       // check for opts class
       rtnClass.push (opts.classes && opts.classes.link ? opts.classes.link : 'nav-link');
-      rtnClass.push (item.route === this.page.path ? 'active' : '');
+      rtnClass.push (item.route === this.mnt.path ? 'active' : '');
 
       // return joined class
       return rtnClass.join (' ');
