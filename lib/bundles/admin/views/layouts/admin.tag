@@ -1,14 +1,14 @@
 <admin-layout>
-  <nav class="navbar navbar-full navbar-dark navbar-admin bg-inverse">
+  <nav class="navbar navbar-toggleable-md navbar-dark bg-inverse mb-3">
     <div class="container">
-      <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#navbar-header" aria-controls="navbar-header">
+      <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#navbar-admin" aria-controls="navbar-admin">
         ☰
       </button>
-      <div class="collapse navbar-toggleable-xs" id="navbar-header">
+      <div class="collapse navbar-collapse" id="navbar-admin">
         <a class="navbar-brand" href="/">
-          { opts.title }
+          { this.config.title }
         </a>
-        <menu name="MAIN" menu={ opts.menus } path={ opts.path } classes={ menuClass } />
+        <menu name="MAIN" class="ml-auto" menu={ opts.menus } path={ opts.path } classes={ menuClass } />
       </div>
     </div>
   </nav>
@@ -18,7 +18,6 @@
         <menu name="ADMIN" menu={ opts.menus } path={ opts.path } classes={ this.adminMenuClass } />
       </aside>
       <div class="col-sm-9">
-        <alert error={ opts.error } success={ opts.success } />
         <div class="admin-page" ref="page"></div>
       </div>
     </div>
@@ -26,11 +25,13 @@
 
   <script>
     // add layout mixin
+    this.mixin ('page');
+    this.mixin ('config');
     this.mixin ('layout');
 
     // set menu class object
     this.menuClass = {
-      'main' : 'nav navbar-nav float-xs-right'
+      'main' : 'navbar-nav'
     };
     this.adminMenuClass = {
       'main' : 'nav nav-pills flex-column',

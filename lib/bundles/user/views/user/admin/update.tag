@@ -1,19 +1,18 @@
-<users-admin-add-page>
-  <form method="post" action="/admin/users/{ opts.usr && opts.usr.id ? (opts.usr.id + '/edit') : 'add' }">
+<user-admin-update-page>
+  <form method="post" action="/admin/user/{ opts.usr && opts.usr.id ? (opts.usr.id + '/update') : 'create' }">
     <div class="card">
       <div class="card-header">
         <strong>{ opts.usr && opts.usr.id ? 'Update' : 'Add' } User</strong>
-        <small>{ opts.usr.username || '' }</small>
+        <p class="mb-0">{ opts.usr.username || opts.usr.email || '' }</p>
       </div>
       <div class="card-block">
-        <input name="id" type="hidden" value={ opts.usr && opts.usr.id ? opts.usr.id : '' } if={ opts.usr && opts.usr.id } />
         <div class="form-group">
           <label for="username">Username</label>
-          <input type="text" class="form-control" name="username" id="username" aria-describedby="username" placeholder="Enter username" value={ opts.usr ? opts.usr.username : '' }>
+          <input type="text" class="form-control" name="username" id="username" aria-describedby="username" placeholder="Enter username" value={ opts.usr.username }>
         </div>
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" class="form-control" name="email" id="email" aria-describedby="email" placeholder="Enter email" value={ opts.usr ? opts.usr.email : '' }>
+          <input type="email" class="form-control" name="email" id="email" aria-describedby="email" placeholder="Enter email" value={ opts.usr.email }>
         </div>
         <div class="form-group">
           <label for="name">Password</label>
@@ -31,4 +30,4 @@
       </div>
     </div>
   </form>
-</users-admin-add-page>
+</user-admin-update-page>
