@@ -235,14 +235,6 @@ class edenBuilder {
     // set variables
     let all  = '';
 
-    // set running
-    if (this._tmpRunning || this._sassRunning) {
-      return;
-    }
-
-    // set tmp running
-    this._tmpRunning = true;
-
     // grab gulp source for sass
     // create local variables array for sass files
     let sassFiles = [
@@ -295,9 +287,6 @@ class edenBuilder {
       .on ('end', () => {
         // write temp sass file
         fs.writeFileSync ('./app/cache/tmp.scss', all);
-
-        // reset running
-        this._tmpRunning = false;
       });
   }
 
@@ -305,14 +294,6 @@ class edenBuilder {
    * sass task
    */
   sass () {
-    // check running
-    if (this._tmpRunning || this._sassRunning) {
-      return;
-    }
-
-    // set sass running
-    this._sassRunning = true;
-
     // run gulp task
     return this.gulp.src ('./app/cache/tmp.scss')
       .pipe (sourcemaps.init ())
@@ -321,11 +302,7 @@ class edenBuilder {
       }))
       .pipe (rename ('app.min.css'))
       .pipe (sourcemaps.write ('./www/public/css'))
-      .pipe (this.gulp.dest ('./www/public/css'))
-      .on ('end', () => {
-        // reset running
-        this._sassRunning = false;
-      });
+      .pipe (this.gulp.dest ('./www/public/css'));
   }
 
   /**
@@ -435,13 +412,6 @@ class edenBuilder {
    * views task
    */
   views () {
-    // ensure running only once
-    if (this._viewsRunning) {
-      return;
-    }
-
-    // set tags running
-    this._viewsRunning = true;
 
     // remove views cache directory
     fs.removeSync ('./app/cache/views');
@@ -454,23 +424,13 @@ class edenBuilder {
         amended.shift ();
         filePath.dirname = amended.join (path.sep);
       }))
-      .pipe (this.gulp.dest ('./app/cache/views'))
-      .on ('end', () => {
-        // reset running flag
-        this._viewsRunning = false;
-      });
+      .pipe (this.gulp.dest ('./app/cache/views'));
   }
 
   /**
    * tag task
    */
   tags () {
-    // ensure running only once
-    if (this._tagsRunning) return;
-
-    // set tags running
-    this._tagsRunning = true;
-
     // create header
     let riotHeader = '';
     for (var key in config.view.include) {
@@ -495,25 +455,13 @@ class edenBuilder {
       .pipe (header (riotHeader))
       .pipe (rename ('tags.min.js'))
       .pipe (this.gulp.dest ('./app/cache'))
-      .pipe (sourcemaps.write ('./app/cache'))
-      .on ('end', () => {
-        // reset running flag
-        this._tagsRunning = false;
-      });
+      .pipe (sourcemaps.write ('./app/cache'));
   }
 
   /**
    * javascript task
    */
   serviceworker () {
-    // ensure running only once
-    if (this._serviceworkerRunning) {
-      return;
-    }
-
-    // set js running
-    this._serviceworkerRunning = true;
-
     // create javascript array
     let entries = [];
         entries = entries.concat (glob.sync ('./lib/bundles/*/public/js/serviceworker.js'));
@@ -541,25 +489,13 @@ class edenBuilder {
         'compress' : true
       }))
       .pipe (sourcemaps.write ('./www/public/js'))
-      .pipe (this.gulp.dest ('./www/public/js'))
-      .on ('end', () => {
-        // reset running flag
-        this._serviceworkerRunning = false;
-      });
+      .pipe (this.gulp.dest ('./www/public/js'));
   }
 
   /**
    * javascript task
    */
   js () {
-    // ensure running only once
-    if (this._jsRunning) {
-      return;
-    }
-
-    // set js running
-    this._jsRunning = true;
-
     // create javascript array
     let entries = [];
         entries = entries.concat (glob.sync ('./lib/bundles/*/public/js/bootstrap.js'));
@@ -599,9 +535,6 @@ class edenBuilder {
       .pipe (sourcemaps.write ('./www/public/js'))
       .pipe (this.gulp.dest ('./www/public/js'))
       .on ('end', () => {
-        // reset running flag
-        this._jsRunning = false;
-
         // restart server
         this._restart ();
       });
