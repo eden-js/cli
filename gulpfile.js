@@ -382,7 +382,7 @@ class edenBuilder {
         let pipe = this;
 
         // run pipe chunk
-        let result = configParser.parse (chunk);
+        let result = configParser.class (chunk);
 
         // push to pipe
         pipe.push ({
