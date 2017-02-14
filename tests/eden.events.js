@@ -23,7 +23,7 @@ describe ('EdenJS Event Emitter', () => {
   // test redis event emitter functionality
   it ('enable event emitter via redis', (done) => {
     // set event function
-    global.eden.on ('eeredis', (channel, data) => {
+    global.eden.on ('eeredis', (data) => {
       // stop listening
       global.eden.off ('eeredis');
 
@@ -58,7 +58,7 @@ describe ('EdenJS Event Emitter', () => {
   // test standard event emitter functionality
   it ('allow event emitter to pass strings via redis', (done) => {
     // set event function
-    global.eden.on ('eestringredis', (channel, data) => {
+    global.eden.on ('eestringredis', (data) => {
       // stop listening
       global.eden.off ('eestringredis');
 
@@ -98,7 +98,7 @@ describe ('EdenJS Event Emitter', () => {
   // test standard event emitter functionality
   it ('allow event emitter to pass objects via redis', (done) => {
     // set event function
-    global.eden.on ('eeobjectredis', (channel, data) => {
+    global.eden.on ('eeobjectredis', (data) => {
       // stop listening
       global.eden.off ('eeobjectredis');
 
