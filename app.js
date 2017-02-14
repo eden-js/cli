@@ -64,7 +64,7 @@ class app {
     });
 
     // run single instance
-    new eden ({
+    global.eden = new eden ({
       'id'      : process.env.id,
       'port'    : parseInt (process.env.port),
       'logger'  : this._logger,
