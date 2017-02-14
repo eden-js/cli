@@ -1,19 +1,11 @@
 
+// require environment
+require ('../lib/env');
+
 // require dependencies
 const os      = require ('os');
 const path    = require ('path');
-const addPath = require ('app-module-path').addPath;
 const winston = require ('winston');
-
-// set global app root
-global.appRoot = path.dirname (path.dirname (__dirname));
-
-// add node paths
-addPath (global.appRoot);
-addPath (global.appRoot + '/lib/core');
-addPath (global.appRoot + '/app/bundles');
-addPath (global.appRoot + '/lib/bundles');
-addPath (global.appRoot + '/lib/aliases');
 
 // require local dependencies
 const log    = require ('lib/utilities/log');

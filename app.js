@@ -3,21 +3,13 @@
 // use strict
 'use strict';
 
-// set global app root
-global.appRoot = __dirname;
+// require environment
+require ('./lib/env');
 
 // require dependencies
 const os      = require ('os');
-const addPath = require ('app-module-path').addPath;
 const cluster = require ('cluster');
 const winston = require ('winston');
-
-// add node paths
-addPath (global.appRoot);
-addPath (global.appRoot + '/lib/core');
-addPath (global.appRoot + '/app/bundles');
-addPath (global.appRoot + '/lib/bundles');
-addPath (global.appRoot + '/lib/aliases');
 
 // require local dependencies
 const log    = require ('lib/utilities/log');

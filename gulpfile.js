@@ -5,8 +5,8 @@
 // use strict
 'use strict';
 
-// set globals
-global.appRoot = __dirname;
+// require environment
+require ('./lib/env');
 
 // require dependencies
 const fs         = require ('fs-extra');
@@ -382,7 +382,7 @@ class edenBuilder {
         let pipe = this;
 
         // run pipe chunk
-        let result = configParser.class (chunk);
+        let result = configParser.parse (chunk);
 
         // push to pipe
         pipe.push ({
