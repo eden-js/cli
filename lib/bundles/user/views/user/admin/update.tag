@@ -30,4 +30,51 @@
       </div>
     </div>
   </form>
+  <div class="card mt-4" if={ opts.usr.id }>
+    <div class="card-header">
+      Send Alert
+    </div>
+    <div class="card-block">
+      <div class="form-group">
+        <label for="type">Type</label>
+        <select name="type" class="form-control">
+          <option value="success">Success</option>
+          <option value="error">Error</option>
+          <option value="info">Info</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="username">Text</label>
+        <input type="text" class="form-control" name="text" id="text" aria-describedby="text" placeholder="Enter text">
+      </div>
+    </div>
+    <div class="card-footer">
+      <button class="btn btn-primary" onclick={ onAlert }>Send</button>
+    </div>
+  </div>
+
+  <script>
+
+    /**
+     * on alert function
+     *
+     * @param {Event} e
+     */
+    onAlert (e) {
+      // prevent default
+      e.preventDefault ();
+      e.stopPropagation ();
+
+      // get type
+      let type = jQuery ('select[name="type"]', this.root).val ();
+      let text = jQuery ('input[name="text"]', this.root).val ();
+
+      // emit to socket
+      socket.emit ('user.alert', {
+        'id'   : opts.usr.id,
+        'type' : type,
+        'text' : text
+      });
+    }
+  </script>
 </user-admin-update-page>
