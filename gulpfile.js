@@ -53,6 +53,9 @@ class loader {
         'env'      : {
           'NODE_ENV' : 'development'
         },
+        'args'     : [
+          '--color'
+        ],
         'path'     : './app.js',
         'execArgv' : [
           '--harmony-async-await'
