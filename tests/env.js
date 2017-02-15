@@ -3,8 +3,6 @@
 require ('../lib/env');
 
 // require dependencies
-const os      = require ('os');
-const path    = require ('path');
 const winston = require ('winston');
 
 // require local dependencies

@@ -75,7 +75,7 @@ class app {
     let express = worker.process.env.express === 'true';
 
     // spawn new thread
-    this.spawn (parseInt (id), true, (parseInt (config.port) + parseInt (id)));
+    this.spawn (parseInt (id), express, (parseInt (config.port) + parseInt (id)));
   }
 
   /**
