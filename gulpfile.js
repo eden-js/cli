@@ -209,7 +209,7 @@ class loader {
     let filtered = [];
 
     // loop files
-    [global.appRoot + '/lib/bundles/*/', global.appRoot + '/app/bundles/*/'].forEach ((loc) => {
+    [global.appRoot + '/lib/bundles/*/', global.appRoot + '/node_modules/*/bundles/*/', global.appRoot + '/app/bundles/*/'].forEach ((loc) => {
       // loop files
       files.forEach ((file) => {
         // push to newFiles
