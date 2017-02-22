@@ -30,7 +30,7 @@ const logger = new winston.Logger ({
 global.logger = logger;
 
 // setup eden
-global.eden = new eden ({
+eden.start ({
   'logger'  : logger,
   'express' : true
 });

@@ -1,47 +1,50 @@
 
-// create eden
+// require dependencies
 const assert = require ('assert');
+
+// require local dependencies
+const eden = require ('lib/eden');
 
 // describe eden
 describe ('EdenJS Event Emitter', () => {
   // test standard event emitter functionality
   it ('enable event emitter functionality', (done) => {
     // set event function
-    global.eden.on ('eefn', (data) => {
+    eden.on ('eefn', (data) => {
       // stop listening
-      global.eden.off ('eefn');
+      eden.off ('eefn');
 
       // send done function
       done ();
     });
 
     // emit event
-    global.eden.emit ('eefn');
+    eden.emit ('eefn');
   });
 
 
   // test redis event emitter functionality
   it ('enable event emitter via redis', (done) => {
     // set event function
-    global.eden.on ('eeredis', (data) => {
+    eden.on ('eeredis', (data) => {
       // stop listening
-      global.eden.off ('eeredis');
+      eden.off ('eeredis');
 
       // send done function
       done ();
     }, true);
 
     // emit event
-    global.eden.emit ('eeredis', true, true);
+    eden.emit ('eeredis', true, true);
   });
 
 
   // test standard event emitter functionality
   it ('allow event emitter to pass strings', (done) => {
     // set event function
-    global.eden.on ('eestring', (data) => {
+    eden.on ('eestring', (data) => {
       // stop listening
-      global.eden.off ('eestring');
+      eden.off ('eestring');
 
       // send done function
       assert (data === 'true');
@@ -51,16 +54,16 @@ describe ('EdenJS Event Emitter', () => {
     });
 
     // emit event
-    global.eden.emit ('eestring', 'true');
+    eden.emit ('eestring', 'true');
   });
 
 
   // test standard event emitter functionality
   it ('allow event emitter to pass strings via redis', (done) => {
     // set event function
-    global.eden.on ('eestringredis', (data) => {
+    eden.on ('eestringredis', (data) => {
       // stop listening
-      global.eden.off ('eestringredis');
+      eden.off ('eestringredis');
 
       // send done function
       assert (data === 'true');
@@ -70,16 +73,16 @@ describe ('EdenJS Event Emitter', () => {
     }, true);
 
     // emit event
-    global.eden.emit ('eestringredis', 'true', true);
+    eden.emit ('eestringredis', 'true', true);
   });
 
 
   // test standard event emitter functionality
   it ('allow event emitter to pass objects', (done) => {
     // set event function
-    global.eden.on ('eeobject', (data) => {
+    eden.on ('eeobject', (data) => {
       // stop listening
-      global.eden.off ('eeobject');
+      eden.off ('eeobject');
 
       // send done function
       assert (data.true && data.true === true);
@@ -89,7 +92,7 @@ describe ('EdenJS Event Emitter', () => {
     });
 
     // emit event
-    global.eden.emit ('eeobject', {
+    eden.emit ('eeobject', {
       'true' : true
     });
   });
@@ -98,9 +101,9 @@ describe ('EdenJS Event Emitter', () => {
   // test standard event emitter functionality
   it ('allow event emitter to pass objects via redis', (done) => {
     // set event function
-    global.eden.on ('eeobjectredis', (data) => {
+    eden.on ('eeobjectredis', (data) => {
       // stop listening
-      global.eden.off ('eeobjectredis');
+      eden.off ('eeobjectredis');
 
       // send done function
       assert (data.true && data.true === true);
@@ -110,7 +113,7 @@ describe ('EdenJS Event Emitter', () => {
     }, true);
 
     // emit event
-    global.eden.emit ('eeobjectredis', {
+    eden.emit ('eeobjectredis', {
       'true' : true
     }, true);
   });

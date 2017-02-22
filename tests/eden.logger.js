@@ -1,13 +1,16 @@
 
-// create eden
+// require dependencies
 const assert = require ('assert');
+
+// require local dependencies
+const eden = require ('lib/eden');
 
 // describe eden
 describe ('EdenJS Logger', () => {
   // test standard event emitter functionality
   it ('exist within eden core', (done) => {
     // assert logger exists
-    assert (global.eden.logger !== false);
+    assert (eden.logger !== false);
 
     // run done
     done ();
@@ -16,7 +19,7 @@ describe ('EdenJS Logger', () => {
   // test standard event emitter functionality
   it ('log correctly', (done) => {
     // log message
-    global.eden.logger.log ('info', 'test');
+    eden.logger.log ('info', 'test');
 
     // run done
     done ();

@@ -2,6 +2,7 @@
   <img src={ src () || opts.fallback } class={ opts.class } />
 
   <script>
+
     /**
      * set src
      */
@@ -9,8 +10,11 @@
       // check if image
       if (!opts.image) return false;
 
+      // get config
+      let config = this.eden.get ('config');
+
       // build url
-      let url  = (eden.config || opts).cdn && (eden.config || opts).cdn.url || '/public/';
+      let url  = config.cdn && config.cdn.url || '/public/';
           url += opts.image.path;
 
       // check if label

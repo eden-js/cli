@@ -13,7 +13,6 @@ const winston = require ('winston');
 
 // require local dependencies
 const log    = require ('lib/utilities/log');
-const eden   = require ('lib/eden');
 const config = require ('app/config');
 
 // set global environment
@@ -50,13 +49,16 @@ class app {
    * runs edenJS
    */
   run () {
+    // load eden
+    let eden = require ('lib/eden');
+    
     // log spawning threads
     this._logger.log ('info', 'spawned new ' + ((process.env.express === 'true') ? 'express' : 'compute') + ' thread', {
       'class' : 'eden'
     });
 
     // run single instance
-    global.eden = new eden ({
+    eden.start ({
       'id'      : process.env.id,
       'port'    : parseInt (process.env.port),
       'logger'  : this._logger,
