@@ -22,6 +22,7 @@
     "body-parser": "^1.16.1",
     "bootstrap": "^4.0.0-alpha.6",
     "browserify": "^14.1.0",
+    "cacheman-redis": "^1.1.2",
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
     "colors": "^1.1.2",
