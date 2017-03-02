@@ -57,6 +57,16 @@ config.redis = {
   'port' : 6379
 };
 
+// i18n configuration
+config.i18n = {
+  'cookie'         : 'locale',
+  'locales'        : ['en'],
+  'register'       : global,
+  'directory'      : global.appRoot + '/app/cache/locales',
+  'defaultLocale'  : 'en',
+  'queryParameter' : 'lang',
+};
+
 
 /**
  * Set database configuration
