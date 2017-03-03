@@ -13,7 +13,7 @@
      */
     this.on ('mount', () => {
       // set innerHTML
-      this.refs.l.innerHTML = this.i18n (this.refs.o.innerHTML);
+      this.refs.l.innerHTML = this.t (this.refs.o.innerHTML);
     })
   </script>
 </i18n>

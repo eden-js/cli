@@ -59,12 +59,13 @@ config.redis = {
 
 // i18n configuration
 config.i18n = {
-  'cookie'         : 'locale',
-  'locales'        : ['en'],
-  'register'       : global,
-  'directory'      : global.appRoot + '/app/cache/locales',
-  'defaultLocale'  : 'en',
-  'queryParameter' : 'lang',
+  'ns'           : ['default', 'common'],
+  'lngs'         : ['en'],
+  'defaultNS'    : 'default',
+  'whitelist'    : ['en'],
+  'fallbackNS'   : 'common',
+  'fallbackLng'  : 'en',
+  'lowerCaseLng' : true
 };
 
 
