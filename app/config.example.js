@@ -59,12 +59,10 @@ config.redis = {
 
 // i18n configuration
 config.i18n = {
-  'ns'           : ['default', 'common'],
-  'lngs'         : ['en'],
+  'lngs'         : ['en-au', 'en-us'],
   'defaultNS'    : 'default',
-  'whitelist'    : ['en'],
   'fallbackNS'   : 'common',
-  'fallbackLng'  : 'en',
+  'fallbackLng'  : 'en-au',
   'lowerCaseLng' : true
 };
 
