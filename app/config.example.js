@@ -62,7 +62,7 @@ config.i18n = {
   'ns'           : ['default'],
   'lngs'         : ['en-au'],
   'cache'        : {
-    'prefix'         : 'i18n_res_',
+    'prefix'         : 'lang_',
     'enabled'        : true,
     'versions'       : {},
     'expirationTime' : 7 * 24 * 60 * 60 * 1000,
