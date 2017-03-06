@@ -60,12 +60,29 @@ config.redis = {
 // i18n configuration
 config.i18n = {
   'ns'           : ['default'],
-  'lngs'         : ['en-us'],
+  'lngs'         : ['en-au'],
+  'cache'        : {
+    'prefix'         : 'lang_',
+    'enabled'        : true,
+    'versions'       : {},
+    'expirationTime' : 7 * 24 * 60 * 60 * 1000,
+  },
+  'detection'    : {
+    'caches'            : ['cookie'],
+    'lookupCookie'      : 'lang',
+    'lookupQuerystring' : 'lang'
+  },
   'defaultNS'    : 'default',
   'fallbackNS'   : 'default',
-  'fallbackLng'  : 'en-us',
+  'fallbackLng'  : 'en-au',
   'lowerCaseLng' : true
 };
+
+// set cache versions for i18n
+for (var i = 0; i < config.i18n.lngs.length; i++) {
+  // set versions
+  config.i18n.cache.versions[config.i18n.lngs[i]] = config.version;
+}
 
 
 /**
