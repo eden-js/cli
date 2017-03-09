@@ -59,8 +59,6 @@ config.redis = {
 
 // i18n configuration
 config.i18n = {
-  'ns'           : ['default'],
-  'lngs'         : ['en-au'],
   'cache'        : {
     'prefix'         : 'lang_',
     'enabled'        : true,
@@ -77,12 +75,6 @@ config.i18n = {
   'fallbackLng'  : 'en-au',
   'lowerCaseLng' : true
 };
-
-// set cache versions for i18n
-for (var i = 0; i < config.i18n.lngs.length; i++) {
-  // set versions
-  config.i18n.cache.versions[config.i18n.lngs[i]] = config.version;
-}
 
 
 /**
