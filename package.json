@@ -12,7 +12,7 @@
     "url": "git://github.com/eden-js/eden.git"
   },
   "scripts": {
-    "test": "mocha --harmony-async-await --require tests/env --reporter spec tests/ \"lib/bundles/*/tests/**/*.js\" \"app/bundles/*/tests/**/*.js\"^"
+    "test": "mocha --harmony-async-await --require tests/env --reporter spec tests/ \"*/bundles/*/tests/**/*.js\""
   },
   "engines": {
     "node": ">= 7.0.0",
