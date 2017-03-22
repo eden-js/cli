@@ -76,6 +76,11 @@ config.i18n = {
   'lowerCaseLng' : true
 };
 
+// add media dir
+config.media = {
+  'dir' : 'media'
+};
+
 
 /**
  * Set database configuration
