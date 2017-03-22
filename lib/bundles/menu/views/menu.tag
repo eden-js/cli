@@ -2,6 +2,7 @@
   <ul class="{ opts.classes && opts.classes.main ? opts.classes.main : 'nav' }" if={ this.menu }>
     <li each={ item, i in this.menu[opts.name] } class={ renderMainClass (item) }>
       <a class={ renderLinkClass (item) } href={ item.route } data-toggle={ hasChildren (item) ? 'dropdown' : false }>
+        <i if={ item.icon } class="{ item.icon }" />
         { item.title }
       </a>
     </li>
