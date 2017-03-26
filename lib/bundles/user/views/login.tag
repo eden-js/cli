@@ -23,7 +23,7 @@
               <button class="btn btn-success btn-block" type="submit">
                 Login
               </button>
-              <a class="btn btn-link btn-block" href="/register">
+              <a class="btn btn-primary btn-block" href="/register">
                 No account?
               </a>
             </form>

@@ -20,7 +20,7 @@
               <button class="btn btn-success btn-block" type="submit">
                 Register
               </button>
-              <a class="btn btn-link btn-block" href="/login">
+              <a class="btn btn-primary btn-block" href="/login">
                 Already have an account?
               </a>
             </form>
