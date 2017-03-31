@@ -1,0 +1,28 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "mocha": true,
+    "node": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 8
+  },
+  "rules": {
+    "eqeqeq": ["error", "smart"],
+    "indent": ["error", 2],
+    "no-bitwise": ["error", { "allow": ["|"] }],
+    "no-cond-assign": "off",
+    "no-console": "off",
+    "no-unexpected-multiline": "error",
+    "quotes": ["error", "single", "avoid-escape"],
+    "space-before-function-paren": ["error", "always"]
+  },
+  "globals": {
+    "model": true,
+    "helper": true,
+    "cache": true
+  }
+}
