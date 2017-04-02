@@ -83,7 +83,7 @@
     "riotcontrol": "^0.0.3",
     "run-sequence": "^1.2.2",
     "safe-eval": "^0.3.0",
-    "sharp": "^0.17.2",
+    "sharp": "^0.17.3",
     "socket.io": "^1.7.3",
     "socket.io-client": "^1.7.3",
     "socket.io-emitter": "^2.0.0",
