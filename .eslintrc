@@ -12,8 +12,14 @@
   },
   "rules": {
     "eqeqeq": ["error", "smart"],
+    "brace-style": ["error", "1tbs"],
     "indent": ["error", 2],
     "no-bitwise": ["error", { "allow": ["|"] }],
+    "key-spacing": ["error", {
+      "align": "colon",
+      "beforeColon": true,
+      "afterColon": true
+    }],
     "no-cond-assign": "off",
     "no-console": "off",
     "no-unexpected-multiline": "error",
@@ -21,10 +27,12 @@
     "space-before-function-paren": ["error", "always"]
   },
   "globals": {
+    "riot": true,
     "eden": true,
     "model": true,
     "helper": true,
     "cache": true,
     "jQuery": true
-  }
+  },
+  "ignore-path" : ".eslintignore"
 }
