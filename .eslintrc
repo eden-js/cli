@@ -21,8 +21,10 @@
     "space-before-function-paren": ["error", "always"]
   },
   "globals": {
+    "eden": true,
     "model": true,
     "helper": true,
-    "cache": true
+    "cache": true,
+    "jQuery": true
   }
 }
