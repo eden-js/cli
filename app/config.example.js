@@ -45,7 +45,7 @@ config.computeThreads = 1;
 
 // Websocket configuration
 config.socket = {
-  'url'    :    '//' + config.domain + (config.environment === 'dev' ? ':' + config.port : ''),
+  'url'    : '//' + config.domain + (config.environment === 'dev' ? ':' + config.port : ''),
   'params' : {
     'reconnect' : true
   }
@@ -59,13 +59,13 @@ config.redis = {
 
 // i18n configuration
 config.i18n = {
-  'cache'        : {
+  'cache' : {
     'prefix'         : 'lang_',
     'enabled'        : true,
     'versions'       : {},
     'expirationTime' : 7 * 24 * 60 * 60 * 1000,
   },
-  'detection'    : {
+  'detection' : {
     'caches'            : ['cookie'],
     'lookupCookie'      : 'lang',
     'lookupQuerystring' : 'lang'
@@ -121,8 +121,7 @@ config.email = {
 // These are imported into app.min.css by default
 config.sass = [
   './node_modules/bootstrap/scss/bootstrap.scss',
-  './node_modules/tether/src/css/tether.scss',
-  './node_modules/toastr/toastr.scss'
+  './node_modules/tether/src/css/tether.scss'
 ];
 
 // Set js imports
@@ -131,7 +130,6 @@ config.js = [
   './node_modules/jquery/dist/jquery.min.js',
   './node_modules/jquery-form/dist/jquery.form.min.js',
   './node_modules/tether/dist/js/tether.min.js',
-  './node_modules/toastr/build/toastr.min.js',
   './node_modules/bootstrap/dist/js/bootstrap.js'
 ];
 

@@ -88,7 +88,6 @@
     "socket.io-redis": "^4.0.0",
     "tether": "^1.4.0",
     "through2": "^2.0.3",
-    "toastr": "^2.1.2",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "winston": "^2.3.1"
