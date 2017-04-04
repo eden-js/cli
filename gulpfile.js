@@ -17,7 +17,6 @@ const server   = require ('gulp-develop-server');
 const sequence = require ('run-sequence');
 
 // require local dependencies
-const config = require ('app/config');
 const parser = require ('lib/utilities/parser');
 
 /**
@@ -50,10 +49,10 @@ class loader {
     gulp.task ('server', ['install'], () => {
       // run server task
       server.listen ({
-        'env'      : {
+        'env' : {
           'NODE_ENV' : 'development'
         },
-        'args'     : [
+        'args' : [
           '--color'
         ],
         'path'     : './app.js',
@@ -120,9 +119,9 @@ class loader {
         done = done.concat (task.after);
 
         // remove after from defaults
-        for (var a = 0; a < task.after.length; a++) {
+        for (var b = 0; b < task.after.length; b++) {
           // set index
-          let index = installers.indexOf (task.after[a]);
+          let index = installers.indexOf (task.after[b]);
 
           // check defaults
           if (index > -1) installers.splice (index, 1);
@@ -178,9 +177,9 @@ class loader {
     for (var p in obj2) {
       try {
         // Property in destination object set; update its value.
-        if (obj2[p].constructor == Object) {
+        if (typeof obj2[p].constructor === Object) {
           obj1[p] = this.merge (obj1[p], obj2[p]);
-        } else if (obj2[p].constructor == Array) {
+        } else if (obj2[p].constructor === Array) {
           obj1[p] = obj1[p].concat (obj2[p]);
         } else {
           obj1[p] = obj2[p];
@@ -230,7 +229,7 @@ class loader {
   _task (task) {
     // create task
     let Task = require (task.file);
-        Task = new Task (this);
+    Task = new Task (this);
 
     // create gulp task
     gulp.task (task.task + '.run', () => {
@@ -260,7 +259,7 @@ class loader {
     gulp.task (task.task, (cb) => {
       // push cb
       let newArgs = args.slice ();
-          newArgs.push (cb);
+      newArgs.push (cb);
 
       // run gulp sequence
       sequence.apply (null, newArgs);
