@@ -177,7 +177,7 @@ class loader {
     for (var p in obj2) {
       try {
         // Property in destination object set; update its value.
-        if (typeof obj2[p].constructor === Object) {
+        if (obj2[p].constructor === Object) {
           obj1[p] = this.merge (obj1[p], obj2[p]);
         } else if (obj2[p].constructor === Array) {
           obj1[p] = obj1[p].concat (obj2[p]);
