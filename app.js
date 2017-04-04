@@ -13,10 +13,10 @@ const winston = require ('winston');
 
 // require local dependencies
 const log    = require ('lib/utilities/log');
-const config = require ('app/config');
+const config = require ('config');
 
 // set global environment
-global.envrionment = process.env.NODE_ENV || config.environment;
+global.envrionment = process.env.NODE_ENV || config.get ('environment');
 
 /**
  * build app class
@@ -51,7 +51,7 @@ class app {
   run () {
     // load eden
     let eden = require ('lib/eden');
-    
+
     // log spawning threads
     this._logger.log ('info', 'spawned new ' + ((process.env.express === 'true') ? 'express' : 'compute') + ' thread', {
       'class' : 'eden'
@@ -77,7 +77,7 @@ class app {
     let express = worker.process.env.express === 'true';
 
     // spawn new thread
-    this.spawn (parseInt (id), express, (parseInt (config.port) + parseInt (id)));
+    this.spawn (parseInt (id), express, (parseInt (config.get ('port')) + parseInt (id)));
   }
 
   /**
@@ -109,7 +109,7 @@ class app {
   logger () {
     // set logger
     this._logger = new winston.Logger ({
-      level      : config.logLevel  || 'info',
+      level      : config.get ('logLevel')  || 'info',
       transports : [
         new (winston.transports.Console) ({
           colorize  : true,
@@ -130,10 +130,10 @@ class app {
     });
 
     // count frontend threads
-    let expressThreads = config.expressThreads || config.expressThreads === 0 ? config.expressThreads : os.cpus ().length;
+    let expressThreads = config.get ('expressThreads') || config.get ('expressThreads') === 0 ? config.get ('expressThreads') : os.cpus ().length;
 
     // count backend threads
-    let computeThreads = config.computeThreads || config.computeThreads === 0 ? config.computeThreads : 1;
+    let computeThreads = config.get ('computeThreads') || config.get ('computeThreads') === 0 ? config.get ('computeThreads') : 1;
 
     // log spawning threads
     this._logger.log ('info', 'Spawning ' + expressThreads + ' eden express thread' + (expressThreads > 1 ? 's' : ''), {
@@ -143,7 +143,7 @@ class app {
     // loop express threads
     for (var a = 0; a < expressThreads; a++) {
       // spawn new thread
-      this.spawn (a, true, (parseInt (config.port) + a));
+      this.spawn (a, true, (parseInt (config.get ('port')) + a));
     }
 
     // log spawning threads
