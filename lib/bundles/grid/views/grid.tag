@@ -248,7 +248,7 @@
     /**
      * loads datagrid by params
      */
-    load () {
+    async load () {
       // set loading
       this.loading = true;
 
@@ -256,9 +256,8 @@
       this.update ();
 
       // log data
-      jQuery.ajax ({
-        'url'         : this.route,
-        'type'        : 'post',
+      let res = await fetch (this.route, {
+        'method'      : 'post',
         'data'        : JSON.stringify ({
           'way'    : this.way,
           'page'   : this.page,
@@ -266,28 +265,22 @@
           'sort'   : this.sort,
           'filter' : this.filter
         }),
-        'contentType' : 'application/json; charset=utf-8',
-        'traditional' : true
-      })
-        .fail (() => {
-          // set registering to false
-          this.loading = false;
+        'credentials' : 'same-origin'
+      });
 
-          // update view
-          this.update ();
-        })
-        .done ((data) => {
-          // loop data
-          for (var key in data) {
-              this[key] = data[key];
-          }
+      // load json
+      let data = await res.json ();
 
-          // set loading
-          this.loading = false;
+      // loop data
+      for (var key in data) {
+        this[key] = data[key];
+      }
 
-          // update view
-          this.update ();
-        });
+      // set loading
+      this.loading = false;
+
+      // update view
+      this.update ();
     }
 
     /**
