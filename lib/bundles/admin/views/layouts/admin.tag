@@ -22,6 +22,7 @@
       </div>
     </div>
   </div>
+  <toast />
 
   <script>
     // add layout mixin

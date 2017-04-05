@@ -13,6 +13,7 @@
     </div>
   </nav>
   <div ref="page"></div>
+  <toast />
 
   <script>
     // add layout mixin
