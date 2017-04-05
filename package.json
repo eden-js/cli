@@ -26,7 +26,7 @@
     "babelify": "^7.3.0",
     "body-parser": "^1.17.1",
     "bootstrap": "^4.0.0-alpha.6",
-    "browserify": "^14.1.0",
+    "browserify": "^14.3.0",
     "cacheman-redis": "^1.1.2",
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
