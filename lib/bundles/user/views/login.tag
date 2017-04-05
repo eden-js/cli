@@ -9,10 +9,7 @@
           <div class="card-block">
             <form accept-charset="UTF-8" role="form" method="post" action="/login">
               <div class="form-group">
-                <input class="form-control" placeholder="Username" name="username" type="text" value={ opts.old ? opts.old.username : '' }>
-              </div>
-              <div class="form-group">
-                <input class="form-control" placeholder="Email" name="email" type="email" value={ opts.old ? opts.old.email : '' }>
+                <input class="form-control" placeholder="Username / Email" name="username" type="text" value={ opts.old ? opts.old.username : '' }>
               </div>
               <div class="form-group">
                 <input class="form-control" placeholder="Password" name="password" type="password">
