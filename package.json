@@ -38,6 +38,7 @@
     "del": "^2.2.2",
     "express": "^4.15.2",
     "express-session": "^1.15.2",
+    "extendify": "^1.0.0",
     "fs-extra": "^2.1.2",
     "glob": "^7.1.1",
     "glob-all": "^3.1.0",
