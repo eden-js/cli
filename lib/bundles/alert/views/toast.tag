@@ -4,7 +4,7 @@
       <button type="button" class="close" data-id={ alert.id } onclick={ onDismiss }>
         <span aria-hidden="true">&times;</span>
       </button>
-      <strong class="mr-3" if={ alert.title }>{ alert.title }</strong> <grid-raw html={ alert.text } />
+      <strong class="mr-3" if={ alert.title }>{ alert.title }</strong> <raw html={ alert.text } />
     </div>
   </div>
 
