@@ -84,8 +84,6 @@
     "sharp": "^0.17.3",
     "socket.io": "^2.0.1",
     "socket.io-client": "^2.0.1",
-    "socket.io-emitter": "^2.0.0",
-    "socket.io-redis": "^4.0.0",
     "tether": "^1.4.0",
     "through2": "^2.0.3",
     "vinyl-buffer": "^1.0.0",
