@@ -7,7 +7,7 @@
      * @type {Event} 'update'
      */
     this.on ('mount', () => {
-      this.root.innerHTML = opts.html;
+      this.root.innerHTML = opts.html || '';
     });
 
     /**
@@ -16,7 +16,7 @@
      * @type {Event} 'update'
      */
     this.on ('update', () => {
-      this.root.innerHTML = opts.html;
+      this.root.innerHTML = opts.html || '';
     });
   </script>
 </raw>
