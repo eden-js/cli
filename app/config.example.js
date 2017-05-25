@@ -160,18 +160,24 @@ config.session = {
 
 // Set acl object
 config.acl = {
-  // Default acl per user
-  'default' : {
-    'name'  : 'user',
-    'value' : [
-      'user.registered'
-    ]
-  },
-  // Default acl for first user (admin)
-  'first' : {
-    'name'  : 'admin',
-    'value' : true
-  }
+  // default acl per user
+  // this is added by default to every registered user
+  'default' : [
+    {
+      name  : 'User',
+      value : [
+        'user.authenticated'
+      ]
+    }
+  ],
+  // default acl for first user (admin)
+  // this acl is added only to the first user
+  'admin' : [
+    {
+      name  : 'Admin',
+      value : true // assigning true to value gives access to everything
+    }
+  ]
 };
 
 
