@@ -1,6 +1,6 @@
 <menu>
   <ul class="{ opts.classes && opts.classes.main ? opts.classes.main : 'nav' }" if={ this.menu }>
-    <li each={ item, i in this.menu[opts.name] } class={ renderMainClass (item) }>
+    <li each={ item, i in getMenu (opts.name) } class={ renderMainClass (item) }>
       <a class={ renderLinkClass (item) } href={ item.route } data-toggle={ hasChildren (item) ? 'dropdown' : false }>
         <i if={ item.icon } class="{ item.icon }" />
         { item.title }
@@ -12,6 +12,27 @@
     // add menu mixin
     this.mixin ('menu');
     this.mixin ('mount');
+
+    /**
+     * gets menu
+     *
+     * @param  {String} name
+     *
+     * @return {Array}
+     */
+    getMenu (name) {
+      // get menu
+      let menu = this.menu[name] || [];
+
+      // get classes
+      menu.sort ((a, b) => {
+        // return sort
+        return b.priority === a.priority ? 0 : (b.priority < a.priority ? -1 : 1);
+      });
+
+      // return menu
+      return menu;
+    }
 
     /**
      * check if item has children
