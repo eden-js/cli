@@ -55,10 +55,7 @@ class loader {
         'args' : [
           '--color'
         ],
-        'path'     : './app.js',
-        'execArgv' : [
-          '--harmony-async-await'
-        ]
+        'path' : './app.js'
       });
 
       // set server
