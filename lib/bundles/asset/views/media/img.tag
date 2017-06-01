@@ -14,7 +14,7 @@
       let config = this.eden.get ('config');
 
       // build url
-      let url  = config.cdn && config.cdn.url || '/public/';
+      let url  = config.cdn && config.cdn.url || 'public/';
           url += opts.image.path;
 
       // check if label
