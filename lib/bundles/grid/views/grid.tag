@@ -22,7 +22,7 @@
       <tbody>
         <tr each={ data, i in this.data }>
           <td each={ column, a in this.columns }>
-            <raw html={ data[column.id] } />
+            <grid-raw html={ data[column.id] } />
           </td>
         </tr>
       </tbody>
@@ -258,13 +258,16 @@
       // log data
       let res = await fetch (this.route, {
         'method'      : 'post',
-        'data'        : JSON.stringify ({
+        'body'        : JSON.stringify ({
           'way'    : this.way,
           'page'   : this.page,
           'rows'   : this.rows,
           'sort'   : this.sort,
           'filter' : this.filter
         }),
+        'headers' : {
+          'Content-Type': 'application/json'
+        },
         'credentials' : 'same-origin'
       });
 
