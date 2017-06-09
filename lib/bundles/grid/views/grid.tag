@@ -22,7 +22,7 @@
       <tbody>
         <tr each={ data, i in this.data }>
           <td each={ column, a in this.columns }>
-            <grid-raw html={ data[column.id] } />
+            <raw html={ data[column.id] } />
           </td>
         </tr>
       </tbody>
