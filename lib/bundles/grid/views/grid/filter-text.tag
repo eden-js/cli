@@ -1,5 +1,5 @@
 <grid-filter-text>
-  <div class="input-group">
+  <div class="form-group">
     <label if={ opts.filter.title }>
       { opts.filter.title }
     </label>
