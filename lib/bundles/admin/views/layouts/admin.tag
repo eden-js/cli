@@ -18,7 +18,7 @@
         <menu name="ADMIN" menu={ opts.menus } path={ opts.path } classes={ this.adminMenuClass } />
       </aside>
       <div class="col-sm-9">
-        <div class="admin-page" ref="page"></div>
+        <div data-is={ this.view } opts={ this.state } />
       </div>
     </div>
   </div>

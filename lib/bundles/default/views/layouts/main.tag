@@ -12,7 +12,7 @@
       </div>
     </div>
   </nav>
-  <div ref="page"></div>
+  <div data-is={ this.view } opts={ this.state } />
   <toast />
 
   <script>
