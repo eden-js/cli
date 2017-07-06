@@ -8,7 +8,7 @@
           </h4>
           <div class="card-block">
             <form accept-charset="UTF-8" role="form" method="post" action="/register">
-              <input type="hidden" if={ opts.url } value={ opts.url } name="url" />
+              <input type="hidden" if={ opts.redirect } value={ opts.redirect } name="url" />
               <div class="form-group">
                 <input class="form-control" placeholder="Username" name="username" type="text" value={ opts.old ? opts.old.username : '' }>
               </div>
@@ -24,7 +24,7 @@
               <button class="btn btn-success btn-block" type="submit">
                 Register
               </button>
-              <a class="btn btn-primary btn-block" href="/login{ opts.url ? '?url=' + opts.url : '' }">
+              <a class="btn btn-primary btn-block" href="/login{ opts.redirect ? '?url=' + opts.redirect : '' }">
                 Already have an account?
               </a>
             </form>
