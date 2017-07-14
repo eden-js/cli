@@ -2,8 +2,7 @@
   <div class={ 'grid' : true, 'loading' : !this.loaded || this.loading }>
     <div class="row filters" if={ this.filters.length }>
       <div class="col-md-3 filter form-group" each={ f, i in this.filters }>
-        <grid-filter-text if={ !f.type || f.type === 'text' } filter={ f } values={ this.filter } onfilter={ onFilter } />
-        <grid-filter-select if={ f.type === 'select' } filter={ f } values={ this.filter } onfilter={ onFilter } />
+        <div data-is="grid-filter-{ f.type || 'text' }" filter={ f } values={ this.filter } onfilter={ onFilter } />
       </div>
     </div>
     <table class={ tableClass () }>
@@ -11,9 +10,7 @@
         <tr>
           <th each={ column, i in this.columns } data-column={ i } width={ column.width || false }>
             <a href="#!" if={ column.sort } class={ 'pull-right sort' : true, 'text-muted' : !isSort (column) } onclick={ onSort }>
-              <i class="fa fa-sort" aria-hidden="true" if={ this.way === false || !isSort (column) }></i>
-              <i class="fa fa-sort-asc" aria-hidden="true" if={ this.way === 1 && isSort (column) }></i>
-              <i class="fa fa-sort-desc" aria-hidden="true" if={ this.way === -1 && isSort (column) }></i>
+              <i class={ 'fa' : true, 'fa-sort' : this.way === false || !isSort (column), 'fa-sort-asc' : this.way === 1 && isSort (column), 'fa-sort-desc' : this.way === -1 && isSort (column) } />
             </a>
             { column.title }
           </th>
@@ -29,30 +26,28 @@
     </table>
     <div class="row">
       <div class="col-sm-6">
-        <nav aria-label="Page navigation">
+        <small class="pagination-stats text-muted">
+          Showing { (this.page - 1) * this.rows } - { (this.page * this.rows) > this.total ? this.total : (this.page * this.rows) } of { this.total }
+        </small>
+      </div>
+      <div class="col-sm-6">
+        <nav aria-label="Page navigation" class="float-sm-right">
           <ul class="pagination pagination-sm">
             <li class={ 'page-item' : true, 'disabled' : !hasPrev () }>
               <a class="page-link" href="#!" aria-label="Previous" onclick={ onPrev }>
-                <span aria-hidden="true">&laquo;</span>
-                <span class="sr-only">Previous</span>
+                Previous
               </a>
             </li>
             <li each={ p, i in this.pages } class={ 'page-item' : true, 'active' : this.page === p }>
               <a class="page-link" href="#!" data-page={ p } onclick={ onPage }>{ p }</a>
             </li>
             <li class={ 'page-item' : true, 'disabled' : !hasNext () }>
-              <a class="page-link" href="#" aria-label="Next" onclick={ onNext }>
-                <span aria-hidden="true">&raquo;</span>
-                <span class="sr-only">Next</span>
+              <a class="page-link" href="#!" aria-label="Next" onclick={ onNext }>
+                Next
               </a>
             </li>
           </ul>
         </nav>
-      </div>
-      <div class="col-sm-6 text-sm-right">
-        <small class="pagination-stats">
-          Showing { (this.page - 1) * this.rows } - { (this.page * this.rows) > this.total ? this.total : (this.page * this.rows) } of { this.total }
-        </small>
       </div>
     </div>
   </div>
@@ -257,14 +252,14 @@
 
       // log data
       let res = await fetch (this.route, {
-        'method'      : 'post',
-        'body'        : JSON.stringify ({
+        'body' : JSON.stringify ({
           'way'    : this.way,
           'page'   : this.page,
           'rows'   : this.rows,
           'sort'   : this.sort,
           'filter' : this.filter
         }),
+        'method'  : 'post',
         'headers' : {
           'Content-Type': 'application/json'
         },
