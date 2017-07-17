@@ -66,7 +66,7 @@
       // check for opts class
       rtnClass.push (opts.classes && opts.classes.item ? opts.classes.item : 'nav-item');
       rtnClass.push (this.hasChildren (item) ? 'dropdown' : '');
-      rtnClass.push (this.mnt.path.indexOf (item.route) === 0  ? 'active' : '');
+      rtnClass.push (this.mnt.path.indexOf (item.route) === 0 && (item.route === this.mnt.path || item.route !== opts.base) ? 'active' : '');
 
       // join class
       return rtnClass.join (' ').split ('  ').join (' ');
@@ -85,7 +85,7 @@
 
       // check for opts class
       rtnClass.push (opts.classes && opts.classes.link ? opts.classes.link : 'nav-link');
-      rtnClass.push (this.mnt.path.indexOf (item.route) === 0 ? 'active' : '');
+      rtnClass.push (this.mnt.path.indexOf (item.route) === 0 && (item.route === this.mnt.path || item.route !== opts.base) ? 'active' : '');
 
       // return joined class
       return rtnClass.join (' ');
