@@ -68,7 +68,7 @@
     };
 
     // set pages
-    opts.pages = [];
+    this.pages = [];
 
     // set loading
     this.loaded  = opts.grid || false;
@@ -149,6 +149,9 @@
      * @param  {Event} e
      */
     onFilter (filter, value) {
+      // check filter exists
+      if (!opts.grid.filter) opts.grid.filter = {};
+
       // set filter
       opts.grid.filter[filter.id] = value;
 
@@ -314,6 +317,20 @@
     this.on ('update', () => {
       // set pages
       this.setPages ();
+
+      // set variables
+      opts.grid = opts.grid || {
+        'way'     : false,
+        'rows'    : 20,
+        'data'    : [],
+        'page'    : 1,
+        'sort'    : false,
+        'route'   : '',
+        'total'   : 0,
+        'filter'  : {},
+        'filters' : [],
+        'columns' : []
+      };
     });
   </script>
 </grid>
