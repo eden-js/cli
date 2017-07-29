@@ -2,7 +2,7 @@
   <div class={ 'grid' : true, 'loading' : !this.loaded || this.loading }>
     <div class="row filters" if={ opts.grid.filters.length }>
       <div class="col-md-3 filter form-group" each={ f, i in opts.grid.filters }>
-        <div data-is="grid-filter-{ f.type || 'text' }" filter={ f } values={ grid ().filter } onfilter={ onFilter } />
+        <div data-is="grid-filter-{ f.type || 'text' }" filter={ f } values={ grid ().filter } on-filter={ onFilter } />
       </div>
     </div>
     <table class={ tableClass () }>

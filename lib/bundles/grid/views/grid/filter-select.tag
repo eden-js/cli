@@ -20,7 +20,7 @@
      */
     filterValue () {
       // return filter value
-      return opts.values[opts.filter.id] || false;
+      return (opts.values || {})[opts.filter.id] || false;
     }
 
     /**
@@ -30,7 +30,7 @@
      */
     onFilter (e) {
       // send to opts
-      if (opts.onfilter) opts.onfilter (opts.filter, e.target.value);
+      if (opts.onFilter) opts.onFilter (opts.filter, e.target.value);
     }
 
   </script>
