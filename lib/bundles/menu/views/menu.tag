@@ -3,7 +3,7 @@
     <li each={ item, i in getMenu (opts.name) } class={ renderMainClass (item) }>
       <a class={ renderLinkClass (item) } href={ item.route } data-toggle={ hasChildren (item) ? 'dropdown' : false }>
         <i if={ item.icon } class="{ item.icon }" />
-        { item.title }
+        { this.t (item.title) }
       </a>
     </li>
   </ul>
@@ -11,6 +11,7 @@
   <script>
     // add menu mixin
     this.mixin ('menu');
+    this.mixin ('i18n');
     this.mixin ('mount');
 
     /**
