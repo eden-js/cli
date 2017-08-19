@@ -120,8 +120,7 @@ config.email = {
 // Set scss imports
 // These are imported into app.min.css by default
 config.sass = [
-  './node_modules/bootstrap/scss/bootstrap.scss',
-  './node_modules/tether/src/css/tether.scss'
+  './node_modules/bootstrap/scss/bootstrap.scss'
 ];
 
 // Set js imports
@@ -130,7 +129,7 @@ config.js = [
   './node_modules/whatwg-fetch/fetch.js',
   './node_modules/promise-polyfill/promise.min.js',
   './node_modules/jquery/dist/jquery.min.js',
-  './node_modules/tether/dist/js/tether.min.js',
+  './node_modules/popper.js/dist/umd/popper.min.js',
   './node_modules/bootstrap/dist/js/bootstrap.js'
 ];
 
