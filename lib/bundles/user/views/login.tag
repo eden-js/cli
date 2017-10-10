@@ -1,12 +1,12 @@
 <login-page>
   <div class="container">
     <div class="row">
-      <div class="col-md-4 offset-md-4 mt-3">
+      <div class="col-md-4 mx-auto mt-3">
         <div class="card card-default">
-          <h4 class="card-header text-xs-center">
+          <div class="card-header">
             Login
-          </h4>
-          <div class="card-block">
+          </div>
+          <div class="card-body">
             <form accept-charset="UTF-8" role="form" method="post" action="/login">
               <input type="hidden" if={ opts.redirect } value={ opts.redirect } name="redirect" />
               <div class="form-group">

@@ -1,18 +1,21 @@
 <main-layout>
-  <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
-      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar-nav" aria-controls="navbar-nav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
       <a class="navbar-brand" href="/">
         { this.config.title }
       </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
       <div class="collapse navbar-collapse" id="navbar-nav">
         <menu name="MAIN" classes={ menuClass } class="ml-auto" />
       </div>
     </div>
   </nav>
-  <div data-is={ this.view } opts={ this.state } />
+
+  <div data-is={ this.view } opts={ this.state } class="main-page" />
+
   <toast />
 
   <script>
