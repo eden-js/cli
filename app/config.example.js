@@ -127,7 +127,6 @@ config.sass = [
 // These are imported into app.min.js at the top
 config.js = [
   './node_modules/whatwg-fetch/fetch.js',
-  './node_modules/promise-polyfill/promise.min.js',
   './node_modules/jquery/dist/jquery.min.js',
   './node_modules/popper.js/dist/umd/popper.min.js',
   './node_modules/bootstrap/dist/js/bootstrap.js'

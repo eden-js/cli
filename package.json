@@ -87,7 +87,6 @@
     "redis-lock": "^0.1.0",
     "response-time": "^2.3.2",
     "riot": "^3.6.3",
-    "riotcontrol": "^0.0.3",
     "run-sequence": "^2.1.0",
     "sharp": "^0.18.2",
     "socket.io": "^2.0.3",

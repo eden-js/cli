@@ -33,6 +33,5 @@
     "helper": true,
     "cache": true,
     "jQuery": true
-  },
-  "ignore-path" : ".eslintignore"
+  }
 }
