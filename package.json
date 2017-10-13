@@ -89,6 +89,7 @@
     "riot": "^3.6.3",
     "run-sequence": "^2.1.0",
     "sharp": "^0.18.2",
+    "sitemap": "^1.13.0",
     "socket.io": "^2.0.3",
     "socket.io-client": "^2.0.3",
     "through2": "^2.0.3",
