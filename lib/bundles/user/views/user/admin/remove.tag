@@ -5,7 +5,7 @@
         <strong>Remove User</strong>
         <p class="mb-0">{ opts.usr.username || opts.usr.email }</p>
       </div>
-      <div class="card-block">
+      <div class="card-body">
         <p>
           Are you sure you want to delete <b>{ opts.usr.username || opts.usr.email }</b>?
         </p>

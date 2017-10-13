@@ -5,7 +5,7 @@
         <strong>{ opts.usr && opts.usr.id ? 'Update' : 'Add' } User</strong>
         <p class="mb-0">{ opts.usr.username || opts.usr.email || '' }</p>
       </div>
-      <div class="card-block">
+      <div class="card-body">
         <div class="form-group">
           <label for="username">Username</label>
           <input type="text" class="form-control" name="username" id="username" aria-describedby="username" placeholder="Enter username" value={ opts.usr.username }>
@@ -34,7 +34,7 @@
     <div class="card-header">
       Send Alert
     </div>
-    <div class="card-block">
+    <div class="card-body">
       <div class="form-group">
         <label for="type">Type</label>
         <select name="type" class="form-control">

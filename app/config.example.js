@@ -81,6 +81,11 @@ config.media = {
   'dir' : 'media'
 };
 
+// create sitemap
+config.sitemap = {
+  'enabled' : true
+};
+
 
 /**
  * Set database configuration
