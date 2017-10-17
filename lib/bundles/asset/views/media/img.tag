@@ -1,5 +1,5 @@
 <media-img>
-  <img src={ src () || opts.fallback } class={ opts.class } />
+  <img src={ src () || opts.fallback } class={ opts.class || opts.classes } />
 
   <script>
 
