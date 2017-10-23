@@ -1,24 +1,24 @@
 <grid>
   <div class={ 'grid' : true, 'loading' : !this.loaded || this.loading }>
-    <div class="row filters" if={ this.filters.length }>
-      <div class="col-md-3 filter form-group" each={ f, i in this.filters }>
-        <div data-is="grid-filter-{ f.type || 'text' }" filter={ f } values={ this.filter } onfilter={ onFilter } />
+    <div class="row filters" if={ this.state.filters.length }>
+      <div class="col-md-3 filter form-group" each={ f, i in this.state.filters }>
+        <div data-is="grid-filter-{ f.type || 'text' }" filter={ f } values={ getState ().filter } on-filter={ onFilter } />
       </div>
     </div>
     <table class={ tableClass () }>
       <thead>
         <tr>
-          <th each={ column, i in this.columns } data-column={ i } width={ column.width || false }>
+          <th each={ column, i in this.state.columns } data-column={ i } width={ column.width || false }>
             <a href="#!" if={ column.sort } class={ 'pull-right sort' : true, 'text-muted' : !isSort (column) } onclick={ onSort }>
-              <i class={ 'fa' : true, 'fa-sort' : this.way === false || !isSort (column), 'fa-sort-asc' : this.way === 1 && isSort (column), 'fa-sort-desc' : this.way === -1 && isSort (column) } />
+              <i class={ 'fa' : true, 'fa-sort' : getState ().way === false || !isSort (column), 'fa-sort-asc' : getState ().way === 1 && isSort (column), 'fa-sort-desc' : getState ().way === -1 && isSort (column) } />
             </a>
             { column.title }
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr each={ data, i in this.data }>
-          <td each={ column, a in this.columns }>
+        <tr each={ data, i in this.state.data }>
+          <td each={ column, a in getState ().columns }>
             <raw html={ data[column.id] } />
           </td>
         </tr>
@@ -27,7 +27,7 @@
     <div class="row">
       <div class="col-sm-6">
         <small class="pagination-stats text-muted">
-          Showing { (this.page - 1) * this.rows } - { (this.page * this.rows) > this.total ? this.total : (this.page * this.rows) } of { this.total }
+          Showing { (this.state.page - 1) * this.state.rows } - { (this.state.page * this.state.rows) > this.state.total ? this.state.total : (this.state.page * this.state.rows) } of { this.state.total }
         </small>
       </div>
       <div class="col-sm-6">
@@ -38,7 +38,7 @@
                 Previous
               </a>
             </li>
-            <li each={ p, i in this.pages } class={ 'page-item' : true, 'active' : this.page === p }>
+            <li each={ p, i in this.pages } class={ 'page-item' : true, 'active' : this.state.page === p }>
               <a class="page-link" href="#!" data-page={ p } onclick={ onPage }>{ p }</a>
             </li>
             <li class={ 'page-item' : true, 'disabled' : !hasNext () }>
@@ -54,16 +54,18 @@
 
   <script>
     // set variables
-    this.way     = opts.grid && opts.grid.way     ? opts.grid.way     : false;
-    this.rows    = opts.grid && opts.grid.rows    ? opts.grid.rows    : 20;
-    this.data    = opts.grid && opts.grid.data    ? opts.grid.data    : [];
-    this.page    = opts.grid && opts.grid.page    ? opts.grid.page    : 1;
-    this.sort    = opts.grid && opts.grid.sort    ? opts.grid.sort    : false;
-    this.route   = opts.grid && opts.grid.route   ? opts.grid.route   : '';
-    this.total   = opts.grid && opts.grid.total   ? opts.grid.total   : 0;
-    this.filter  = opts.grid && opts.grid.filter  ? opts.grid.filter  : {};
-    this.filters = opts.grid && opts.grid.filters ? opts.grid.filters : [];
-    this.columns = opts.grid && opts.grid.columns ? opts.grid.columns : [];
+    this.state = {
+      'way'     : opts.grid && opts.grid.way     ? opts.grid.way     : false,
+      'rows'    : opts.grid && opts.grid.rows    ? opts.grid.rows    : 20,
+      'data'    : opts.grid && opts.grid.data    ? opts.grid.data    : [],
+      'page'    : opts.grid && opts.grid.page    ? opts.grid.page    : 1,
+      'sort'    : opts.grid && opts.grid.sort    ? opts.grid.sort    : false,
+      'route'   : opts.grid && opts.grid.route   ? opts.grid.route   : '',
+      'total'   : opts.grid && opts.grid.total   ? opts.grid.total   : 0,
+      'filter'  : opts.grid && opts.grid.filter  ? opts.grid.filter  : {},
+      'filters' : opts.grid && opts.grid.filters ? opts.grid.filters : [],
+      'columns' : opts.grid && opts.grid.columns ? opts.grid.columns : []
+    };
 
     // set pages
     this.pages = [];
@@ -90,7 +92,7 @@
      */
     isSort (column) {
       // return boolean
-      return this.sort === column.id;
+      return this.state.sort === column.id;
     }
 
     /**
@@ -99,7 +101,7 @@
      * @return {Boolean}
      */
     hasPrev () {
-      return this.page > 1;
+      return this.state.page > 1;
     }
 
     /**
@@ -108,7 +110,17 @@
      * @return {Boolean}
      */
     hasNext () {
-      return this.page < Math.floor (this.total / this.rows) + 1;
+      return this.state.page < Math.floor (this.state.total / this.state.rows) + 1;
+    }
+
+    /**
+     * gets state
+     *
+     * @return {Object}
+     */
+    getState () {
+      // return state
+      return this.state;
     }
 
     /**
@@ -119,12 +131,12 @@
       this.pages = [];
 
       // set start
-      let page  = (this.page - 5) < 1 ? 1 : (this.page - 5);
+      let page  = (this.state.page - 5) < 1 ? 1 : (this.state.page - 5);
       let main  = page;
-      let start = ((page - 1) * this.rows);
+      let start = ((page - 1) * this.state.rows);
 
       // while start less than pages
-      while (start < this.total) {
+      while (start < this.state.total) {
         // add to pages
         this.pages.push (page);
 
@@ -132,7 +144,7 @@
         page++;
 
         // set start value
-        start = ((page - 1) * this.rows);
+        start = ((page - 1) * this.state.rows);
 
         // check if should stop
         if (main - page > 8 || this.pages.length > 9) {
@@ -148,7 +160,7 @@
      */
     onFilter (filter, value) {
       // set filter
-      this.filter[filter.id] = value;
+      this.state.filter[filter.id] = value;
 
       // load view
       this.load ();
@@ -164,7 +176,7 @@
      */
     onPage (e) {
       // get page
-      this.page = e.target.dataset.page;
+      this.state.page = e.target.dataset.page;
 
       // load view
       this.load ();
@@ -178,7 +190,7 @@
      */
     onNext () {
       // get page
-      this.page = this.hasNext () ? (this.page + 1) : this.page;
+      this.state.page = this.hasNext () ? (this.state.page + 1) : this.page;
 
       // load view
       this.load ();
@@ -192,7 +204,7 @@
      */
     onPrev () {
       // get page
-      this.page = this.hasPrev () ? (this.page - 1) : 1;
+      this.state.page = this.hasPrev () ? (this.state.page - 1) : 1;
 
       // load view
       this.load ();
@@ -211,26 +223,26 @@
       let th = jQuery (e.target).is ('th') ? jQuery (e.target) : jQuery (e.target).closest ('th');
 
       // get column
-      let column = this.columns[th.attr ('data-column')];
+      let column = this.state.columns[th.attr ('data-column')];
 
       // check for id
-      if (column.id === this.sort) {
+      if (column.id === this.state.sort) {
         // set asc or desc
-        if (this.way === false) {
+        if (this.state.way === false) {
           // set way
-          this.way = -1;
-        } else if (this.way === -1) {
+          this.state.way = -1;
+        } else if (this.state.way === -1) {
           // set way
-          this.way = 1;
-        } else if (this.way === 1) {
+          this.state.way = 1;
+        } else if (this.state.way === 1) {
           // reset sort
-          this.way  = false;
-          this.sort = false;
+          this.state.way  = false;
+          this.state.sort = false;
         }
       } else {
         // set sort
-        this.way  = -1;
-        this.sort = column.id;
+        this.state.way  = -1;
+        this.state.sort = column.id;
       }
 
       // load view
@@ -250,14 +262,26 @@
       // update view
       this.update ();
 
+      // set url
+      window.eden.router.history.replace ({
+        'pathname' : eden.router.history.location.pathname.split ('?')[0] + '?' + jQuery.param ({
+          'way'    : this.state.way,
+          'page'   : this.state.page,
+          'rows'   : this.state.rows,
+          'sort'   : this.state.sort,
+          'filter' : this.state.filter
+        }),
+        'state' : eden.router.history.location.state,
+      })
+
       // log data
-      let res = await fetch (this.route, {
+      let res = await fetch (this.state.route, {
         'body' : JSON.stringify ({
-          'way'    : this.way,
-          'page'   : this.page,
-          'rows'   : this.rows,
-          'sort'   : this.sort,
-          'filter' : this.filter
+          'way'    : this.state.way,
+          'page'   : this.state.page,
+          'rows'   : this.state.rows,
+          'sort'   : this.state.sort,
+          'filter' : this.state.filter
         }),
         'method'  : 'post',
         'headers' : {
@@ -271,7 +295,7 @@
 
       // loop data
       for (var key in data) {
-        this[key] = data[key];
+        this.state[key] = data[key];
       }
 
       // set loading
