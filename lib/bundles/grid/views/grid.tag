@@ -316,6 +316,9 @@
 
       // update
       this.update ();
+
+      // check frontend
+      if (!this.eden.frontend) return;
     });
 
     /**
