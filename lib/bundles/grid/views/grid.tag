@@ -262,6 +262,12 @@
       // update view
       this.update ();
 
+      // get state
+      let state = JSON.parse (JSON.stringify (eden.router.history.location.state));
+
+      // set prevent
+      state.prevent = true;
+
       // set url
       window.eden.router.history.replace ({
         'pathname' : eden.router.history.location.pathname.split ('?')[0] + '?' + jQuery.param ({
@@ -271,7 +277,7 @@
           'sort'   : this.state.sort,
           'filter' : this.state.filter
         }),
-        'state' : eden.router.history.location.state,
+        'state' : state,
       })
 
       // log data
@@ -311,6 +317,9 @@
      * @param  {String} 'mount'
      */
     this.on ('mount', () => {
+      // check frontend
+      if (!this.eden.frontend) return;
+
       // set pages
       this.setPages ();
 
@@ -346,9 +355,6 @@
 
       // update view
       this.update ();
-
-      // check frontend
-      if (!this.eden.frontend) return;
     });
 
     /**
