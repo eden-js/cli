@@ -314,7 +314,37 @@
       // set pages
       this.setPages ();
 
-      // update
+      // trigger mount on parent mount
+      if (!this.onCheckMount) {
+        // flag onCheckMount
+        this.onCheckMount = true;
+
+        // add parent mount check
+        this.parent.on ('mount', () => this.trigger ('mount'));
+      }
+
+      // set variables
+      this.state = {
+        'way'     : opts.grid && opts.grid.way     ? opts.grid.way     : false,
+        'rows'    : opts.grid && opts.grid.rows    ? opts.grid.rows    : 20,
+        'data'    : opts.grid && opts.grid.data    ? opts.grid.data    : [],
+        'page'    : opts.grid && opts.grid.page    ? opts.grid.page    : 1,
+        'sort'    : opts.grid && opts.grid.sort    ? opts.grid.sort    : false,
+        'route'   : opts.grid && opts.grid.route   ? opts.grid.route   : '',
+        'total'   : opts.grid && opts.grid.total   ? opts.grid.total   : 0,
+        'filter'  : opts.grid && opts.grid.filter  ? opts.grid.filter  : {},
+        'filters' : opts.grid && opts.grid.filters ? opts.grid.filters : [],
+        'columns' : opts.grid && opts.grid.columns ? opts.grid.columns : []
+      };
+
+      // set pages
+      this.pages = [];
+
+      // set loading
+      this.loaded  = opts.grid || false;
+      this.loading = false;
+
+      // update view
       this.update ();
 
       // check frontend

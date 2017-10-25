@@ -14,7 +14,7 @@
     </div>
   </nav>
 
-  <div data-is={ this.view } opts={ this.state } class="main-page" />
+  <div data-is={ this.view } opts={ this.state } ref="page" class="main-page" />
 
   <toast />
 

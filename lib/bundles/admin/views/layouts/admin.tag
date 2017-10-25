@@ -24,7 +24,7 @@
       <menu name="ADMIN" base="/admin" classes={ this.adminMenuClass } class="col-sm-3 col-md-2 d-none d-sm-block bg-light sidebar pt-3" />
 
       <main class="col-sm-9 ml-sm-auto col-md-10 pt-4 px-4" role="main">
-        <div data-is={ this.view } opts={ this.state } class="main-page" />
+        <div data-is={ this.view } opts={ this.state } ref="page" class="main-page" />
       </main>
     </div>
   </div>
