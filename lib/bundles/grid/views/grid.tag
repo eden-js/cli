@@ -263,10 +263,9 @@
       this.update ();
 
       // get state
-      let state = JSON.parse (JSON.stringify (eden.router.history.location.state));
-
-      // set prevent
-      state.prevent = true;
+      let state = jQuery.extend ({
+        'prevent' : true
+      }, eden.router.history.location.state);
 
       // set url
       window.eden.router.history.replace ({
