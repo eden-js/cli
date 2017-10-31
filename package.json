@@ -59,7 +59,7 @@
     "history": "^4.7.2",
     "html-entities": "^1.2.1",
     "html-to-text": "^3.3.0",
-    "i18next": "^10.0.3",
+    "i18next": "^10.0.7",
     "i18next-browser-languagedetector": "^2.0.0",
     "i18next-express-middleware": "^1.0.7",
     "i18next-localstorage-cache": "^1.1.1",
