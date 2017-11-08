@@ -15,7 +15,7 @@
     "test": "mocha --harmony-async-await --require tests/env --reporter spec tests/ \"*/bundles/*/tests/**/*.js\""
   },
   "engines": {
-    "node": ">= 7.0.0",
+    "node": ">= 8.0.0",
     "npm": ">= 4.0.0"
   },
   "dependencies": {
