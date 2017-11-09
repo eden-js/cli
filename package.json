@@ -33,7 +33,7 @@
     "chai": "^4.1.2",
     "chai-http": "^3.0.0",
     "colors": "^1.1.2",
-    "comment-parser": "^0.4.2",
+    "comment-parser": "^0.5.0",
     "connect-redis": "^3.3.2",
     "cookie-parser": "^1.4.3",
     "crypto": "^1.0.1",
