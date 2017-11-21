@@ -25,12 +25,6 @@
       // get menu
       let menu = this.menu[name] || [];
 
-      // get classes
-      menu.sort ((a, b) => {
-        // return sort
-        return b.priority === a.priority ? 0 : (b.priority < a.priority ? -1 : 1);
-      });
-
       // return menu
       return menu;
     }
