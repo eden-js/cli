@@ -12,7 +12,7 @@
             <a href="#!" if={ column.sort } class={ 'pull-right sort' : true, 'text-muted' : !isSort (column) } onclick={ onSort }>
               <i class={ 'fa' : true, 'fa-sort' : getState ().way === false || !isSort (column), 'fa-sort-asc' : getState ().way === 1 && isSort (column), 'fa-sort-desc' : getState ().way === -1 && isSort (column) } />
             </a>
-            { column.title }
+            { this.t (column.title) }
           </th>
         </tr>
       </thead>
@@ -63,6 +63,9 @@
   </div>
 
   <script>
+    // do mixins
+    this.mixin ('i18n');
+
     // set variables
     this.state = {
       'way'     : opts.grid && opts.grid.way     ? opts.grid.way     : false,
