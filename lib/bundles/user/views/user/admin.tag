@@ -15,6 +15,6 @@
     </div>
     <!-- / page header -->
 
-    <grid grid={ opts.grid } table-class="table table-bordered bg-inverse" title="Users Grid" />
+    <grid grid={ opts.grid } table-class="table table-striped table-bordered" title="Users Grid" />
   </div>
 </user-admin-page>
