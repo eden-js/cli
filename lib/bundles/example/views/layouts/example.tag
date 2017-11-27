@@ -1,27 +1,31 @@
 <example-layout>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
-        <nav class="navbar navbar-light bg-faded">
-            <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#navbar-header" aria-controls="navbar-header">
-              ☰
-            </button>
-            <div class="collapse navbar-toggleable-xs" id="navbar-header">
-                <a class="navbar-brand" href="/">
-                    { opts.title }
-                </a>
-                <menu name="MAIN" menu={ opts.menu } classes={ menuClass } />
-            </div>
-        </nav>
-        <alert success={ opts.success } error={ opts.error } />
-        <div name="page"></div>
+      <a class="navbar-brand" href="/">
+        { this.config.title }
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbar-nav">
+        <menu name="MAIN" classes={ menuClass } class="ml-auto" />
+      </div>
     </div>
+  </nav>
 
-    <script>
-        // add layout mixin
-        this.mixin ('layout');
+  <div data-is={ this.view } opts={ this.state } ref="page" class="main-page" />
 
-        // set menu class object
-        this.menuClass = {
-            'main' : 'nav navbar-nav'
-        };
-    </script>
+  <toast />
+
+  <script>
+    // add layout mixin
+    this.mixin ('config');
+    this.mixin ('layout');
+
+    // set menu class object
+    this.menuClass = {
+      'main' : 'navbar-nav'
+    };
+  </script>
 </example-layout>
