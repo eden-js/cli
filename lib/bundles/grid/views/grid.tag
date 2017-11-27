@@ -34,6 +34,11 @@
         <nav aria-label="Page navigation" class="float-sm-right">
           <ul class="pagination pagination-sm">
             <li class={ 'page-item' : true, 'disabled' : !hasPrev () }>
+              <a class="page-link" href="#!" aria-label="First" onclick={ onFirst }>
+                First
+              </a>
+            </li>
+            <li class={ 'page-item' : true, 'disabled' : !hasPrev () }>
               <a class="page-link" href="#!" aria-label="Previous" onclick={ onPrev }>
                 Previous
               </a>
@@ -44,6 +49,11 @@
             <li class={ 'page-item' : true, 'disabled' : !hasNext () }>
               <a class="page-link" href="#!" aria-label="Next" onclick={ onNext }>
                 Next
+              </a>
+            </li>
+            <li class={ 'page-item' : true, 'disabled' : !hasNext () }>
+              <a class="page-link" href="#!" aria-label="Last" onclick={ onLast }>
+                Last
               </a>
             </li>
           </ul>
@@ -177,6 +187,34 @@
     onPage (e) {
       // get page
       this.state.page = e.target.dataset.page;
+
+      // load view
+      this.load ();
+
+      // update view
+      this.update ();
+    }
+
+    /**
+     * on next click function
+     */
+    onLast () {
+      // get page
+      this.state.page = Math.floor (this.state.total / this.state.rows) + 1;
+
+      // load view
+      this.load ();
+
+      // update view
+      this.update ();
+    }
+
+    /**
+     * on previous click function
+     */
+    onFirst () {
+      // get page
+      this.state.page = 1;
 
       // load view
       this.load ();
