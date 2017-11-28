@@ -27,33 +27,33 @@
     <div class="row">
       <div class="col-sm-6">
         <small class="pagination-stats text-muted">
-          Showing { (this.state.page - 1) * this.state.rows } - { (this.state.page * this.state.rows) > this.state.total ? this.state.total : (this.state.page * this.state.rows) } of { this.state.total }
+          { this.t ('Showing') } { (this.state.page - 1) * this.state.rows } - { (this.state.page * this.state.rows) > this.state.total ? this.state.total : (this.state.page * this.state.rows) } { this.t ('of') } { this.state.total }
         </small>
       </div>
       <div class="col-sm-6">
         <nav aria-label="Page navigation" class="float-sm-right">
           <ul class="pagination pagination-sm">
             <li class={ 'page-item' : true, 'disabled' : !hasPrev () }>
-              <a class="page-link" href="#!" aria-label="First" onclick={ onFirst }>
-                First
+              <a class="page-link" href="#!" aria-label={ this.t ('First') } onclick={ onFirst }>
+                { this.t ('First') }
               </a>
             </li>
             <li class={ 'page-item' : true, 'disabled' : !hasPrev () }>
-              <a class="page-link" href="#!" aria-label="Previous" onclick={ onPrev }>
-                Previous
+              <a class="page-link" href="#!" aria-label={ this.t ('Previous') } onclick={ onPrev }>
+                { this.t ('Previous') }
               </a>
             </li>
             <li each={ p, i in this.pages } class={ 'page-item' : true, 'active' : this.state.page === p }>
               <a class="page-link" href="#!" data-page={ p } onclick={ onPage }>{ p }</a>
             </li>
             <li class={ 'page-item' : true, 'disabled' : !hasNext () }>
-              <a class="page-link" href="#!" aria-label="Next" onclick={ onNext }>
-                Next
+              <a class="page-link" href="#!" aria-label={ this.t ('Next') } onclick={ onNext }>
+                { this.t ('Next') }
               </a>
             </li>
             <li class={ 'page-item' : true, 'disabled' : !hasNext () }>
-              <a class="page-link" href="#!" aria-label="Last" onclick={ onLast }>
-                Last
+              <a class="page-link" href="#!" aria-label={ this.t ('Last') } onclick={ onLast }>
+                { this.t ('Last') }
               </a>
             </li>
           </ul>
