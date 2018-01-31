@@ -81,11 +81,6 @@ config.media = {
   'dir' : 'media'
 };
 
-// create sitemap
-config.sitemap = {
-  'enabled' : true
-};
-
 
 /**
  * Set database configuration
@@ -93,15 +88,10 @@ config.sitemap = {
 
 // Set config database object
 config.database = {
-  // Set dev database
-  'dev' : {
-    'db'   : config.domain.split ('.')[0],
-    'host' : 'localhost'
-  },
-  // Set live database
-  'live' : {
-    'db'   : config.domain.split ('.')[0],
-    'host' : 'localhost'
+  'plug'   : 'MongoPlug', // can be MongoPlug, RethinkPlug, CouchPlug or ElasticPlug
+  'config' : {
+    'db'  : config.domain.split ('.')[0],
+    'url' : 'mongodb://localhost:27017'
   }
 };
 
@@ -132,6 +122,7 @@ config.sass = [
 // These are imported into app.min.js at the top
 config.js = [
   './node_modules/whatwg-fetch/fetch.js',
+  './node_modules/promise-polyfill/promise.min.js',
   './node_modules/jquery/dist/jquery.min.js',
   './node_modules/popper.js/dist/umd/popper.min.js',
   './node_modules/bootstrap/dist/js/bootstrap.js'
