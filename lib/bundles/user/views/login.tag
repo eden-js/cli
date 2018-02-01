@@ -10,10 +10,10 @@
             <form accept-charset="UTF-8" role="form" method="post" action="/login">
               <input type="hidden" if={ opts.redirect } value={ opts.redirect } name="redirect" />
               <div class="form-group">
-                <input class="form-control" placeholder="Username / Email" name="username" type="text" value={ opts.old ? opts.old.username : '' }>
+                <input class="form-control" placeholder="Username / Email" name="username" type="text" value={ opts.old ? opts.old.username : '' } autocomplete="email">
               </div>
               <div class="form-group">
-                <input class="form-control" placeholder="Password" name="password" type="password">
+                <input class="form-control" placeholder="Password" name="password" type="password" autocomplete="current-password">
               </div>
               <button class="btn btn-success btn-block" type="submit">
                 Login

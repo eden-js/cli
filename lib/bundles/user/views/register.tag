@@ -9,16 +9,16 @@
           <div class="card-body">
             <input type="hidden" if={ opts.redirect } value={ opts.redirect } name="redirect" />
             <div class="form-group">
-              <input class="form-control" placeholder="Username" name="username" type="text" value={ opts.old ? opts.old.username : '' }>
+              <input class="form-control" placeholder="Username" name="username" type="text" value={ opts.old ? opts.old.username : '' } autocomplete="username">
             </div>
             <div class="form-group">
-              <input class="form-control" placeholder="Email" name="email" type="email" value={ opts.old ? opts.old.email : '' }>
+              <input class="form-control" placeholder="Email" name="email" type="email" value={ opts.old ? opts.old.email : '' } autocomplete="email">
             </div>
             <div class="form-group">
-              <input class="form-control" placeholder="Password" name="password" type="password">
+              <input class="form-control" placeholder="Password" name="password" type="password" autocomplete="new-password">
             </div>
             <div class="form-group">
-              <input class="form-control" placeholder="Password Again" name="passwordb" type="password">
+              <input class="form-control" placeholder="Password Again" name="passwordb" type="password" autocomplete="new-password">
             </div>
             <button class="btn btn-success btn-block" type="submit">
               Register
