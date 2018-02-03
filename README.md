@@ -1,9 +1,9 @@
 # EdenJS
 
-[![bitHound Overall Score](https://www.bithound.io/github/Alex-iFactory/eden/badges/score.svg?style=flat-square)](https://www.bithound.io/github/eden-js/eden)
-[![issues](https://img.shields.io/github/issues/eden-js/eden.svg?style=flat-square)](https://github.com/eden-js/eden/issues)
-[![dependencies](https://david-dm.org/eden-js/eden.svg?style=flat-square)](https://github.com/eden-js/eden)
-[![license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/eden-js/eden)
+[![bitHound Overall Score](https://img.shields.io/bithound/code/github/eden-js/eden.svg?label=bitHound%20Overall%20Score&style=flat-square)](https://www.bithound.io/github/eden-js/eden)
+[![Issues](https://img.shields.io/github/issues/eden-js/eden.svg?style=flat-square)](https://github.com/eden-js/eden/issues)
+[![Dependencies](https://david-dm.org/eden-js/eden.svg?style=flat-square)](https://github.com/eden-js/eden)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/eden-js/eden)
 [![Awesome](https://img.shields.io/badge/awesome-true-green.svg?style=flat-square)](https://github.com/eden-js/eden)
 
 Awesome isomorphic NodeJS skeleton for structured applications.
