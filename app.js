@@ -61,6 +61,7 @@ class app {
     eden.start ({
       'id'      : process.env.id,
       'port'    : parseInt (process.env.port),
+      'host'    : process.env.host,
       'logger'  : this._logger,
       'express' : (process.env.express === 'true')
     });

@@ -33,6 +33,9 @@ config.environment = 'dev';
 // Set starting port
 config.port = 1337;
 
+// Set server host
+config.host = '0.0.0.0';
+
 // set amount of express threads to run
 // setting this as null will count your CPU cores
 config.expressThreads = 1;
