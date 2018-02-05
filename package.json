@@ -80,6 +80,7 @@
     "passport.socketio": "^3.7.0",
     "popper.js": "^1.12.9",
     "pretty-error": "^2.1.1",
+    "promise-polyfill": "^7.0.2",
     "redis": "^2.8.0",
     "redis-eventemitter": "^2.0.1",
     "redis-lock": "^0.1.4",

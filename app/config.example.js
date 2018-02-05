@@ -3,7 +3,7 @@
  *
  * @type {Object}
  */
-var config = {};
+const config = {};
 
 
 /**
@@ -32,6 +32,9 @@ config.environment = 'dev';
 
 // Set starting port
 config.port = 1337;
+
+// Set server host
+config.host = '0.0.0.0';
 
 // set amount of express threads to run
 // setting this as null will count your CPU cores
@@ -122,7 +125,7 @@ config.sass = [
 // These are imported into app.min.js at the top
 config.js = [
   './node_modules/whatwg-fetch/fetch.js',
-  './node_modules/promise-polyfill/promise.min.js',
+  './node_modules/promise-polyfill/dist/promise.min.js',
   './node_modules/jquery/dist/jquery.min.js',
   './node_modules/popper.js/dist/umd/popper.min.js',
   './node_modules/bootstrap/dist/js/bootstrap.js'
