@@ -8,7 +8,7 @@
         Let's call this "Hello World". You will need to create your own bundles within <code>app/bundles/[bundle name]</code> to start!
       </p>
       <p>
-        <a class="btn btn-lg btn-primary mr-2" href="//edenjs.com" role="button">Read the docs »</a>
+        <a class="btn btn-lg btn-primary mr-3" href="//edenjs.com" role="button">Read the docs »</a>
         <a class="btn btn-lg btn-secondary" href="//github.com/eden-js/eden" role="button">Read the source »</a>
       </p>
     </div>
