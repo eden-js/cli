@@ -10,7 +10,7 @@
         <tr>
           <th each={ column, i in this.state.columns } data-column={ i } width={ column.width || false }>
             <a href="#!" if={ column.sort } class={ 'pull-right sort' : true, 'text-muted' : !isSort (column) } onclick={ onSort }>
-              <i class={ 'fa' : true, 'fa-sort' : getState ().way === false || !isSort (column), 'fa-sort-asc' : getState ().way === 1 && isSort (column), 'fa-sort-desc' : getState ().way === -1 && isSort (column) } />
+              <i class={ 'fa mr-2' : true, 'fa-sort' : getState ().way === false || !isSort (column), 'fa-sort-up' : getState ().way === 1 && isSort (column), 'fa-sort-down' : getState ().way === -1 && isSort (column) } />
             </a>
             { this.t (column.title) }
           </th>
