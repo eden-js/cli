@@ -1,7 +1,7 @@
 <toast>
   <div each={ position, a in this.positions } class="eden-toast eden-toast-{ position }" if={ alerts (position).length }>
     <div each={ alert, b in alerts (position) } class="alert alert-{ alert.type || 'info' } fade { alert.visible ? 'show' : 'hide' }" role="alert">
-      <button type="button" class="close" data-id={ alert.id } onclick={ onDismiss }>
+      <button type="button" class="close" if={ this.eden.frontend } data-id={ alert.id } onclick={ onDismiss }>
         <span aria-hidden="true">&times;</span>
       </button>
       <strong class="mr-3" if={ alert.title }>{ alert.title }</strong> <raw html={ alert.text } />
