@@ -39,7 +39,7 @@
     "del": "^3.0.0",
     "dot-prop": "^4.2.0",
     "dot-prop-immutable": "^1.4.0",
-    "edenjs-model": "^1.5.6",
+    "edenjs-model": "^1.5.9",
     "express": "^4.16.2",
     "express-session": "^1.15.6",
     "extendify": "^1.0.0",
