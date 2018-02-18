@@ -60,6 +60,11 @@ config.redis = {
   'port' : 6379
 };
 
+// Redis configuration
+config.lock = {
+  'maxPending' : 1000000
+};
+
 // i18n configuration
 config.i18n = {
   'cache' : {
