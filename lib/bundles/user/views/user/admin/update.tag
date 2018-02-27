@@ -52,6 +52,19 @@
       <button class="btn btn-primary" onclick={ onAlert }>Send</button>
     </div>
   </div>
+  <div class="card mt-4" if={ opts.usr.id }>
+    <div class="card-header">
+      Test User
+    </div>
+    <div class="card-body">
+      <p>
+        This will log you out of your current account and into this users account.
+      </p>
+    </div>
+    <div class="card-footer">
+      <a href="/admin/user/{ opts.usr.id }/login" class="btn btn-danger">Login as { opts.usr.username }</a>
+    </div>
+  </div>
 
   <script>
 
