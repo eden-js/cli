@@ -1,5 +1,5 @@
 /**
- * Create initial config Object
+ * create initial config object
  *
  * @type {Object}
  */
@@ -7,63 +7,61 @@ const config = {};
 
 
 /**
- * Set application page information
+ * set application page information
  */
 
-// Set application title
-config.title  = 'EdenJS';
+// set application title
+config.title = 'EdenJS';
 
-// Set application domain
+// set application domain
 config.domain = 'edenjs.com';
 
-// Set application version
-config.version = '0.01';
+// set application version (recommend: semver)
+config.version = '0.1.0';
 
-// Set logo
+// set logo
 config.logo = '/public/assets/images/logo.svg';
 
 
 /**
- * Set application server configuration
+ * set application server configuration
  */
 
-// Set app environment
+// set app environment
 config.environment = 'dev';
 
-// Set starting port
+// set starting port
 config.port = 1337;
 
-// Set server host
+// set server host
 config.host = '0.0.0.0';
 
-// set amount of express threads to run
-// setting this as null will count your CPU cores
+// set amount of express threads to run. setting this as null will count your CPU cores
 config.expressThreads = 1;
 
-// set amount of compute threads to run
-// setting this as null will use 1 compute thread
-// compute threads are threads used for backend processes they do not run
-// the express application, but do run all daemons
+// set amount of compute threads to run. setting this as null will use 1 compute thread. compute threads are threads
+// used for backend processes they do not run the express application, but do run all daemons
 config.computeThreads = 1;
 
-// Websocket configuration
+// websocket configuration
 config.socket = {
-  'url'    : '//' + config.domain + (config.environment === 'dev' ? ':' + config.port : ''),
+  'url'    : `//${config.domain}`,
   'params' : {
     'reconnect' : true
   }
 };
 
-// Redis configuration
+// redis configuration
 config.redis = {
   'host' : 'localhost',
   'port' : 6379
 };
 
-// Redis configuration
+// lock configuration
 config.lock = {
   'maxPending' : 1000000
 };
+
 
 // i18n configuration
 config.i18n = {
@@ -71,10 +69,10 @@ config.i18n = {
     'prefix'         : 'lang_',
     'enabled'        : true,
     'versions'       : {},
-    'expirationTime' : 7 * 24 * 60 * 60 * 1000,
+    'expirationTime' : 7 * 24 * 60 * 60 * 1000
   },
   'detection' : {
-    'caches'            : ['cookie'],
+    'caches'            : [ 'cookie' ],
     'lookupCookie'      : 'lang',
     'lookupQuerystring' : 'lang'
   },
@@ -94,12 +92,11 @@ config.sitemap = {
   'enabled' : true
 };
 
-
 /**
- * Set database configuration
+ * set database configuration
  */
 
-// Set config database object
+// set config database object
 config.database = {
   'plug'   : 'MongoPlug', // can be MongoPlug, RethinkPlug, CouchPlug or ElasticPlug
   'config' : {
@@ -108,31 +105,31 @@ config.database = {
   }
 };
 
+
 /**
- * Set email transport configuration
+ * set email transport configuration
  */
 
-// Set SMTP config email object
+// set SMTP config email object
 config.email = {
   'service' : 'Zoho',
   'auth'    : {
     'user' : 'email@domain.com',
-    'pass' : 'supersecretemailpassword'
+    'pass' : 'superSecretPassword'
   }
 };
 
+
 /**
- * Set included files
+ * set included files
  */
 
-// Set scss imports
-// These are imported into app.min.css by default
+// set scss imports. thes are imported into app.min.css
 config.sass = [
   './node_modules/bootstrap/scss/bootstrap.scss'
 ];
 
-// Set js imports
-// These are imported into app.min.js at the top
+// set js imports. these are imported into app.min.js at the top
 config.js = [
   './node_modules/whatwg-fetch/fetch.js',
   './node_modules/jquery/dist/jquery.min.js',
@@ -142,18 +139,17 @@ config.js = [
 
 
 /**
- * Set application session secret
+ * set application session secret
  */
 
-// Secret for crypto
+// secret for crypto
 config.secret = 'someStrongSecretHash';
 
-// Secret for session
+// set config session object
 config.session = {
-  'key'    : config.domain.split ('.')[0] + '.session.id',
+  'key'    : `${config.domain.split ('.')[0]}.session.id`,
   'cookie' : {
-    // Setting secure to true allows for secure sessions over HTTPS;
-    // if you are not using https then sessions will break
+    // setting secure to true allows for secure sessions over HTTPS; if you are not using https then sessions will break
     'secure'   : false,
     'httpOnly' : false
   }
@@ -161,57 +157,56 @@ config.session = {
 
 
 /**
- * Set default ACL information
+ * set default ACL information
  */
 
-// Set acl object
+// set config ACL object
 config.acl = {
-  // default acl per user
-  // this is added by default to every registered user
+  // default ACL for user. this is added by default to every registered user
   'default' : [
     {
-      name  : 'User',
-      value : [
+      'name'  : 'User',
+      'value' : [
         'user.authenticated'
       ]
     }
   ],
-  // default acl for first user (admin)
-  // this acl is added only to the first user
-  'admin' : [
+
+  // default ACL for first user (admin). this ACL is added only to the first user
+  'admin'   : [
     {
-      name  : 'Admin',
-      value : true // assigning true to value gives access to everything
+      'name'  : 'Admin',
+      'value' : true // assigning true to value gives access to everything
     }
   ]
 };
 
 
 /**
- * Set view import functionality
+ * set view import functionality
  */
 
-// Create view object
+// set config view object
 config.view = {
-  // Modules will be required at the top of riot's tags.min.js
+  'engine'  : 'riot',
   'include' : {
-    // Include alert module
-    'alert'  : 'alert/public/js/bootstrap',
-    // Include socket module
-    'socket' : 'socket/public/js/bootstrap'
+    'alert'  : 'alert/public/js/bootstrap', // include alert module
+    'socket' : 'socket/public/js/bootstrap' // include socket module
   }
 };
 
+
 /**
- * Set misc settings
+ * set misc settings
  */
 
-// Create log level setting
-config.logLevel = 'info';
+// set log level setting
+config.logLevel = config.environment === 'dev' ? 'debug' : 'info';
+
 
 /**
- * Export config
+ * exports config
  *
  * @type {Object}
  */
-module.exports = config;
+exports = module.exports = config;
