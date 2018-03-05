@@ -96,5 +96,8 @@
     "vinyl-source-stream": "^2.0.0",
     "whatwg-fetch": "^2.0.3",
     "winston": "^2.4.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.18.2"
   }
 }
