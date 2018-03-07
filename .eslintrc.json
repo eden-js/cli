@@ -26,13 +26,6 @@
       "error",
       "consistent"
     ],
-    "array-bracket-spacing"            : [
-      "error",
-      "always",
-      {
-        "arraysInArrays" : false
-      }
-    ],
     "array-callback-return"            : [
       "error",
       {
@@ -78,9 +71,6 @@
       "error",
       "never"
     ],
-    "class-methods-use-this"           : [
-      "error"
-    ],
     "comma-dangle"                     : [
       "error",
       "never"
@@ -102,10 +92,6 @@
     ],
     "constructor-super"                : [
       "error"
-    ],
-    "curly"                            : [
-      "error",
-      "all"
     ],
     "dot-location"                     : [
       "error",
