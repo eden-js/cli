@@ -1,4 +1,8 @@
 
+// default spacer
+$spacer : 1rem!default;
+
+// alter navbar admin
 .navbar-admin {
-    margin-bottom : ($spacer * 2);
+  margin-bottom : ($spacer * 2);
 }
