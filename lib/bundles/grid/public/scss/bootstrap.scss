@@ -1,29 +1,33 @@
+
+// set default variables
+$gray-500: #6d6e70!default;
+
 // grid related css
 .grid {
-    // on grid loading
-    &.loading .table {
-        position : relative;
+  // on grid loading
+  &.loading .table {
+    position : relative;
 
-        &:before {
-            // set position
-            content    : '';
-            position   : absolute;
-            background : transparentize($gray-500, 0.5);
+    &:before {
+      // set position
+      content    : '';
+      position   : absolute;
+      background : transparentize($gray-500, 0.5);
 
-            top    : 0;
-            left   : 0;
-            right  : 0;
-            bottom : 0;
-        }
+      top    : 0;
+      left   : 0;
+      right  : 0;
+      bottom : 0;
     }
+  }
 
-    // alter pagination
-    .pagination {
-        margin : 0;
-    }
+  // alter pagination
+  .pagination {
+    margin : 0;
+  }
 
-    // alter pagination stats
-    .pagination-stats {
-        line-height : 32px;
-    }
+  // alter pagination stats
+  .pagination-stats {
+    line-height : 32px;
+  }
 }
