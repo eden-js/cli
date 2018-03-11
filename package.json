@@ -32,7 +32,7 @@
     "cacheman-redis": "^1.1.2",
     "chai": "^4.1.2",
     "chai-http": "^3.0.0",
-    "colors": "^1.1.2",
+    "colors": "^1.2.0",
     "comment-parser": "^0.5.0",
     "connect-redis": "^3.3.3",
     "cookie-parser": "^1.4.3",
@@ -94,7 +94,7 @@
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
     "whatwg-fetch": "^2.0.3",
-    "winston": "^2.4.0"
+    "winston": "^2.4.1"
   },
   "devDependencies": {
     "eslint": "^4.18.2",
