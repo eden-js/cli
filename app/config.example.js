@@ -124,7 +124,7 @@ config.email = {
  * set included files
  */
 
-// set scss imports. thes are imported into app.min.css
+// set scss imports. these are imported into app.min.css
 config.sass = [
   './node_modules/bootstrap/scss/bootstrap.scss'
 ];
