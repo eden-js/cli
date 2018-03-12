@@ -1,6 +1,6 @@
 <menu>
   <ul class="{ opts.classes && opts.classes.main ? opts.classes.main : 'nav' }" if={ this.menu }>
-    <li each={ item, i in getMenu (opts.name) } class={ renderMainClass (item) }>
+    <li each={ item, i in getMenu (opts.name) } class={ renderMainClass (item) } if={ item.acl && item.acl.length ? this.acl.validate (item.acl) : true }>
       <a class={ renderLinkClass (item) } href={ item.route } data-toggle={ hasChildren (item) ? 'dropdown' : false }>
         <i if={ item.icon } class="{ item.icon }" />
         { this.t (item.title) }
@@ -10,6 +10,7 @@
 
   <script>
     // add menu mixin
+    this.mixin ('acl');
     this.mixin ('menu');
     this.mixin ('i18n');
     this.mixin ('mount');
