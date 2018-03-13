@@ -188,6 +188,10 @@
      * @param  {Event} e
      */
     onPage (e) {
+      // prevent scrolling to top
+      e.preventDefault ();
+      e.stopPropagation ();
+      
       // get page
       this.state.page = e.target.dataset.page;
 
@@ -201,7 +205,11 @@
     /**
      * on next click function
      */
-    onLast () {
+    onLast (e) {
+      // prevent scrolling to top
+      e.preventDefault ();
+      e.stopPropagation ();
+      
       // get page
       this.state.page = Math.floor (this.state.total / this.state.rows) + 1;
 
@@ -215,7 +223,11 @@
     /**
      * on previous click function
      */
-    onFirst () {
+    onFirst (e) {
+      // prevent scrolling to top
+      e.preventDefault ();
+      e.stopPropagation ();
+      
       // get page
       this.state.page = 1;
 
@@ -229,7 +241,11 @@
     /**
      * on next click function
      */
-    onNext () {
+    onNext (e) {
+      // prevent scrolling to top
+      e.preventDefault ();
+      e.stopPropagation ();
+      
       // get page
       this.state.page = this.hasNext () ? (this.state.page + 1) : this.page;
 
@@ -243,7 +259,11 @@
     /**
      * on previous click function
      */
-    onPrev () {
+    onPrev (e) {
+      // prevent scrolling to top
+      e.preventDefault ();
+      e.stopPropagation ();
+      
       // get page
       this.state.page = this.hasPrev () ? (this.state.page - 1) : 1;
 
@@ -260,6 +280,10 @@
      * @param {Event} e
      */
     onSort (e) {
+      // prevent scrolling to top
+      e.preventDefault ();
+      e.stopPropagation ();
+      
       // get link
       let th = jQuery (e.target).is ('th') ? jQuery (e.target) : jQuery (e.target).closest ('th');
 
