@@ -86,7 +86,7 @@
     "response-time": "^2.3.2",
     "riot": "^3.9.0",
     "run-sequence": "^2.2.1",
-    "sharp": "^0.20.0",
+    "sharp": "^0.20.1",
     "sitemap": "^1.13.0",
     "socket.io": "^2.0.4",
     "socket.io-client": "^2.0.4",
