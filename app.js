@@ -22,6 +22,7 @@ global.envrionment = process.env.NODE_ENV || config.get ('environment');
  * build app class
  */
 class app {
+
   /**
    * construct app class
    */
@@ -110,12 +111,12 @@ class app {
   logger () {
     // set logger
     this._logger = new winston.Logger ({
-      level      : config.get ('logLevel')  || 'info',
-      transports : [
+      'level'      : config.get ('logLevel')  || 'info',
+      'transports' : [
         new (winston.transports.Console) ({
-          colorize  : true,
-          formatter : log,
-          timestamp : true
+          'colorize'  : true,
+          'formatter' : log,
+          'timestamp' : true
         })
       ]
     });
