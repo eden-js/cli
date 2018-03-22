@@ -5,7 +5,10 @@
         <div data-is="grid-filter-{ f.type || 'text' }" filter={ f } values={ getState ().filter } on-filter={ onFilter } />
       </div>
     </div>
-    <table class={ tableClass () }>
+    <div if={ this.state.type !== 'columns' } class="data">
+      <yield from="data" />
+    </div>
+    <table if={ this.state.type === 'columns' } class={ tableClass () }>
       <thead>
         <tr>
           <th each={ column, i in this.state.columns } data-column={ i } width={ column.width || false }>
@@ -19,7 +22,7 @@
       <tbody>
         <tr each={ data, i in this.state.data }>
           <td each={ column, a in getState ().columns }>
-            <raw html={ data[column.id] } />
+            <raw data={ { 'html' : data[column.id] } } />
           </td>
         </tr>
       </tbody>
@@ -64,12 +67,15 @@
 
   <script>
     // do mixins
+    this.mixin ('live');
     this.mixin ('i18n');
 
     // set variables
     this.state = {
       'way'     : opts.grid && opts.grid.way     ? opts.grid.way     : false,
       'rows'    : opts.grid && opts.grid.rows    ? opts.grid.rows    : 20,
+      'live'    : opts.grid && opts.grid.live    ? opts.grid.live    : false,
+      'type'    : opts.grid && opts.grid.type    ? opts.grid.type    : 'columns',
       'data'    : opts.grid && opts.grid.data    ? opts.grid.data    : [],
       'page'    : opts.grid && opts.grid.page    ? opts.grid.page    : 1,
       'sort'    : opts.grid && opts.grid.sort    ? opts.grid.sort    : false,
@@ -79,6 +85,12 @@
       'filters' : opts.grid && opts.grid.filters ? opts.grid.filters : [],
       'columns' : opts.grid && opts.grid.columns ? opts.grid.columns : []
     };
+
+    // map data
+    if (this.state.live) this.state.data = this.state.data.map ((line) => {
+      // set data
+      return this.live (this.state.type, line);
+    });
 
     // set pages
     this.pages = [];
@@ -191,7 +203,7 @@
       // prevent scrolling to top
       e.preventDefault ();
       e.stopPropagation ();
-      
+
       // get page
       this.state.page = e.target.dataset.page;
 
@@ -209,7 +221,7 @@
       // prevent scrolling to top
       e.preventDefault ();
       e.stopPropagation ();
-      
+
       // get page
       this.state.page = Math.floor (this.state.total / this.state.rows) + 1;
 
@@ -227,7 +239,7 @@
       // prevent scrolling to top
       e.preventDefault ();
       e.stopPropagation ();
-      
+
       // get page
       this.state.page = 1;
 
@@ -245,7 +257,7 @@
       // prevent scrolling to top
       e.preventDefault ();
       e.stopPropagation ();
-      
+
       // get page
       this.state.page = this.hasNext () ? (this.state.page + 1) : this.page;
 
@@ -263,7 +275,7 @@
       // prevent scrolling to top
       e.preventDefault ();
       e.stopPropagation ();
-      
+
       // get page
       this.state.page = this.hasPrev () ? (this.state.page - 1) : 1;
 
@@ -283,7 +295,7 @@
       // prevent scrolling to top
       e.preventDefault ();
       e.stopPropagation ();
-      
+
       // get link
       let th = jQuery (e.target).is ('th') ? jQuery (e.target) : jQuery (e.target).closest ('th');
 
@@ -363,10 +375,19 @@
       // load json
       let data = await res.json ();
 
+      // check if live
+      if (this.state.live) this.trigger ('deafen');
+
       // loop data
       for (var key in data) {
         this.state[key] = data[key];
       }
+
+      // map data
+      if (this.state.live) this.state.data = this.state.data.map ((line) => {
+        // set data
+        return this.live (this.state.type, line);
+      });
 
       // set loading
       this.loading = false;
@@ -401,6 +422,7 @@
         'way'     : opts.grid && opts.grid.way     ? opts.grid.way     : false,
         'rows'    : opts.grid && opts.grid.rows    ? opts.grid.rows    : 20,
         'data'    : opts.grid && opts.grid.data    ? opts.grid.data    : [],
+        'type'    : opts.grid && opts.grid.type    ? opts.grid.type    : 'columns',
         'page'    : opts.grid && opts.grid.page    ? opts.grid.page    : 1,
         'sort'    : opts.grid && opts.grid.sort    ? opts.grid.sort    : false,
         'route'   : opts.grid && opts.grid.route   ? opts.grid.route   : '',
@@ -409,6 +431,12 @@
         'filters' : opts.grid && opts.grid.filters ? opts.grid.filters : [],
         'columns' : opts.grid && opts.grid.columns ? opts.grid.columns : []
       };
+
+      // map data
+      if (this.state.live) this.state.data = this.state.data.map ((line) => {
+        // set data
+        return this.live (this.state.type, line);
+      });
 
       // set pages
       this.pages = [];

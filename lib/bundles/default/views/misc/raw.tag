@@ -1,4 +1,5 @@
 <raw>
+
   <script>
 
     /**
@@ -7,7 +8,7 @@
      * @type {Event} 'update'
      */
     this.on ('mount', () => {
-      this.root.innerHTML = opts.html || '';
+      if (this.root) this.root.innerHTML = ((opts.data || {}).html || opts.html || '').toString ();
     });
 
     /**
@@ -16,7 +17,7 @@
      * @type {Event} 'update'
      */
     this.on ('update', () => {
-      this.root.innerHTML = opts.html || '';
+      if (this.root) this.root.innerHTML = ((opts.data || {}).html || opts.html || '').toString ();
     });
   </script>
 </raw>
