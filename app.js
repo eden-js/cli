@@ -1,8 +1,5 @@
 #!/usr/bin/env node
 
-// use strict
-'use strict';
-
 // require environment
 require ('./lib/env');
 
