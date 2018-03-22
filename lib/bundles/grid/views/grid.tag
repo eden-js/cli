@@ -405,18 +405,6 @@
       // check frontend
       if (!this.eden.frontend) return;
 
-      // set pages
-      this.setPages ();
-
-      // trigger mount on parent mount
-      if (!this.onCheckMount) {
-        // flag onCheckMount
-        this.onCheckMount = true;
-
-        // add parent mount check
-        this.parent.on ('mount', () => this.trigger ('mount'));
-      }
-
       // set variables
       this.state = {
         'way'     : opts.grid && opts.grid.way     ? opts.grid.way     : false,
@@ -425,6 +413,7 @@
         'type'    : opts.grid && opts.grid.type    ? opts.grid.type    : 'columns',
         'page'    : opts.grid && opts.grid.page    ? opts.grid.page    : 1,
         'sort'    : opts.grid && opts.grid.sort    ? opts.grid.sort    : false,
+        'live'    : opts.grid && opts.grid.live    ? opts.grid.live    : false,
         'route'   : opts.grid && opts.grid.route   ? opts.grid.route   : '',
         'total'   : opts.grid && opts.grid.total   ? opts.grid.total   : 0,
         'filter'  : opts.grid && opts.grid.filter  ? opts.grid.filter  : {},
