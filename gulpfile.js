@@ -1,12 +1,6 @@
-/**
- * Created by Awesome on 1/30/2016.
- */
-
-// use strict
-'use strict';
 
 // require environment
-require ('./lib/env')
+require ('./lib/env');
 
 // require dependencies
 const fs       = require ('fs-extra');
@@ -23,6 +17,7 @@ const parser = require ('lib/utilities/parser');
  * build loader class
  */
 class loader {
+
   /**
    * construct gulp class
    */
@@ -150,8 +145,8 @@ class loader {
   /**
    * writes config file
    *
-   * @param name
-   * @param obj
+   * @param {String} name
+   * @param {Object} obj
    */
   write (name, obj) {
     // write file
@@ -164,8 +159,8 @@ class loader {
   /**
    * merges two objects
    *
-   * @param obj1
-   * @param obj2
+   * @param {Object} obj1
+   * @param {Object} obj2
    *
    * @returns {*}
    */
@@ -173,7 +168,7 @@ class loader {
     // loop object
     for (var p in obj2) {
       try {
-        // Property in destination object set; update its value.
+        // property in destination object set; update its value.
         if (obj2[p].constructor === Object) {
           obj1[p] = this.merge (obj1[p], obj2[p]);
         } else if (obj2[p].constructor === Array) {
@@ -182,7 +177,7 @@ class loader {
           obj1[p] = obj2[p];
         }
       } catch (e) {
-        // Property in destination object not set; create it and set its value.
+        // property in destination object not set; create it and set its value.
         obj1[p] = obj2[p];
       }
     }
@@ -222,10 +217,14 @@ class loader {
    *
    * @param {Object} task
    * @private
+   *
+   * @returns {*}
    */
   _task (task) {
     // create task
     let Task = require (task.file);
+
+    // new task
     Task = new Task (this);
 
     // create gulp task
@@ -256,6 +255,8 @@ class loader {
     gulp.task (task.task, (cb) => {
       // push cb
       let newArgs = args.slice ();
+
+      // push new callback
       newArgs.push (cb);
 
       // run gulp sequence
