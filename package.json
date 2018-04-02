@@ -39,7 +39,7 @@
     "del": "^3.0.0",
     "dot-prop": "^4.2.0",
     "dot-prop-immutable": "^1.4.0",
-    "edenjs-model": "^1.11.4",
+    "edenjs-model": "^1.11.5",
     "escape-string-regexp": "^1.0.5",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
