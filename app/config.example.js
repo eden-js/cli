@@ -83,8 +83,8 @@ config.i18n = {
 };
 
 // add media dir
-config.media = {
-  'dir' : 'media'
+config.asset = {
+  'migrate' : false // migrate media
 };
 
 // create sitemap
