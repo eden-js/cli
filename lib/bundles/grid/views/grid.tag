@@ -376,7 +376,7 @@
       let data = await res.json ();
 
       // check if live
-      if (this.state.live) this.trigger ('deafen');
+      if (this.state.live) this.emit ('deafen');
 
       // loop data
       for (var key in data) {
