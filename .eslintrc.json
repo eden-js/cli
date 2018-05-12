@@ -182,7 +182,7 @@
     "new-cap"                          : [
       "error",
       {
-        "newIsCap"   : false,
+        "newIsCap"   : true,
         "capIsNew"   : false,
         "properties" : false
       }
