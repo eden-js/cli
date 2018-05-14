@@ -1,61 +1,61 @@
 #!/usr/bin/env node
 
-// require environment
+// Require environment
 require ('./lib/env');
 
-// require dependencies
+// Require dependencies
 const os      = require ('os');
 const cluster = require ('cluster');
 const winston = require ('winston');
 
-// require local dependencies
+// Require local dependencies
 const log    = require ('lib/utilities/log');
 const config = require ('config');
 
-// set global environment
+// Set global environment
 global.envrionment = process.env.NODE_ENV || config.get ('environment');
 
 /**
- * build app class
+ * Create App class
  */
-class app {
+class App {
 
   /**
-   * construct app class
+   * Construct App class
    */
   constructor () {
-    // bind private variables
+    // Bind private variables
     this._master  = cluster.isMaster;
     this._logger  = false;
     this._workers = {};
 
-    // bind variables
+    // Bind public methods
     this.run      = this.run.bind (this);
     this.exit     = this.exit.bind (this);
     this.spawn    = this.spawn.bind (this);
     this.logger   = this.logger.bind (this);
     this.children = this.children.bind (this);
 
-    // build logger
+    // Build logger
     this.logger ();
 
-    // spawn children
+    // Spawn children
     this._master ? this.children () : this.run ();
   }
 
   /**
-   * runs edenJS
+   * Runs Eden
    */
   run () {
-    // load eden
-    let eden = require ('lib/eden');
+    // Load eden
+    const eden = require ('lib/eden');
 
-    // log spawning threads
-    this._logger.log ('info', 'spawned new ' + ((process.env.express === 'true') ? 'express' : 'compute') + ' thread', {
-      'class' : 'eden'
+    // Log spawning threads
+    this._logger.log ('info', 'Spawned new ' + ((process.env.express === 'true') ? 'Express' : 'Compute') + ' thread', {
+      'class' : 'Eden'
     });
 
-    // run single instance
+    // Run single Eden instance
     eden.start ({
       'id'      : process.env.id,
       'port'    : parseInt (process.env.port),
@@ -66,51 +66,51 @@ class app {
   }
 
   /**
-   * on cluster worker exit
+   * On cluster worker exit
    *
    * @param {Object} worker
    */
   exit (worker) {
-    // set id
-    let id      = worker.process.env.id;
-    let express = worker.process.env.express === 'true';
+    // Set id
+    const id      = worker.process.env.id;
+    const express = worker.process.env.express === 'true';
 
-    // spawn new thread
+    // Spawn new thread
     this.spawn (parseInt (id), express, (parseInt (config.get ('port')) + parseInt (id)));
   }
 
   /**
-   * spawns new app thread
+   * Spawns new App thread
    *
-   * @param {Integer} id
+   * @param {Number}  id
    * @param {Boolean} express
-   * @param {Mixed}   port
+   * @param {Number}  port
    */
   spawn (id, express, port) {
-    // clone environment
-    let env = JSON.parse (JSON.stringify (process.env));
+    // Clone environment
+    const env = JSON.parse (JSON.stringify (process.env));
 
-    // set thread id
+    // Set thread id
     env.id      = id;
     env.express = express ? 'true' : 'false';
 
-    // check port
+    // Check port
     if (port) env.port = port;
 
-    // fork new thread
+    // Fork new thread
     this._workers[(express ? 'express' : 'compute') + ':' + id] = cluster.fork (env);
     this._workers[(express ? 'express' : 'compute') + ':' + id].process.env = env;
   }
 
   /**
-   * builds logger
+   * Builds logger
    */
   logger () {
-    // set logger
+    // Set logger
     this._logger = new winston.Logger ({
       'level'      : config.get ('logLevel')  || 'info',
       'transports' : [
-        new (winston.transports.Console) ({
+        new winston.transports.Console ({
           'colorize'  : true,
           'formatter' : log,
           'timestamp' : true
@@ -120,50 +120,50 @@ class app {
   }
 
   /**
-   * spawns child processes
+   * Spawns child processes
    */
   children () {
-    // run in production
-    this._logger.log ('info', 'Running edenJS', {
-      'class' : 'eden'
+    // Log running Eden
+    this._logger.log ('info', 'Running Eden', {
+      'class' : 'Eden'
     });
 
-    // count frontend threads
-    let expressThreads = config.get ('expressThreads') || config.get ('expressThreads') === 0 ? config.get ('expressThreads') : os.cpus ().length;
+    // Count frontend express threads
+    const expressThreads = config.get ('expressThreads') || config.get ('expressThreads') === 0 ? config.get ('expressThreads') : os.cpus ().length;
 
-    // count backend threads
-    let computeThreads = config.get ('computeThreads') || config.get ('computeThreads') === 0 ? config.get ('computeThreads') : 1;
+    // Count backend compute threads
+    const computeThreads = config.get ('computeThreads') || config.get ('computeThreads') === 0 ? config.get ('computeThreads') : 1;
 
-    // log spawning threads
-    this._logger.log ('info', 'Spawning ' + expressThreads + ' eden express thread' + (expressThreads > 1 ? 's' : ''), {
-      'class' : 'eden'
+    // Log spawning Express threads
+    this._logger.log ('info', 'Spawning ' + expressThreads + ' Eden Express thread' + (expressThreads > 1 ? 's' : ''), {
+      'class' : 'Eden'
     });
 
-    // loop express threads
-    for (var a = 0; a < expressThreads; a++) {
-      // spawn new thread
+    // Loop Express threads
+    for (let a = 0; a < expressThreads; a++) {
+      // Spawn new thread
       this.spawn (a, true, (parseInt (config.get ('port')) + a));
     }
 
-    // log spawning threads
-    this._logger.log ('info', 'Spawning ' + computeThreads + ' eden compute thread' + (computeThreads > 1 ? 's' : ''), {
-      'class' : 'eden'
+    // Log spawning Compute threads
+    this._logger.log ('info', 'Spawning ' + computeThreads + ' Eden Compute thread' + (computeThreads > 1 ? 's' : ''), {
+      'class' : 'Eden'
     });
 
-    // loop compute threads
-    for (var b = 0; b < computeThreads; b++) {
-      // spawn new thread
+    // Loop Compute threads
+    for (let b = 0; b < computeThreads; b++) {
+      // Spawn new thread
       this.spawn (b, false);
     }
 
-    // on cluster exit
+    // On cluster exit
     cluster.on ('exit', this.exit);
   }
 }
 
 /**
- * create eden app
+ * Export new Eden App instance
  *
- * @type {app}
+ * @type {App}
  */
-module.exports = new app ();
+module.exports = new App ();

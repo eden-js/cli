@@ -1,18 +1,16 @@
 <raw>
-
   <script>
-
     /**
-     * update raw html on create
+     * Update raw html on mount
      *
-     * @type {Event} 'update'
+     * @type {Event} 'mount'
      */
     this.on ('mount', () => {
       if (this.root) this.root.innerHTML = ((opts.data || {}).html || opts.html || '').toString ();
     });
 
     /**
-     * update raw html on create
+     * Update raw html on update
      *
      * @type {Event} 'update'
      */

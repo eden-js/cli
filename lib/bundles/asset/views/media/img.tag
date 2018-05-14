@@ -2,8 +2,7 @@
   <img src={ this.media.url (opts.image, opts.label) || opts.fallback } class={ opts.class || opts.classes } />
 
   <script>
-    // do misins
+    // Add mixins
     this.mixin ('media');
-    
   </script>
 </media-img>

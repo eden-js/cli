@@ -1,13 +1,12 @@
+// Default spacer
+$spacer : 1rem !default;
 
-// default spacer
-$spacer : 1rem!default;
-
-// edit toast
+// Eden toast
 .eden-toast {
   z-index  : 9999;
   position : fixed;
 
-  // alter positions
+  // Alter positions
   &.eden-toast-top-left {
     top  : $spacer;
     left : $spacer;

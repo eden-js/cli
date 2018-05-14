@@ -3,31 +3,31 @@
     <label if={ opts.filter.title }>
       { opts.filter.title }
     </label>
+
     <input class={ 'form-control' : true } type="text" value={ filterValue () } onchange={ onFilter } required />
   </div>
   <script>
 
     /**
-     * returns filter value
+     * Returns filter value
      *
      * @param  {Object} filter
      *
      * @return {String}
      */
     filterValue () {
-      // return filter value
+      // Return filter value
       return (opts.values || {})[opts.filter.id] || '';
     }
 
     /**
-     * on filter function
+     * On filter function
      *
      * @param  {Event} e
      */
     onFilter (e) {
-      // send to opts
+      // Send to opts
       if (opts.onFilter) opts.onFilter (opts.filter, e.target.value);
     }
-
   </script>
 </grid-filter-text>

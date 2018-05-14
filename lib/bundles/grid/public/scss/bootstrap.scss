@@ -1,15 +1,14 @@
-
-// set default variables
+// Set default variables
 $gray-500: #6d6e70!default;
 
-// grid related css
+// Grid related css
 .grid {
-  // on grid loading
+  // On grid loading
   &.loading .table {
     position : relative;
 
     &:before {
-      // set position
+      // Set position
       content    : '';
       position   : absolute;
       background : transparentize($gray-500, 0.5);
@@ -21,12 +20,12 @@ $gray-500: #6d6e70!default;
     }
   }
 
-  // alter pagination
+  // Alter pagination
   .pagination {
     margin : 0;
   }
 
-  // alter pagination stats
+  // Alter pagination stats
   .pagination-stats {
     line-height : 32px;
   }

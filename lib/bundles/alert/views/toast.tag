@@ -9,10 +9,10 @@
   </div>
 
 	<script>
-    // do mixins
+    // Add mixins
     this.mixin ('alert');
 
-    // set positions
+    // Set positions
     this.positions = [
       'top-left',
       'top-right',
@@ -23,57 +23,59 @@
     ];
 
     /**
-     * returns alerts by placement
+     * Returns alerts by placement
      *
      * @param  {String} placement
      *
      * @return {Array}
      */
     alerts (position) {
-      // set alerts
-      let alerts = [];
+      // Set alerts
+      const alerts = [];
 
-      // set placement
-      for (var i = 0; i < this.alert.alerts.length; i++) {
-        // check placement
+      // Loop alerts
+      for (let i = 0; i < this.alert.alerts.length; i++) {
+        // Check placement
         if (this.alert.alerts[i].position === position) alerts.push (this.alert.alerts[i]);
       }
 
-      // return alerts
+      // Return alerts
       return alerts;
     }
 
     /**
-     * on dismiss function
+     * On dismiss function
      *
-     * @param  {Event} e
+     * @param {Event} e
      */
     onDismiss (e) {
-      // prevent default
+      // Prevent default
       e.preventDefault ();
 
-      // get target
-      let target = jQuery (e.target).is ('button') ? jQuery (e.target) : jQuery (e.target).closest ('button');
+      // Set target
+      const target = jQuery (e.target).is ('button') ? jQuery (e.target) : jQuery (e.target).closest ('button');
 
-      // let alert
-      let id    = target.attr ('data-id');
+      // Set alert id
+      const id = target.attr ('data-id');
+
+      // Set alert
       let alert = false;
 
-      // set placement
-      for (var i = 0; i < this.alert.alerts.length; i++) {
-        // check id
+      // Loop alerts
+      for (let i = 0; i < this.alert.alerts.length; i++) {
+        // Check alert id
         if (this.alert.alerts[i].id === id) {
-          // set alert
+          // Set alert
           alert = this.alert.alerts[i];
         }
       }
 
-      // check alert
+      // Check alert
       if (alert) {
-        // clear timeout
+        // Clear timeout
         clearTimeout (alert.timeout);
 
-        // close
+        // Close alert
         alert.close ();
       }
     }

@@ -19,11 +19,11 @@
   <toast />
 
   <script>
-    // add layout mixin
+    // Add mixins
     this.mixin ('config');
     this.mixin ('layout');
 
-    // set menu class object
+    // Set menu class object
     this.menuClass = {
       'main' : 'navbar-nav'
     };

@@ -32,14 +32,16 @@
   <toast />
 
   <script>
-    // add layout mixin
+    // Add miins
     this.mixin ('config');
     this.mixin ('layout');
 
-    // set menu class object
+    // Set menu class object
     this.menuClass = {
       'main' : 'navbar-nav'
     };
+
+    // Set admin menu class object
     this.adminMenuClass = {
       'main' : 'nav nav-pills flex-column',
       'item' : 'nav-item',

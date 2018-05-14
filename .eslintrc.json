@@ -69,7 +69,10 @@
     ],
     "capitalized-comments"             : [
       "error",
-      "never"
+      "always",
+      {
+        "ignoreConsecutiveComments" : true
+      }
     ],
     "comma-dangle"                     : [
       "error",
@@ -208,6 +211,9 @@
           "warn"
         ]
       }
+    ],
+    "no-var": [
+      "error"
     ],
     "nonblock-statement-body-position" : [
       "error",

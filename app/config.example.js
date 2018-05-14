@@ -1,5 +1,5 @@
 /**
- * create initial config object
+ * Create initial config object
  *
  * @type {Object}
  */
@@ -7,43 +7,43 @@ const config = {};
 
 
 /**
- * set application page information
+ * Set application page information
  */
 
-// set application title
+// Set application title
 config.title = 'EdenJS';
 
-// set application domain
+// Set application domain
 config.domain = 'edenjs.com';
 
-// set application version (recommend: semver)
+// Set application version (recommend: semver)
 config.version = '0.1.0';
 
-// set logo
+// Set logo
 config.logo = '/public/assets/images/logo.svg';
 
 
 /**
- * set application server configuration
+ * Set application server configuration
  */
 
-// set app environment
+// Set app environment
 config.environment = 'dev';
 
-// set starting port
+// Set starting port
 config.port = 1337;
 
-// set server host
+// Set server host
 config.host = '0.0.0.0';
 
-// set amount of express threads to run. setting this as null will count your CPU cores
+// Set amount of express threads to run. Setting this as null will count your CPU cores
 config.expressThreads = 1;
 
-// set amount of compute threads to run. setting this as null will use 1 compute thread. compute threads are threads
+// Set amount of compute threads to run. Setting this as null will use 1 compute thread. Compute threads are threads
 // used for backend processes they do not run the express application, but do run all daemons
 config.computeThreads = 1;
 
-// websocket configuration
+// Websocket configuration
 config.socket = {
   'url'    : `//${config.domain}`,
   'params' : {
@@ -51,19 +51,19 @@ config.socket = {
   }
 };
 
-// redis configuration
+// Redis configuration
 config.redis = {
   'host' : 'localhost',
   'port' : 6379
 };
 
-// lock configuration
+// Lock configuration
 config.lock = {
   'maxPending' : 1000000
 };
 
 
-// i18n configuration
+// I18n configuration
 config.i18n = {
   'cache' : {
     'prefix'         : 'lang_',
@@ -82,23 +82,23 @@ config.i18n = {
   'lowerCaseLng' : true
 };
 
-// add media dir
+// Add media dir
 config.asset = {
-  'migrate' : false // migrate media
+  'migrate' : false // Migrate media
 };
 
-// create sitemap
+// Create sitemap
 config.sitemap = {
   'enabled' : true
 };
 
 /**
- * set database configuration
+ * Set database configuration
  */
 
-// set config database object
+// Set config database object
 config.database = {
-  'plug'   : 'MongoPlug', // can be MongoPlug, RethinkPlug, CouchPlug or ElasticPlug
+  'plug'   : 'MongoPlug', // Can be MongoPlug, RethinkPlug, CouchPlug or ElasticPlug
   'config' : {
     'db'  : config.domain.split ('.')[0],
     'url' : 'mongodb://localhost:27017'
@@ -107,10 +107,10 @@ config.database = {
 
 
 /**
- * set email transport configuration
+ * Set email transport configuration
  */
 
-// set SMTP config email object
+// Set SMTP config email object
 config.email = {
   'service' : 'Zoho',
   'auth'    : {
@@ -121,15 +121,15 @@ config.email = {
 
 
 /**
- * set included files
+ * Set included files
  */
 
-// set scss imports. these are imported into app.min.css
+// Set scss imports. These are imported into app.min.css
 config.sass = [
   './node_modules/bootstrap/scss/bootstrap.scss'
 ];
 
-// set js imports. these are imported into app.min.js at the top
+// Set js imports. These are imported into app.min.js at the top
 config.js = [
   './node_modules/whatwg-fetch/fetch.js',
   './node_modules/jquery/dist/jquery.min.js',
@@ -139,17 +139,17 @@ config.js = [
 
 
 /**
- * set application session secret
+ * Set application session secret
  */
 
-// secret for crypto
+// Secret for crypto
 config.secret = 'someStrongSecretHash';
 
-// set config session object
+// Set config session object
 config.session = {
   'key'    : `${config.domain.split ('.')[0]}.session.id`,
   'cookie' : {
-    // setting secure to true allows for secure sessions over HTTPS; if you are not using https then sessions will break
+    // Setting secure to true allows for secure sessions over HTTPS; if you are not using https then sessions will break
     'secure'   : false,
     'httpOnly' : false
   }
@@ -157,12 +157,12 @@ config.session = {
 
 
 /**
- * set default ACL information
+ * Set default ACL information
  */
 
-// set config ACL object
+// Set config ACL object
 config.acl = {
-  // default ACL for user. this is added by default to every registered user
+  // Default ACL for user. This is added by default to every registered user
   'default' : [
     {
       'name'  : 'User',
@@ -172,40 +172,40 @@ config.acl = {
     }
   ],
 
-  // default ACL for first user (admin). this ACL is added only to the first user
+  // Default ACL for first user (admin). This ACL is added only to the first user
   'admin'   : [
     {
       'name'  : 'Admin',
-      'value' : true // assigning true to value gives access to everything
+      'value' : true // Assigning true to value gives access to everything
     }
   ]
 };
 
 
 /**
- * set view import functionality
+ * Set view import functionality
  */
 
-// set config view object
+// Set config view object
 config.view = {
   'engine'  : 'riot',
   'include' : {
-    'alert'  : 'alert/public/js/bootstrap', // include alert module
-    'socket' : 'socket/public/js/bootstrap' // include socket module
+    'alert'  : 'alert/public/js/bootstrap', // Include alert module
+    'socket' : 'socket/public/js/bootstrap' // Include socket module
   }
 };
 
 
 /**
- * set misc settings
+ * Set misc settings
  */
 
-// set log level setting
+// Set log level setting
 config.logLevel = config.environment === 'dev' ? 'debug' : 'info';
 
 
 /**
- * exports config
+ * Exports config object
  *
  * @type {Object}
  */
