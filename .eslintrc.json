@@ -109,7 +109,7 @@
     ],
     "func-call-spacing"                : [
       "error",
-      "always"
+      "never"
     ],
     "func-names"                       : [
       "error",
@@ -212,7 +212,7 @@
         ]
       }
     ],
-    "no-var": [
+    "no-var"                           : [
       "error"
     ],
     "nonblock-statement-body-position" : [
@@ -222,7 +222,12 @@
     "object-curly-newline"             : [
       "error",
       {
-        "minProperties" : 1
+        "ObjectExpression"  : {
+          "multiline"  : true,
+          "consistent" : true
+        },
+        "ImportDeclaration" : "never",
+        "ExportDeclaration" : "never"
       }
     ],
     "object-curly-spacing"             : [

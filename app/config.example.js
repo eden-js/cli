@@ -65,14 +65,14 @@ config.lock = {
 
 // I18n configuration
 config.i18n = {
-  'cache' : {
+  'cache'        : {
     'prefix'         : 'lang_',
     'enabled'        : true,
     'versions'       : {},
     'expirationTime' : 7 * 24 * 60 * 60 * 1000
   },
-  'detection' : {
-    'caches'            : [ 'cookie' ],
+  'detection'    : {
+    'caches'            : ['cookie'],
     'lookupCookie'      : 'lang',
     'lookupQuerystring' : 'lang'
   },
@@ -100,7 +100,7 @@ config.sitemap = {
 config.database = {
   'plug'   : 'MongoPlug', // Can be MongoPlug, RethinkPlug, CouchPlug or ElasticPlug
   'config' : {
-    'db'  : config.domain.split ('.')[0],
+    'db'  : config.domain.split('.')[0],
     'url' : 'mongodb://localhost:27017'
   }
 };
@@ -147,7 +147,7 @@ config.secret = 'someStrongSecretHash';
 
 // Set config session object
 config.session = {
-  'key'    : `${config.domain.split ('.')[0]}.session.id`,
+  'key'    : `${config.domain.split('.')[0]}.session.id`,
   'cookie' : {
     // Setting secure to true allows for secure sessions over HTTPS; if you are not using https then sessions will break
     'secure'   : false,
@@ -173,7 +173,7 @@ config.acl = {
   ],
 
   // Default ACL for first user (admin). This ACL is added only to the first user
-  'admin'   : [
+  'admin' : [
     {
       'name'  : 'Admin',
       'value' : true // Assigning true to value gives access to everything
