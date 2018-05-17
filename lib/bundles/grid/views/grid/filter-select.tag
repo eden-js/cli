@@ -15,9 +15,9 @@
     /**
      * Returns filter value
      *
-     * @param  {Object} filter
+     * @param  {object} filter
      *
-     * @return {String}
+     * @return {string}
      */
     filterValue () {
       // Return filter value
@@ -27,11 +27,11 @@
     /**
      * On filter function
      *
-     * @param  {Event} e
+     * @param {Event} e
      */
     onFilter (e) {
       // Send to opts
-      if (opts.onFilter) opts.onFilter (opts.filter, e.target.value);
+      if (opts.onFilter) opts.onFilter(opts.filter, e.target.value);
     }
   </script>
 </grid-filter-select>

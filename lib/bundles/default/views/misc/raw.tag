@@ -5,7 +5,7 @@
      *
      * @type {Event} 'mount'
      */
-    this.on ('mount', () => {
+    this.on('mount', () => {
       if (this.root) this.root.innerHTML = ((opts.data || {}).html || opts.html || '').toString ();
     });
 
@@ -14,7 +14,7 @@
      *
      * @type {Event} 'update'
      */
-    this.on ('update', () => {
+    this.on('update', () => {
       if (this.root) this.root.innerHTML = ((opts.data || {}).html || opts.html || '').toString ();
     });
   </script>

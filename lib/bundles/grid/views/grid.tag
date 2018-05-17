@@ -2,26 +2,26 @@
   <div class={ 'grid' : true, 'loading' : !this.loaded || this.loading }>
     <div class="row filters" if={ this.state.filters.length }>
       <div class="col-md-3 filter form-group" each={ f, i in this.state.filters }>
-        <div data-is="grid-filter-{ f.type || 'text' }" filter={ f } values={ getState ().filter } on-filter={ onFilter } />
+        <div data-is="grid-filter-{ f.type || 'text' }" filter={ f } values={ getState().filter } on-filter={ onFilter } />
       </div>
     </div>
     <div if={ this.state.type !== 'columns' } class="data">
       <yield from="data" />
     </div>
-    <table if={ this.state.type === 'columns' } class={ tableClass () }>
+    <table if={ this.state.type === 'columns' } class={ tableClass() }>
       <thead>
         <tr>
           <th each={ column, i in this.state.columns } data-column={ i } width={ column.width || false }>
-            <a href="#!" if={ column.sort } class={ 'pull-right sort' : true, 'text-primary' : isSort (column), 'text-muted' : !isSort (column) } onclick={ onSort }>
-              <i class={ 'fa mr-2' : true, 'fa-sort' : getState ().way === false || !isSort (column), 'fa-sort-up' : getState ().way === 1 && isSort (column), 'fa-sort-down' : getState ().way === -1 && isSort (column) } />
+            <a href="#!" if={ column.sort } class={ 'pull-right sort' : true, 'text-primary' : isSort(column), 'text-muted' : !isSort(column) } onclick={ onSort }>
+              <i class={ 'fa mr-2' : true, 'fa-sort' : getState().way === false || !isSort(column), 'fa-sort-up' : getState().way === 1 && isSort(column), 'fa-sort-down' : getState().way === -1 && isSort(column) } />
             </a>
-            { this.t (column.title) }
+            { this.t(column.title) }
           </th>
         </tr>
       </thead>
       <tbody>
         <tr each={ data, i in this.state.data }>
-          <td each={ column, a in getState ().columns }>
+          <td each={ column, a in getState().columns }>
             <raw data={ { 'html' : data[column.id] } } />
           </td>
         </tr>
@@ -30,33 +30,37 @@
     <div class="row">
       <div class="col-sm-6">
         <small class="pagination-stats text-muted">
-          { this.t ('Showing') } { (this.state.page - 1) * this.state.rows } - { (this.state.page * this.state.rows) > this.state.total ? this.state.total : (this.state.page * this.state.rows) } { this.t ('of') } { this.state.total }
+          { this.t('Showing') } { (this.state.page - 1) * this.state.rows } - { (this.state.page * this.state.rows) > this.state.total ? this.state.total : (this.state.page * this.state.rows) } { this.t('of') } { this.state.total }
         </small>
       </div>
       <div class="col-sm-6">
         <nav aria-label="Page navigation" class="float-sm-right">
           <ul class="pagination pagination-sm">
-            <li class={ 'page-item' : true, 'disabled' : !hasPrev () }>
-              <a class="page-link" href="#!" aria-label={ this.t ('First') } onclick={ onFirst }>
-                { this.t ('First') }
+            <li class={ 'page-item' : true, 'disabled' : !hasPrev() }>
+              <a class="page-link" href="#!" aria-label={ this.t('First') } onclick={ onFirst }>
+                { this.t('First') }
               </a>
             </li>
-            <li class={ 'page-item' : true, 'disabled' : !hasPrev () }>
-              <a class="page-link" href="#!" aria-label={ this.t ('Previous') } onclick={ onPrev }>
-                { this.t ('Previous') }
+
+            <li class={ 'page-item' : true, 'disabled' : !hasPrev() }>
+              <a class="page-link" href="#!" aria-label={ this.t('Previous') } onclick={ onPrev }>
+                { this.t('Previous') }
               </a>
             </li>
+
             <li each={ p, i in this.pages } class={ 'page-item' : true, 'active' : this.state.page === p }>
               <a class="page-link" href="#!" data-page={ p } onclick={ onPage }>{ p }</a>
             </li>
-            <li class={ 'page-item' : true, 'disabled' : !hasNext () }>
+
+            <li class={ 'page-item' : true, 'disabled' : !hasNext() }>
               <a class="page-link" href="#!" aria-label={ this.t ('Next') } onclick={ onNext }>
-                { this.t ('Next') }
+                { this.t('Next') }
               </a>
             </li>
-            <li class={ 'page-item' : true, 'disabled' : !hasNext () }>
+
+            <li class={ 'page-item' : true, 'disabled' : !hasNext() }>
               <a class="page-link" href="#!" aria-label={ this.t ('Last') } onclick={ onLast }>
-                { this.t ('Last') }
+                { this.t('Last') }
               </a>
             </li>
           </ul>
@@ -66,11 +70,11 @@
   </div>
 
   <script>
-    // do mixins
-    this.mixin ('live');
-    this.mixin ('i18n');
+    // Add mixins
+    this.mixin('live');
+    this.mixin('i18n');
 
-    // set variables
+    // Set variables
     this.state = {
       'way'     : opts.grid && opts.grid.way     ? opts.grid.way     : false,
       'rows'    : opts.grid && opts.grid.rows    ? opts.grid.rows    : 20,
@@ -86,65 +90,65 @@
       'columns' : opts.grid && opts.grid.columns ? opts.grid.columns : []
     };
 
-    // map data
-    if (this.state.live) this.state.data = this.state.data.map ((line) => {
-      // set data
-      return this.live (this.state.type, line);
+    // Map data
+    if (this.state.live) this.state.data = this.state.data.map((line) => {
+      // Set data
+      return this.live(this.state.type, line);
     });
 
-    // set pages
+    // Set pages
     this.pages = [];
 
-    // set loading
+    // Set loading
     this.loaded  = opts.grid || false;
     this.loading = false;
 
 
     /**
-     * gets table class
+     * Gets table class
      *
-     * @return {String} class
+     * @return {string} class
      */
     tableClass () {
-      // return string
+      // Return string
       return opts.tableClass || 'table table-striped';
     }
 
     /**
-     * return is column currently sorted
+     * Return is column currently sorted
      *
-     * @return {Boolean}
+     * @return {boolean}
      */
     isSort (column) {
-      // return boolean
+      // Return boolean
       return this.state.sort === column.id;
     }
 
     /**
-     * return has previous page
+     * Return has previous page
      *
-     * @return {Boolean}
+     * @return {boolean}
      */
     hasPrev () {
       return this.state.page > 1;
     }
 
     /**
-     * return has next page
+     * Return has next page
      *
-     * @return {Boolean}
+     * @return {boolean}
      */
     hasNext () {
-      return this.state.page < Math.floor (this.state.total / this.state.rows) + 1;
+      return this.state.page < Math.floor(this.state.total / this.state.rows) + 1;
     }
 
     /**
-     * gets state
+     * Gets state
      *
-     * @return {Object}
+     * @return {object}
      */
     getState () {
-      // return state
+      // Return state
       return this.state;
     }
 

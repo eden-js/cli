@@ -2,6 +2,4 @@
   <div>
     Hello World
   </div>
-
-
 </example-page>

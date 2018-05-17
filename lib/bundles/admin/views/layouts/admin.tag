@@ -32,9 +32,9 @@
   <toast />
 
   <script>
-    // Add miins
-    this.mixin ('config');
-    this.mixin ('layout');
+    // Add mixins
+    this.mixin('config');
+    this.mixin('layout');
 
     // Set menu class object
     this.menuClass = {

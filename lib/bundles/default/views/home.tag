@@ -19,6 +19,6 @@
 
   <script>
     // Add mixins
-    this.mixin ('config');
+    this.mixin('config');
   </script>
 </home-page>

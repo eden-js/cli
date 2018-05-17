@@ -1,6 +1,6 @@
 <toast>
-  <div each={ position, a in this.positions } class="eden-toast eden-toast-{ position }" if={ alerts (position).length }>
-    <div each={ alert, b in alerts (position) } class="alert alert-{ alert.type || 'info' } fade { alert.visible ? 'show' : 'hide' }" role="alert">
+  <div each={ position, a in this.positions } class="eden-toast eden-toast-{ position }" if={ alerts(position).length }>
+    <div each={ alert, b in alerts(position) } class="alert alert-{ alert.type || 'info' } fade { alert.visible ? 'show' : 'hide' }" role="alert">
       <button type="button" class="close" if={ this.eden.frontend } data-id={ alert.id } onclick={ onDismiss }>
         <span aria-hidden="true">&times;</span>
       </button>
@@ -10,7 +10,7 @@
 
 	<script>
     // Add mixins
-    this.mixin ('alert');
+    this.mixin('alert');
 
     // Set positions
     this.positions = [
@@ -25,18 +25,18 @@
     /**
      * Returns alerts by placement
      *
-     * @param  {String} placement
+     * @param  {string} placement
      *
-     * @return {Array}
+     * @return {array}
      */
-    alerts (position) {
+    alerts(position) {
       // Set alerts
       const alerts = [];
 
       // Loop alerts
       for (let i = 0; i < this.alert.alerts.length; i++) {
         // Check placement
-        if (this.alert.alerts[i].position === position) alerts.push (this.alert.alerts[i]);
+        if (this.alert.alerts[i].position === position) alerts.push(this.alert.alerts[i]);
       }
 
       // Return alerts
@@ -50,13 +50,13 @@
      */
     onDismiss (e) {
       // Prevent default
-      e.preventDefault ();
+      e.preventDefault();
 
       // Set target
-      const target = jQuery (e.target).is ('button') ? jQuery (e.target) : jQuery (e.target).closest ('button');
+      const target = jQuery(e.target).is('button') ? jQuery(e.target) : jQuery(e.target).closest('button');
 
       // Set alert id
-      const id = target.attr ('data-id');
+      const id = target.attr('data-id');
 
       // Set alert
       let alert = false;
@@ -73,10 +73,10 @@
       // Check alert
       if (alert) {
         // Clear timeout
-        clearTimeout (alert.timeout);
+        clearTimeout(alert.timeout);
 
         // Close alert
-        alert.close ();
+        alert.close();
       }
     }
 	</script>

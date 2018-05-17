@@ -1,16 +1,16 @@
 // Require environment
-require ('./lib/env');
+require('./lib/env');
 
 // Require dependencies
-const fs       = require ('fs-extra');
-const gulp     = require ('gulp');
-const glob     = require ('glob-all');
-const watch    = require ('gulp-watch');
-const server   = require ('gulp-develop-server');
-const sequence = require ('run-sequence');
+const fs       = require('fs-extra');
+const gulp     = require('gulp');
+const glob     = require('glob-all');
+const watch    = require('gulp-watch');
+const server   = require('gulp-develop-server');
+const sequence = require('run-sequence');
 
 // Require local dependencies
-const parser = require ('lib/utilities/parser');
+const parser = require('lib/utilities/parser');
 
 /**
  * Create Loader class
@@ -22,28 +22,28 @@ class Loader {
    */
   constructor () {
     // Check cache exists
-    if (!fs.existsSync ('./app/cache')) {
+    if (!fs.existsSync('./app/cache')) {
       // Create cache
-      fs.mkdirSync ('./app/cache');
+      fs.mkdirSync('./app/cache');
     }
 
     // Bind public methods
-    this.build   = this.build.bind (this);
-    this.files   = this.files.bind (this);
-    this.merge   = this.merge.bind (this);
-    this.restart = this.restart.bind (this);
+    this.build   = this.build.bind(this);
+    this.files   = this.files.bind(this);
+    this.merge   = this.merge.bind(this);
+    this.restart = this.restart.bind(this);
 
     // Bind private methods
-    this._task  = this._task.bind (this);
-    this._watch = this._watch.bind (this);
+    this._task  = this._task.bind(this);
+    this._watch = this._watch.bind(this);
 
     // Run build
-    this.build ();
+    this.build();
 
     // Add dev server task
-    gulp.task ('server', ['install'], () => {
+    gulp.task('server', ['install'], () => {
       // Run server task
-      server.listen ({
+      server.listen({
         'env' : {
           'NODE_ENV' : 'development'
         },
@@ -57,11 +57,11 @@ class Loader {
       this.server = true;
 
       // Run watch task
-      gulp.start ('watch');
+      gulp.start('watch');
     });
 
     // Build default task
-    gulp.task ('default', ['server']);
+    gulp.task('default', ['server']);
   }
 
   /**
@@ -73,61 +73,61 @@ class Loader {
     // Glob tasks
     let done = [];
 
-    const tasks      = glob.sync (this.files ('tasks/*.js'));
+    const tasks      = glob.sync(this.files('tasks/*.js'));
     const watchers   = [];
     const installers = [];
 
     // Loop tasks
     for (let i = 0; i < tasks.length; i++) {
       // Load task
-      const task = parser.task (tasks[i]);
+      const task = parser.task(tasks[i]);
 
       // Create task
-      let Task = this._task (task);
+      let Task = this._task(task);
 
       // Add to default task
-      if (done.indexOf (task.task) === -1) installers.push (task.task);
+      if (done.indexOf(task.task) === -1) installers.push(task.task);
 
       // Push to done
-      done.push (task.task);
+      done.push(task.task);
 
       // Check befores
       if (task.before) {
         // Push to dones
-        done = done.concat (task.before);
+        done = done.concat(task.before);
 
         // Remove before from defaults
         for (let a = 0; a < task.before.length; a++) {
           // Set index
-          const index = installers.indexOf (task.before[a]);
+          const index = installers.indexOf(task.before[a]);
 
           // Check defaults
-          if (index > -1) installers.splice (index, 1);
+          if (index > -1) installers.splice(index, 1);
         }
       }
 
       // Check afters
       if (task.after) {
         // Push to dones
-        done = done.concat (task.after);
+        done = done.concat(task.after);
 
         // Remove after from defaults
         for (let b = 0; b < task.after.length; b++) {
           // Set index
-          const index = installers.indexOf (task.after[b]);
+          const index = installers.indexOf(task.after[b]);
 
           // Check defaults
-          if (index > -1) installers.splice (index, 1);
+          if (index > -1) installers.splice(index, 1);
         }
       }
 
       // Add watch to watchers
-      if (Task.watch) watchers.push (task.task + '.watch');
+      if (Task.watch) watchers.push(task.task + '.watch');
     }
 
     // Create tasks
-    gulp.task ('watch',   watchers);
-    gulp.task ('install', installers);
+    gulp.task('watch',   watchers);
+    gulp.task('install', installers);
   }
 
   /**
@@ -140,30 +140,30 @@ class Loader {
     if (!this.server) return;
 
     // Restart server
-    server.restart ();
+    server.restart();
   }
 
   /**
    * Writes config file
    *
-   * @param {String} name
-   * @param {Object} obj
+   * @param {string} name
+   * @param {object} obj
    */
   write (name, obj) {
     // Write file
-    fs.writeFile ('./app/cache/' + name + '.json', JSON.stringify (obj), (err) => {
+    fs.writeFile('./app/cache/' + name + '.json', JSON.stringify(obj), (err) => {
       // Check if error
-      if (err) console.error (err);
+      if (err) console.error(err);
     });
   }
 
   /**
    * Merges two objects
    *
-   * @param   {Object} obj1
-   * @param   {Object} obj2
+   * @param   {object} obj1
+   * @param   {object} obj2
    *
-   * @returns {*}
+   * @returns {object}
    */
   merge (obj1, obj2) {
     // Loop object
@@ -171,9 +171,9 @@ class Loader {
       try {
         // Property in destination object set; update its value.
         if (obj2[p].constructor === Object) {
-          obj1[p] = this.merge (obj1[p], obj2[p]);
+          obj1[p] = this.merge(obj1[p], obj2[p]);
         } else if (obj2[p].constructor === Array) {
-          obj1[p] = obj1[p].concat (obj2[p]);
+          obj1[p] = obj1[p].concat(obj2[p]);
         } else {
           obj1[p] = obj2[p];
         }
@@ -189,23 +189,23 @@ class Loader {
   /**
    * Returns files
    *
-   * @param  {Array|String} files
+   * @param  {string[]|string} files
    *
-   * @return {Array}
+   * @return {string[]}
    */
   files (files) {
     // Check array
-    if (!Array.isArray (files)) files = [files];
+    if (!Array.isArray(files)) files = [files];
 
     // Let filtered files
     let filtered = [];
 
     // Loop files
-    [global.appRoot + '/lib/bundles/*/', global.appRoot + '/node_modules/*/bundles/*/', global.appRoot + '/app/bundles/*/'].forEach ((loc) => {
+    [global.appRoot + '/lib/bundles/*/', global.appRoot + '/node_modules/*/bundles/*/', global.appRoot + '/app/bundles/*/'].forEach((loc) => {
       // Loop files
-      files.forEach ((file) => {
+      files.forEach((file) => {
         // Push to newFiles
-        filtered.push (loc + file);
+        filtered.push(loc + file);
       });
     });
 
@@ -216,7 +216,7 @@ class Loader {
   /**
    * Runs gulp task
    *
-   * @param   {Object} task
+   * @param   {object} task
    *
    * @returns {*}
    *
@@ -224,15 +224,15 @@ class Loader {
    */
   _task (task) {
     // Create task
-    let Task = require (task.file);
+    let Task = require(task.file);
 
     // New task
-    Task = new Task (this);
+    Task = new Task(this);
 
     // Create gulp task
-    gulp.task (task.task + '.run', () => {
+    gulp.task(task.task + '.run', () => {
       // Return run
-      return Task.run (Task.watch ? this.files (Task.watch ()) : undefined);
+      return Task.run(Task.watch ? this.files(Task.watch()) : undefined);
     });
 
     // Create task args
@@ -241,34 +241,34 @@ class Loader {
     // Check before
     if (task.before && task.before.length) {
       // Push to args
-      args = args.concat (task.before);
+      args = args.concat(task.before);
     }
 
     // Push actual function
-    args.push (task.task + '.run');
+    args.push(task.task + '.run');
 
     // Check after
     if (task.after && task.after.length) {
       // Push to args
-      args = args.concat (task.after);
+      args = args.concat(task.after);
     }
 
     // Create task
-    gulp.task (task.task, (cb) => {
+    gulp.task(task.task, (cb) => {
       // Push cb
-      let newArgs = args.slice ();
+      let newArgs = args.slice();
 
       // Push new callback
-      newArgs.push (cb);
+      newArgs.push(cb);
 
       // Run gulp sequence
-      sequence.apply (null, newArgs);
+      sequence.apply(null, newArgs);
     });
 
     // Check watch
     if (Task.watch) {
       // Create watch task
-      this._watch (task.task, Task);
+      this._watch(task.task, Task);
     }
 
     // Return task
@@ -278,21 +278,22 @@ class Loader {
   /**
    * Creates watch task
    *
-   * @param {String} task
+   * @param {string} task
    * @param {*} Task
    *
    * @private
    */
   _watch (task, Task) {
     // Create watch task
-    gulp.task (task + '.watch', () => {
+    gulp.task(task + '.watch', () => {
       // Return watch task
-      return watch (this.files (Task.watch ()), () => {
+      return watch(this.files(Task.watch()), () => {
         // Start task
-        gulp.start (task);
+        gulp.start(task);
       });
     });
   }
+
 }
 
 /**
@@ -300,4 +301,4 @@ class Loader {
  *
  * @type {Loader}
  */
-module.exports = new Loader ();
+module.exports = new Loader();

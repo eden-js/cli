@@ -4,6 +4,7 @@
       <a class="navbar-brand" href="/">
         { this.config.title }
       </a>
+
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -19,9 +20,9 @@
   <toast />
 
   <script>
-    // add layout mixin
-    this.mixin ('config');
-    this.mixin ('layout');
+    // add mixins
+    this.mixin('config');
+    this.mixin('layout');
 
     // set menu class object
     this.menuClass = {
