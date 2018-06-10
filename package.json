@@ -19,6 +19,7 @@
     "npm": ">= 4.0.0"
   },
   "devDependencies": {
+    "@eden-js/eslint-config-eden": "^1.0.1",
     "babel-core": "^6.26.3",
     "babelify": "^8.0.0",
     "browserify": "^16.2.2",
