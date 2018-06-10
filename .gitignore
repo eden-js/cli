@@ -7,6 +7,9 @@ node_modules
 # Debug log from npm
 npm-debug.log
 
+# Error log from yarn
+yarn-error.log
+
 # IDE
 .idea
 .remote-sync.json
