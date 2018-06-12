@@ -72,6 +72,7 @@
     "nanobar": "^0.4.2",
     "nconf": "^0.10.0",
     "node-fetch": "^2.1.2",
+    "node-sass-tilde-importer": "^1.0.2",
     "nodemailer": "^4.6.4",
     "parse-comments": "^0.4.3",
     "passport": "^0.4.0",
