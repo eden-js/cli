@@ -88,7 +88,7 @@ class App {
    */
   spawn (id, express, port) {
     // Clone environment
-    const env = JSON.parse(JSON.stringify(process.env));
+    const env = Object.assign({}, process.env);
 
     // Set thread id
     env.id      = id;
