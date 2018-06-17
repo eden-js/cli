@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@eden-js/eslint-config-eden@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@eden-js/eslint-config-eden/-/eslint-config-eden-1.0.1.tgz#029f47ae93b22982e5a615a9f3fc83127a209eb8"
+"@eden-js/eslint-config-eden@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@eden-js/eslint-config-eden/-/eslint-config-eden-1.0.2.tgz#5e7e718e1654ca43765f43de53f29d208f13e766"
 
 "@gulp-sourcemaps/identity-map@1.X":
   version "1.0.1"
