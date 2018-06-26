@@ -106,10 +106,10 @@
     "browserify": "^16.2.2",
     "core-js": "^2.5.7",
     "es6-promise": "^4.2.4",
-    "eslint": "^4.19.1",
+    "eslint": "^5.0.0",
     "gulp-autoprefixer": "^5.0.0",
     "gulp-rename": "^1.3.0",
     "gulp-uglify-es": "^1.0.4",
-    "regenerator-runtime": "^0.11.1"
+    "regenerator-runtime": "^0.12.0"
   }
 }
