@@ -1,93 +1,63 @@
 # EdenJS
-
 [![bitHound Overall Score](https://img.shields.io/bithound/code/github/eden-js/eden.svg?label=bitHound%20Overall%20Score&style=flat-square)](https://www.bithound.io/github/eden-js/eden)
 [![Issues](https://img.shields.io/github/issues/eden-js/eden.svg?style=flat-square)](https://github.com/eden-js/eden/issues)
 [![Dependencies](https://david-dm.org/eden-js/eden.svg?style=flat-square)](https://github.com/eden-js/eden)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/eden-js/eden)
 [![Awesome](https://img.shields.io/badge/awesome-true-green.svg?style=flat-square)](https://github.com/eden-js/eden)
 
-Awesome isomorphic NodeJS skeleton for structured applications.
-Just take a look at its bundles.
+Awesome isomorphic NodeJS skeleton for structured applications. Just take a look at its bundles.
 
-## Why
+## Getting Started
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-There are many very good Node/Express/Mongo frameworks around. There is no true "correct" way of build your applications skeleton, what EdenJS tries to do is give you a boilerplate bootstrap/express/mongoDB base for large bundled NodeJS applications.
+### Prerequisites
+Required software to install and run EdenJS:
 
-## Features
+* [Node.js](http://nodejs.org/)
+* [MongoDB](https://www.mongodb.com/)
+* [redis](https://redis.io/)
 
-- Based on ES6 async/await
-- Out of the box MVC structured development environment
-- Established [expressJS](https://github.com/expressjs/express) application base that you're already used to
-- Fully real time with [socketio](https://github.com/socketio/socket.io)
-- Extremely fast isomorphic rendering with [riotJS](https://github.com/riot/riot)
-- Extensible models with [mongorito](https://github.com/vadimdemedes/mongorito)
-
-## Quick Development
-
-```js
-// use strict
-'use strict';
-
-// require local dependencies
-var alert      = require ('alert');
-var controller = require ('controller');
-
-/**
- * build example controller
- */
-class example extends controller {
-  /**
-   * get index action
-   *
-   * @route {get} /
-   */
-  indexAction (req, res, next) {
-    // the same as router.get ('/', example.indexAction)
-    // uses standard expressJS router
-    // SSR with riotJS
-    res.render ('home');
-
-    // alert user
-    alert.user (req.user, 'success', 'successfully loaded index');
-  }
-
-  /**
-   * socketio event emit
-   *
-   * @socket event
-   */
-  eventSocket (Socket, data, User) {
-    // out of the box socket transport with authentication
-
-    // emit directly
-    Socket.emit ('data', {});
-
-    // alert socket
-    alert.socket (Socket, 'success', 'successfully received event');
-  }
-}
-
-/**
- * export example controller
- * @type {example}
- */
-module.exports = example;
+### Installation
 ```
-
-## Installation
-
-The entire framework has been written to be built and compiled with gulp. To install and run the boilerplate is as simple as:
-
-```
-// deploy EdenJS
+// Deploy EdenJS
 git init; git remote add origin https://github.com/eden-js/eden.git; git pull;
+```
 
-// development
-npm install; gulp;
+### Running the tests
+```
+// Test EdenJS with Yarn
+yarn test;
 
-// install (for production)
+// Test EdenJS with NPM
+npm test;
+```
+
+### Deployment
+```
+// Install (for production)
 gulp install;
 
-// run in production
+// Run in production
 node app;
 ```
+
+## Built With
+* [Express](https://expressjs.com/) - Fast, unopinionated, minimalist web framework for Node.js.
+* [socket.io](https://socket.io/) - Node.js realtime framework server.
+* [Riot.js](https://riot.js.org/) - Simple and elegant component-based UI library.
+* [Mongorito](http://mongorito.com/) - MongoDB ODM for Node.js based on ES6 generators. No callbacks or promises.
+
+## Contributing
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Versioning
+We use [SemVer](http://semver.org/) for versioning.
+
+## Authors
+* **Alex Taylor** - *Lead Developer* - [EdenCoder](https://github.com/EdenCoder)
+* **Jack Taylor** - *Developer* - [OhYea777](https://github.com/OhYea777)
+
+See also the list of [contributors](https://github.com/eden-js/eden/contributors) who participated in this project.
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
