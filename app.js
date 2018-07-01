@@ -107,14 +107,11 @@ class App {
    */
   logger () {
     // Set logger
-    this._logger = new winston.Logger({
+    this._logger = winston.createLogger({
       'level'      : config.get('logLevel')  || 'info',
+      'format'     : log,
       'transports' : [
-        new winston.transports.Console({
-          'colorize'  : true,
-          'formatter' : log,
-          'timestamp' : true
-        })
+        new winston.transports.Console()
       ]
     });
   }
