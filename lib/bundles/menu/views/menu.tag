@@ -1,126 +1,127 @@
 <menu>
   <ul class="{ opts.classes && opts.classes.main ? opts.classes.main : 'nav' }" if={ this.menu }>
-    <li each={ item, i in getMenu (opts.name) } class={ renderMainClass (item) } if={ item.acl && item.acl.length ? this.acl.validate (item.acl) : true }>
-      <a class={ renderLinkClass (item) } href={ item.route } data-toggle={ hasChildren (item) ? 'dropdown' : false }>
+    <li each={ item, i in getMenu(opts.name) } class={ renderMainClass(item) } if={ item.acl && item.acl.length ? this.acl.validate(item.acl) : true }>
+      <a class={ renderLinkClass(item) } href={ item.route } data-toggle={ hasChildren(item) ? 'dropdown' : false }>
         <i if={ item.icon } class="{ item.icon }" />
-        { this.t (item.title) }
+        { this.t(item.title) }
       </a>
     </li>
   </ul>
 
   <script>
-    // add menu mixin
-    this.mixin ('acl');
-    this.mixin ('menu');
-    this.mixin ('i18n');
-    this.mixin ('mount');
+    // Add mixins
+    this.mixin('acl');
+    this.mixin('menu');
+    this.mixin('i18n');
+    this.mixin('mount');
 
     /**
-     * gets menu
+     * Gets menu
      *
-     * @param  {String} name
+     * @param  {string} name
      *
-     * @return {Array}
+     * @return {object[]}
      */
     getMenu (name) {
-      // get menu
+      // Get menu
       let menu = this.menu[name] || [];
 
-      // return menu
+      // Return menu
       return menu;
     }
 
     /**
-     * check if item has children
+     * Check if item has children
      *
-     * @param {Object} item
+     * @param {object} item
      */
     hasChildren (item) {
-      // loop menu
-      for (var i = 0; i < this.menu[opts.name].length; i++) {
-        // check if has children
+      // Loop menu
+      for (let i = 0; i < this.menu[opts.name].length; i++) {
+        // Check if has children
         if (this.menu[opts.name][i].parent && this.menu[opts.name][i].parent === item.route) {
+          // Return true
           return true;
         }
       }
 
-      // return false
+      // Return false
       return false;
     }
 
     /**
-     * renders main class
+     * Renders main class
      *
-     * @param  {Object} item
+     * @param  {object} item
      *
-     * @return {String}
+     * @return {string}
      */
     renderMainClass (item) {
-      // set class
-      var rtnClass = [];
+      // Set class
+      const rtnClass = [];
 
-      // check for opts class
-      rtnClass.push (opts.classes && opts.classes.item ? opts.classes.item : 'nav-item');
-      rtnClass.push (this.hasChildren (item) ? 'dropdown' : '');
-      rtnClass.push (this.mnt.path.indexOf (item.route) === 0 && (item.route === this.mnt.path || item.route !== opts.base) ? 'active' : '');
+      // Check for opts class
+      rtnClass.push(opts.classes && opts.classes.item ? opts.classes.item : 'nav-item');
+      rtnClass.push(this.hasChildren(item) ? 'dropdown' : '');
+      rtnClass.push(this.mnt.path.indexOf(item.route) === 0 && (item.route === this.mnt.path || item.route !== opts.base) && (item.route !== '/' || this.mnt.path === '/') ? 'active' : '');
 
-      // join class
-      return rtnClass.join (' ').split ('  ').join (' ');
+      // Join class
+      return rtnClass.join(' ').split('  ').join(' ');
     }
 
     /**
-     * renders link class
+     * Renders link class
      *
-     * @param  {Object} item
+     * @param  {object} item
      *
-     * @return {String}
+     * @return {string}
      */
     renderLinkClass (item) {
-      // set class
-      var rtnClass = [];
+      // Set class
+      const rtnClass = [];
 
-      // check for opts class
-      rtnClass.push (opts.classes && opts.classes.link ? opts.classes.link : 'nav-link');
-      rtnClass.push (this.mnt.path.indexOf (item.route) === 0 && (item.route === this.mnt.path || item.route !== opts.base) ? 'active' : '');
+      // Check for opts class
+      rtnClass.push(opts.classes && opts.classes.link ? opts.classes.link : 'nav-link');
+      rtnClass.push(this.mnt.path.indexOf(item.route) === 0 && (item.route === this.mnt.path || item.route !== opts.base) && (item.route !== '/' || this.mnt.path === '/') ? 'active' : '');
 
-      // return joined class
-      return rtnClass.join (' ');
+      // Return joined class
+      return rtnClass.join(' ');
     }
 
     /**
-     * renders dropdown class
+     * Renders dropdown class
      *
-     * @param  {Object} item
+     * @param  {object} item
      *
-     * @return {String}
+     * @return {string}
      */
     renderDropdownClass (item) {
-      // set class
-      var rtnClass = [];
+      // Set class
+      const rtnClass = [];
 
-      // check for opts class
-      rtnClass.push (opts.classes && opts.classes.dropdown ? opts.classes.dropdown : 'dropdown-menu');
+      // Check for opts class
+      rtnClass.push(opts.classes && opts.classes.dropdown ? opts.classes.dropdown : 'dropdown-menu');
 
-      // return joined class
-      return rtnClass.join (' ');
+      // Return joined class
+      return rtnClass.join(' ');
     }
 
     /**
-     * renders dropdown link class
+     * Renders dropdown link class
      *
-     * @param  {Object} item
+     * @param  {object} item
      *
-     * @return {String}
+     * @return {string}
      */
     renderDropdownLink (item) {
-      // set class
-      var rtnClass = [];
+      // Set class
+      const rtnClass = [];
 
-      // check for opts class
-      rtnClass.push (opts.classes && opts.classes.sub ? opts.classes.sub : 'dropdown-menu');
+      // Check for opts class
+      rtnClass.push(opts.classes && opts.classes.sub ? opts.classes.sub : 'dropdown-menu');
 
-      // return joined class
-      return rtnClass.join (' ');
+      // Return joined class
+      return rtnClass.join(' ');
     }
   </script>
 </menu>

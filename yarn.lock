@@ -2259,13 +2259,17 @@ eslint-scope@^4.0.0:
     esrecurse "^4.1.0"
     estraverse "^4.1.1"
 
+eslint-utils@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/eslint-utils/-/eslint-utils-1.3.1.tgz#9a851ba89ee7c460346f97cf8939c7298827e512"
+
 eslint-visitor-keys@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#3f3180fb2e291017716acb4c9d6d5b5c34a6a81d"
 
-eslint@^5.0.1:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.0.1.tgz#109b90ab7f7a736f54e0f341c8bb9d09777494c3"
+eslint@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.1.0.tgz#2ed611f1ce163c0fb99e1e0cda5af8f662dff645"
   dependencies:
     ajv "^6.5.0"
     babel-code-frame "^6.26.0"
@@ -2274,6 +2278,7 @@ eslint@^5.0.1:
     debug "^3.1.0"
     doctrine "^2.1.0"
     eslint-scope "^4.0.0"
+    eslint-utils "^1.3.1"
     eslint-visitor-keys "^1.0.0"
     espree "^4.0.0"
     esquery "^1.0.1"
@@ -2281,7 +2286,7 @@ eslint@^5.0.1:
     file-entry-cache "^2.0.0"
     functional-red-black-tree "^1.0.1"
     glob "^7.1.2"
-    globals "^11.5.0"
+    globals "^11.7.0"
     ignore "^3.3.3"
     imurmurhash "^0.1.4"
     inquirer "^5.2.0"
@@ -2950,7 +2955,7 @@ global-prefix@^1.0.1:
     is-windows "^1.0.1"
     which "^1.2.14"
 
-globals@^11.1.0, globals@^11.5.0:
+globals@^11.1.0, globals@^11.7.0:
   version "11.7.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-11.7.0.tgz#a583faa43055b1aca771914bf68258e2fc125673"
 
@@ -3393,9 +3398,9 @@ i18next-localstorage-backend@^1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/i18next-localstorage-backend/-/i18next-localstorage-backend-1.1.4.tgz#8305fec485a9dfccdc7f5b100b7ac8bceda65dfd"
 
-i18next-node-fs-backend@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/i18next-node-fs-backend/-/i18next-node-fs-backend-1.0.0.tgz#f5a625a3b287c1d098c7171b7dd376bb07299b59"
+i18next-node-fs-backend@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/i18next-node-fs-backend/-/i18next-node-fs-backend-1.1.0.tgz#ab5de651c311c95bbf54cf9177d34ecbf9cd6ad9"
   dependencies:
     js-yaml "3.5.4"
     json5 "0.5.0"
@@ -3404,9 +3409,9 @@ i18next-xhr-backend@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/i18next-xhr-backend/-/i18next-xhr-backend-1.5.1.tgz#50282610780c6a696d880dfa7f4ac1d01e8c3ad5"
 
-i18next@^11.3.3:
-  version "11.3.3"
-  resolved "https://registry.yarnpkg.com/i18next/-/i18next-11.3.3.tgz#a6ca3c2a93237c94e242bda7df3411588ac37ea1"
+i18next@^11.3.5:
+  version "11.3.5"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-11.3.5.tgz#1394f876246c1171125888fad50011d787b618b4"
 
 iconv-lite@0.4.19:
   version "0.4.19"
