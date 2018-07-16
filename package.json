@@ -42,7 +42,7 @@
     "@babel/plugin-transform-classes": "^7.0.0-beta.51",
     "@babel/plugin-transform-runtime": "^7.0.0-beta.51",
     "@babel/polyfill": "^7.0.0-beta.51",
-    "@babel/preset-es2015": "^7.0.0-beta.51",
+    "@babel/preset-env": "^7.0.0-beta.53",
     "@babel/runtime": "^7.0.0-beta.51",
     "@eden-js/eslint-config-eden": "^1.0.3",
     "@eden-js/model": "^1.12.0",
