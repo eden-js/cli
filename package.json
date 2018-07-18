@@ -70,7 +70,7 @@
     "express": "^4.16.3",
     "express-session": "^1.15.6",
     "extendify": "^1.0.0",
-    "fs-extra": "^6.0.1",
+    "fs-extra": "^7.0.0",
     "glob": "^7.1.2",
     "glob-all": "^3.1.0",
     "graceful-fs": "^4.1.11",
