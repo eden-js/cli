@@ -12,6 +12,7 @@ const config = {};
 
 // Set application title
 config.title = 'EdenJS';
+config.direction = 1; // 0 = page title only, 1 = title before page title, 2 = title after page title
 
 // Set application domain
 config.domain = 'edenjs.com';
