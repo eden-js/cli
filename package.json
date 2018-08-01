@@ -88,7 +88,7 @@
     "history": "^4.7.2",
     "html-entities": "^1.2.1",
     "html-to-text": "^4.0.0",
-    "i18next": "^11.4.0",
+    "i18next": "^11.5.0",
     "i18next-browser-languagedetector": "^2.2.2",
     "i18next-chained-backend": "^0.1.2",
     "i18next-express-middleware": "^1.1.1",
