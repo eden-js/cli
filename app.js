@@ -125,6 +125,12 @@ class App {
       'class' : 'Eden'
     });
 
+    // Set process name
+    try {
+      // Set process name
+      process.title = config.get('domain') + ' - master';
+    } catch (e) {}
+
     // Count frontend express threads
     const expressThreads = config.get('expressThreads') || config.get('expressThreads') === 0 ? config.get('expressThreads') : os.cpus().length;
 
