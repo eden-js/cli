@@ -5,10 +5,12 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/eden-js/eden)
 [![Awesome](https://img.shields.io/badge/awesome-true-green.svg?style=flat-square)](https://github.com/eden-js/eden)
 
-Awesome isomorphic NodeJS skeleton for structured applications. Just take a look at its bundles.
+Awesome isomorphic NodeJS skeleton for structured applications. Just have a look at the "bundles" that make up an EdenJS application.
 
 ## Getting Started
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get a copy of the project up and running on your local machine. 
+
+See deployment for notes on how to deploy the project.
 
 ### Prerequisites
 Required software to install and run EdenJS:
@@ -41,7 +43,12 @@ gulp install;
 node app;
 ```
 
+### Tutorial
+
+A basic tutorial on how to get started with EdenJS is available: [Tutorial.md](Tutorial.md/)
+
 ## Built With
+
 * [Express](https://expressjs.com/) - Fast, unopinionated, minimalist web framework for Node.js.
 * [socket.io](https://socket.io/) - Node.js realtime framework server.
 * [Riot.js](https://riot.js.org/) - Simple and elegant component-based UI library.
