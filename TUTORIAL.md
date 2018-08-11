@@ -9,7 +9,7 @@ In EdenJS, everything is done inside a `bundle` as seen in `/lib/bundles` and th
 
 To get started, let's copy `/lib/bundles/example/` to `/app/bundles/myexample`. Once this is copied, go through and change all the file names from `example` to `myexample` then update all the instances inside the files. 
 
-I.e. `class example extends controller ` becomes `class myexample extends controller` 
+i.e. `class example extends controller ` becomes `class myexample extends controller` 
 
 Once that's all done, we'll need to make our first route so people can interact with the `myexample` bundle. 
 
