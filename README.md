@@ -45,7 +45,7 @@ node app;
 
 ### Tutorial
 
-A basic tutorial on how to get started with EdenJS is available: [Tutorial.md](Tutorial.md/)
+A basic tutorial on how to get started with EdenJS is available: [TUTORIAL.md](TUTORIAL.md/)
 
 ## Built With
 
@@ -63,7 +63,7 @@ We use [SemVer](http://semver.org/) for versioning.
 ## Authors
 * **Alex Taylor** - *Lead Developer* - [EdenCoder](https://github.com/EdenCoder)
 * **Jack Taylor** - *Developer* - [OhYea777](https://github.com/OhYea777)
-* **Mike Mackenzie** - D*ocumentation / Developer* - [veb](https://github.com/veb)
+* **Mike Mackenzie** - *Documentation* / *Developer* - [veb](https://github.com/veb)
 
 See also the list of [contributors](https://github.com/eden-js/eden/contributors) who participated in this project.
 
