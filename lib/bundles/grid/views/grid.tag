@@ -71,8 +71,8 @@
 
   <script>
     // Add mixins
-    this.mixin('live');
     this.mixin('i18n');
+    this.mixin('model');
 
     // Set variables
     this.state = {
@@ -93,7 +93,7 @@
     // Map data
     if (this.state.live) this.state.data = this.state.data.map((line) => {
       // Set data
-      return this.live(this.state.type, line);
+      return this.model(this.state.type, line);
     });
 
     // Set pages
@@ -358,7 +358,7 @@
           'filter' : this.state.filter
         }),
         'state' : state,
-      })
+      });
 
       // log data
       let res = await fetch (this.state.route, {
@@ -388,9 +388,9 @@
       }
 
       // map data
-      if (this.state.live) this.state.data = this.state.data.map ((line) => {
+      if (this.state.live) this.state.data = this.state.data.map((line) => {
         // set data
-        return this.live (this.state.type, line);
+        return this.model(this.state.type, line);
       });
 
       // set loading
@@ -426,9 +426,9 @@
       };
 
       // map data
-      if (this.state.live) this.state.data = this.state.data.map ((line) => {
+      if (this.state.live) this.state.data = this.state.data.map((line) => {
         // set data
-        return this.live (this.state.type, line);
+        return this.model(this.state.type, line);
       });
 
       // set pages
