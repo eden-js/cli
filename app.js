@@ -4,15 +4,17 @@
 require('./lib/env');
 
 // Require dependencies
-const os      = require('os');
-const cluster = require('cluster');
-const winston = require('winston');
+const os       = require('os');
+const cluster  = require('cluster');
+const winston  = require('winston');
+const minimist = require('minimist');
 
 // Require local dependencies
 const log    = require('lib/utilities/log');
 const config = require('config');
 
 // Set global environment
+global.arguments = minimist(process.argv.slice(2));
 global.envrionment = process.env.NODE_ENV || config.get('environment');
 
 /**
@@ -131,32 +133,47 @@ class App {
       process.title = config.get('domain') + ' - master';
     } catch (e) {}
 
-    // Count frontend express threads
-    const expressThreads = config.get('expressThreads') || config.get('expressThreads') === 0 ? config.get('expressThreads') : os.cpus().length;
+    // Spawn express threads
+    let threads = (global.arguments.threads || '').split(':');
 
-    // Count backend compute threads
-    const computeThreads = config.get('computeThreads') || config.get('computeThreads') === 0 ? config.get('computeThreads') : 1;
+    // Check should run express
+    if (!threads[0] || threads[0] === 'express') {
+      // Get default express threads
+      const defaultExpressThreads = '0-' + ((config.get('expressThreads') || config.get('expressThreads') === 0 ? config.get('expressThreads') : os.cpus().length) - 1);
 
-    // Log spawning Express threads
-    this._logger.log('info', 'Spawning ' + expressThreads + ' Eden Express thread' + (expressThreads > 1 ? 's' : ''), {
-      'class' : 'Eden'
-    });
+      // Count frontend express threads
+      const expressThreads = (threads[1] ? threads[1].split('-')[0] + '-' + (threads[1].split('-')[1] || threads[1].split('-')[0]) : defaultExpressThreads).split('-').map((thread) => parseInt(thread));
 
-    // Loop Express threads
-    for (let a = 0; a < expressThreads; a++) {
-      // Spawn new thread
-      this.spawn(a, true, (parseInt(config.get('port')) + a));
+      // Log spawning Express threads
+      this._logger.log('info', 'spawning express threads ' + expressThreads[0] + '-' + expressThreads[1], {
+        'class' : 'Eden'
+      });
+
+      // Loop each express thread
+      for (let i = expressThreads[0]; i <= expressThreads[1]; i++) {
+        // Spawn new thread
+        this.spawn(i, true, (parseInt(config.get('port')) + i));
+      }
     }
 
-    // Log spawning Compute threads
-    this._logger.log('info', 'Spawning ' + computeThreads + ' Eden Compute thread' + (computeThreads > 1 ? 's' : ''), {
-      'class' : 'Eden'
-    });
+    // Check should run express
+    if (!threads[0] || threads[0] === 'compute') {
+      // Get default express threads
+      const defaultComputeThreads = '0-' + ((config.get('computeThreads') || config.get('computeThreads') === 0 ? config.get('computeThreads') : os.cpus().length) - 1);
 
-    // Loop Compute threads
-    for (let b = 0; b < computeThreads; b++) {
-      // Spawn new thread
-      this.spawn(b, false);
+      // Count frontend express threads
+      const computeThreads = (threads[1] ? threads[1].split('-')[0] + '-' + (threads[1].split('-')[1] || threads[1].split('-')[0]) : defaultComputeThreads).split('-').map((thread) => parseInt(thread));
+
+      // Log spawning Express threads
+      this._logger.log('info', 'spawning compute threads ' + computeThreads[0] + '-' + computeThreads[1], {
+        'class' : 'Eden'
+      });
+
+      // Loop each express thread
+      for (let i = computeThreads[0]; i <= computeThreads[1]; i++) {
+        // Spawn new thread
+        this.spawn(i, false);
+      }
     }
 
     // On cluster exit
