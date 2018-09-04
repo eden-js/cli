@@ -13,7 +13,7 @@ i.e. `class example extends controller ` becomes `class myexample extends contro
 
 Once that's all done, we'll need to make our first route so people can interact with the `myexample` bundle. 
 
-Open up `/app/bundles/myexample/controllers/dental.js` and add your new binding method into the constructor:
+Open up `/app/bundles/myexample/controllers/test.js` and add your new binding method into the constructor:
 
 ```javascript
   constructor () {
