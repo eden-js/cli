@@ -21,8 +21,29 @@
       </thead>
       <tbody>
         <tr each={ data, i in this.state.data }>
-          <td each={ column, a in getState().columns }>
-            <raw data={ { 'html' : data[column.id] } } />
+          <td each={ column, a in getState().columns } data-index={ i } data-column={ column.id } onclick={ onOpenUpdate } class={ 'grid-update' : column.update, 'active' : this.active[i + '.' + column.id] }>
+            <div if={ column.update }>
+              <div if={ this.active[i + '.' + column.id] } class="form-group m-0">
+                <div class="input-group">
+                  <input class="form-control form-control-sm w-auto" value={ data[column.id] } type={ column.input || 'text' } onchange={ onValue } />
+                  <div class="input-group-append">
+                    <button class={ 'btn btn-sm btn-success' : true, 'disabled' : this.updating[i + '.' + column.id] } disabled={ this.updating[i + '.' + column.id] } onclick={ onUpdate }>
+                      <i class={ 'fa' : true, 'fa-check' : !this.updating[i + '.' + column.id], 'fa-spinner fa-spin' : this.updating[i + '.' + column.id] } />
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick={ onCloseUpdate }>
+                      <i class="fa fa-times" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div if={ !this.active[i + '.' + column.id] } class="grid-update-item">
+                <raw data={ { 'html' : data[column.id] } } />
+                <span class="float-right">
+                  <i class="fa fa-ellipsis-h" />
+                </span>
+              </div>
+            </div>
+            <raw data={ { 'html' : data[column.id] } } if={ !column.update } />
           </td>
         </tr>
       </tbody>
@@ -89,6 +110,8 @@
       'filters' : opts.grid && opts.grid.filters ? opts.grid.filters : [],
       'columns' : opts.grid && opts.grid.columns ? opts.grid.columns : []
     };
+    this.active = {};
+    this.updating = {};
 
     // Map data
     if (this.state.live) this.state.data = this.state.data.map((line) => {
@@ -167,7 +190,7 @@
       // while start less than pages
       while (start < this.state.total) {
         // add to pages
-        this.pages.push (page);
+        this.pages.push(page);
 
         // add to page
         page++;
@@ -192,10 +215,10 @@
       this.state.filter[filter.id] = value;
 
       // load view
-      this.load ();
+      this.load();
 
       // update view
-      this.update ();
+      this.update();
     }
 
     /**
@@ -205,17 +228,17 @@
      */
     onPage (e) {
       // prevent scrolling to top
-      e.preventDefault ();
-      e.stopPropagation ();
+      e.preventDefault();
+      e.stopPropagation();
 
       // get page
       this.state.page = e.target.dataset.page;
 
       // load view
-      this.load ();
+      this.load();
 
       // update view
-      this.update ();
+      this.update();
     }
 
     /**
@@ -223,17 +246,17 @@
      */
     onLast (e) {
       // prevent scrolling to top
-      e.preventDefault ();
-      e.stopPropagation ();
+      e.preventDefault();
+      e.stopPropagation();
 
       // get page
-      this.state.page = Math.floor (this.state.total / this.state.rows) + 1;
+      this.state.page = Math.floor(this.state.total / this.state.rows) + 1;
 
       // load view
-      this.load ();
+      this.load();
 
       // update view
-      this.update ();
+      this.update();
     }
 
     /**
@@ -241,17 +264,17 @@
      */
     onFirst (e) {
       // prevent scrolling to top
-      e.preventDefault ();
-      e.stopPropagation ();
+      e.preventDefault();
+      e.stopPropagation();
 
       // get page
       this.state.page = 1;
 
       // load view
-      this.load ();
+      this.load();
 
       // update view
-      this.update ();
+      this.update();
     }
 
     /**
@@ -259,17 +282,17 @@
      */
     onNext (e) {
       // prevent scrolling to top
-      e.preventDefault ();
-      e.stopPropagation ();
+      e.preventDefault();
+      e.stopPropagation();
 
       // get page
-      this.state.page = this.hasNext () ? (this.state.page + 1) : this.page;
+      this.state.page = this.hasNext() ? (this.state.page + 1) : this.page;
 
       // load view
-      this.load ();
+      this.load();
 
       // update view
-      this.update ();
+      this.update();
     }
 
     /**
@@ -277,17 +300,17 @@
      */
     onPrev (e) {
       // prevent scrolling to top
-      e.preventDefault ();
-      e.stopPropagation ();
+      e.preventDefault();
+      e.stopPropagation();
 
       // get page
-      this.state.page = this.hasPrev () ? (this.state.page - 1) : 1;
+      this.state.page = this.hasPrev() ? (this.state.page - 1) : 1;
 
       // load view
-      this.load ();
+      this.load();
 
       // update view
-      this.update ();
+      this.update();
     }
 
     /**
@@ -297,11 +320,11 @@
      */
     onSort (e) {
       // prevent scrolling to top
-      e.preventDefault ();
-      e.stopPropagation ();
+      e.preventDefault();
+      e.stopPropagation();
 
       // get link
-      let th = jQuery (e.target).is ('th') ? jQuery (e.target) : jQuery (e.target).closest ('th');
+      let th = jQuery(e.target).is('th') ? jQuery(e.target) : jQuery(e.target).closest('th');
 
       // get column
       let column = this.state.columns[th.attr ('data-column')];
@@ -334,23 +357,123 @@
     }
 
     /**
+     * on initialize update
+     *
+     * @param  {Event} e
+     */
+    onOpenUpdate (e) {
+      // get value
+      let index  = jQuery(e.target).closest('[data-index]').attr('data-index');
+      let column = jQuery(e.target).closest('[data-column]').attr('data-column');
+
+      // check update
+      if (!(this.state.columns.find((col) => col.id === column) || {}).update) return;
+
+      // check already updating
+      if (this.active[index + '.' + column]) return;
+
+      // set true
+      this.active[index + '.' + column] = true;
+
+      // update view
+      this.update();
+    }
+
+    /**
+     * on initialize update
+     *
+     * @param  {Event} e
+     */
+    onCloseUpdate (e) {
+      // get value
+      let index  = jQuery(e.target).closest('[data-index]').attr('data-index');
+      let column = jQuery(e.target).closest('[data-column]').attr('data-column');
+
+      // check update
+      if (!(this.state.columns.find((col) => col.id === column) || {}).update) return;
+
+      // check already updating
+      if (!this.active[index + '.' + column]) return;
+
+      // set true
+      this.active[index + '.' + column] = false;
+
+      // update view
+      this.update();
+    }
+
+    /**
+     * on input value
+     *
+     * @param  {Event} e
+     */
+    onValue (e) {
+      // get value
+      let index  = jQuery(e.target).closest('[data-index]').attr('data-index');
+      let column = jQuery(e.target).closest('[data-column]').attr('data-column');
+
+      // set active
+      this.state.data[index][column] = jQuery(e.target).val();
+
+      // update view
+      this.update();
+    }
+
+    /**
+     * on initialize update
+     *
+     * @param  {Event} e
+     */
+    async onUpdate (e) {
+      // get value
+      let index  = jQuery(e.target).closest('[data-index]').attr('data-index');
+      let column = jQuery(e.target).closest('[data-column]').attr('data-column');
+
+      // set updating
+      this.updating[index + '.' + column] = true;
+
+      // update view
+      this.update();
+
+      // send updates
+      let updates = {
+        [this.state.data[index]._id] : {
+          [column] : this.state.data[index][column]
+        }
+      };
+
+      // update view
+      await this.load(updates);
+
+      // emit update event
+      if (opts.onValueSave) opts.onValueSave(updates);
+
+      // set updating
+      this.updating = {};
+
+      // update view
+      this.update();
+    }
+
+    /**
      * loads datagrid by params
      */
-    async load () {
+    async load (updates) {
       // set loading
+      this.active  = {};
       this.loading = true;
 
       // update view
-      this.update ();
+      this.update();
 
       // get state
-      let state = jQuery.extend ({
+      let state = Object.assign({}, {
         'prevent' : true
       }, eden.router.history.location.state);
 
       // set url
-      window.eden.router.history.replace ({
-        'pathname' : eden.router.history.location.pathname.split ('?')[0] + '?' + jQuery.param ({
+      window.eden.router.history.replace({
+        'pathname' : eden.router.history.location.pathname.split('?')[0] + '?' + jQuery.param({
           'way'    : this.state.way,
           'page'   : this.state.page,
           'rows'   : this.state.rows,
@@ -361,13 +484,14 @@
       });
 
       // log data
-      let res = await fetch (this.state.route, {
-        'body' : JSON.stringify ({
-          'way'    : this.state.way,
-          'page'   : this.state.page,
-          'rows'   : this.state.rows,
-          'sort'   : this.state.sort,
-          'filter' : this.state.filter
+      let res = await fetch(this.state.route, {
+        'body' : JSON.stringify({
+          'way'     : this.state.way,
+          'page'    : this.state.page,
+          'rows'    : this.state.rows,
+          'sort'    : this.state.sort,
+          'filter'  : this.state.filter,
+          'updates' : updates
         }),
         'method'  : 'post',
         'headers' : {
@@ -377,10 +501,10 @@
       });
 
       // load json
-      let data = await res.json ();
+      let data = await res.json();
 
       // check if live
-      if (this.state.live) this.emit ('deafen');
+      if (this.state.live) this.emit('deafen');
 
       // loop data
       for (var key in data) {
@@ -397,7 +521,7 @@
       this.loading = false;
 
       // update view
-      this.update ();
+      this.update();
     }
 
     /**
@@ -405,7 +529,7 @@
      *
      * @param  {String} 'mount'
      */
-    this.on ('mount', () => {
+    this.on('mount', () => {
       // check frontend
       if (!this.eden.frontend) return;
 
@@ -439,7 +563,7 @@
       this.loading = false;
 
       // update view
-      this.update ();
+      this.update();
     });
 
     /**
@@ -447,9 +571,9 @@
      *
      * @param  {String} 'update'
      */
-    this.on ('update', () => {
+    this.on('update', () => {
       // set pages
-      this.setPages ();
+      this.setPages();
     });
   </script>
 </grid>

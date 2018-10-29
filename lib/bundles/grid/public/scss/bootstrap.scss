@@ -20,6 +20,13 @@ $gray-500: #6d6e70!default;
     }
   }
 
+  // update item
+  .grid-update {
+    &:not(.active) {
+      cursor : pointer;
+    }
+  }
+
   // Alter pagination
   .pagination {
     margin : 0;
