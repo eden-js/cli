@@ -29,7 +29,7 @@ nginx.conf
 gulp
 
 # Cache Directory
-app/cache
+cache
 
 # Web Directory
 www

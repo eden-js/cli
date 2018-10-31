@@ -5,6 +5,7 @@ require('./lib/env');
 const fs       = require('fs-extra');
 const gulp     = require('gulp');
 const glob     = require('glob-all');
+const path     = require('path');
 const watch    = require('gulp-watch');
 const server   = require('gulp-develop-server');
 const sequence = require('run-sequence');
@@ -22,9 +23,9 @@ class Loader {
    */
   constructor () {
     // Check cache exists
-    if (!fs.existsSync('./app/cache')) {
+    if (!fs.existsSync('./cache')) {
       // Create cache
-      fs.mkdirSync('./app/cache');
+      fs.mkdirSync('./cache');
     }
 
     // Bind public methods
@@ -151,7 +152,7 @@ class Loader {
    */
   write (name, obj) {
     // Write file
-    fs.writeFile('./app/cache/' + name + '.json', JSON.stringify(obj), (err) => {
+    fs.writeFile('./cache/' + name + '.json', JSON.stringify(obj), (err) => {
       // Check if error
       if (err) console.error(err);
     });
@@ -201,7 +202,7 @@ class Loader {
     let filtered = [];
 
     // Loop files
-    [global.appRoot + '/lib/bundles/*/', global.appRoot + '/node_modules/*/bundles/*/', global.appRoot + '/app/bundles/*/'].forEach((loc) => {
+    [path.resolve(global.appRoot + '/lib/bundles/*/'), path.resolve(global.appRoot + '/node_modules/*/bundles/*/'), path.resolve(global.appRoot + '/app/bundles/*/')].forEach((loc) => {
       // Loop files
       files.forEach((file) => {
         // Push to newFiles
