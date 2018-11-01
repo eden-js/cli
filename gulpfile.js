@@ -73,6 +73,7 @@ class Loader {
     // Glob tasks
     let done = [];
 
+    // Get files
     const tasks      = glob.sync(this.files('tasks/*.js'));
     const watchers   = [];
     const installers = [];
@@ -201,7 +202,13 @@ class Loader {
     let filtered = [];
 
     // Loop files
-    [global.appRoot + '/lib/bundles/*/', global.appRoot + '/node_modules/*/bundles/*/', global.appRoot + '/app/bundles/*/'].forEach((loc) => {
+    [
+      global.appRoot + '/lib/bundles/*/',
+      global.appRoot + '/node_modules/*/bundles/*/',
+      global.appRoot + '/app/bundles/node_modules/*/bundles/*/',
+      global.appRoot + '/app/bundles/node_modules/*/*/bundles/*/',
+      global.appRoot + '/app/bundles/*/'
+    ].forEach((loc) => {
       // Loop files
       files.forEach((file) => {
         // Push to newFiles
