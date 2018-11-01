@@ -5,7 +5,6 @@ require('./lib/env');
 const fs       = require('fs-extra');
 const gulp     = require('gulp');
 const glob     = require('glob-all');
-const path     = require('path');
 const watch    = require('gulp-watch');
 const server   = require('gulp-develop-server');
 const sequence = require('run-sequence');
@@ -202,7 +201,7 @@ class Loader {
     let filtered = [];
 
     // Loop files
-    [path.resolve(global.appRoot + '/lib/bundles/*/'), path.resolve(global.appRoot + '/node_modules/*/bundles/*/'), path.resolve(global.appRoot + '/app/bundles/*/')].forEach((loc) => {
+    [global.appRoot + '/lib/bundles/*/', global.appRoot + '/node_modules/*/bundles/*/', global.appRoot + '/app/bundles/*/'].forEach((loc) => {
       // Loop files
       files.forEach((file) => {
         // Push to newFiles
