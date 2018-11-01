@@ -50,7 +50,7 @@
     "@edenjs/alert": "^1.0.0",
     "@edenjs/cms": "^1.0.2",
     "@edenjs/grid": "^1.0.1",
-    "@edenjs/locale": "^1.0.1",
+    "@edenjs/locale": "^1.0.2",
     "@edenjs/menu": "^1.0.0",
     "@edenjs/riot": "^1.0.1",
     "@edenjs/user": "^1.0.0",
