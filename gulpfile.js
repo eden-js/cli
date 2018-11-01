@@ -203,7 +203,6 @@ class Loader {
 
     // Loop files
     [
-      global.appRoot + '/lib/bundles/*/',
       global.appRoot + '/node_modules/*/bundles/*/',
       global.appRoot + '/node_modules/*/*/bundles/*/',
       global.appRoot + '/app/bundles/node_modules/*/bundles/*/',
