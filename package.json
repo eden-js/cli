@@ -49,6 +49,7 @@
     "@edenjs/admin": "^1.0.1",
     "@edenjs/alert": "^1.0.0",
     "@edenjs/grid": "^1.0.1",
+    "@edenjs/locale": "^1.0.1",
     "@edenjs/riot": "^1.0.1",
     "@edenjs/user": "^1.0.0",
     "app-module-path": "^2.2.0",
