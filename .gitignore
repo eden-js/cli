@@ -1,9 +1,3 @@
-# Logs
-logs
-
-# Dependency directory
-node_modules
-
 # Debug log from npm
 npm-debug.log
 
@@ -21,21 +15,20 @@ package-lock.json
 *.log
 *.sentry
 
-# EdenFrame config
-app/config.js
+# EdenJS config
 nginx.conf
-
-# EdenFrame etc
-gulp
-
-# Cache Directory
-cache
-
-# Web Directory
-www
 
 # Application bundles
 app/bundles
 
 # Redis
 *.rdb
+
+# ignore all but
+/*/
+!/lib
+!/app
+
+# local app
+app/bundles
+app/config.js
