@@ -31,6 +31,9 @@ config.logo = '/public/assets/images/logo.svg';
 // Set app environment
 config.environment = 'dev';
 
+// Set local module paths
+config.modules = ['./app'];
+
 // Set starting port
 config.port = 1337;
 

@@ -4,12 +4,14 @@ require('./lib/env');
 // Require dependencies
 const fs       = require('fs-extra');
 const gulp     = require('gulp');
+const path     = require('path');
 const glob     = require('glob-all');
 const watch    = require('gulp-watch');
 const server   = require('gulp-develop-server');
 const sequence = require('run-sequence');
 
 // Require local dependencies
+const config = require('app/config');
 const parser = require('lib/utilities/parser');
 
 /**
@@ -201,13 +203,27 @@ class Loader {
     // Let filtered files
     let filtered = [];
 
+    // Get config
+    let locals = [].concat(...((config.modules || []).map((p) => {
+      // Get paths
+      p = path.resolve(p);
+
+      // Return path
+      return [
+        p + '/bundles/node_modules/*/bundles/*/',
+        p + '/bundles/node_modules/*/*/bundles/*/',
+        p + '/bundles/*/'
+      ];
+    })));
+
     // Loop files
     [
       global.appRoot + '/node_modules/*/bundles/*/',
       global.appRoot + '/node_modules/*/*/bundles/*/',
       global.appRoot + '/app/bundles/node_modules/*/bundles/*/',
       global.appRoot + '/app/bundles/node_modules/*/*/bundles/*/',
-      global.appRoot + '/app/bundles/*/'
+
+      ...locals
     ].forEach((loc) => {
       // Loop files
       files.forEach((file) => {
