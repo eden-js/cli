@@ -39,7 +39,7 @@
   "dependencies": {
     "@eden-js/eslint-config-eden": "^1.0.5",
     "@eden-js/model": "^1.12.0",
-    "@edenjs/core": "^1.0.9",
+    "@edenjs/core": "^1.0.10",
     "app-module-path": "^2.2.0",
     "assert": "^1.4.1",
     "body-parser": "^1.18.3",
