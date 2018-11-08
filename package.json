@@ -39,7 +39,7 @@
   "dependencies": {
     "@eden-js/eslint-config-eden": "^1.0.5",
     "@eden-js/model": "^1.12.0",
-    "@edenjs/core": "^1.0.8",
+    "@edenjs/core": "^1.0.10",
     "app-module-path": "^2.2.0",
     "assert": "^1.4.1",
     "body-parser": "^1.18.3",
@@ -66,7 +66,7 @@
     "mocha": "^5.2.0",
     "multer": "^1.4.1",
     "nconf": "^0.10.0",
-    "node-fetch": "^2.2.0",
+    "node-fetch": "^2.2.1",
     "parse-comments": "^0.4.3",
     "popper.js": "^1.14.4",
     "pretty-error": "^2.1.1",
