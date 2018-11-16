@@ -37,7 +37,6 @@
     "node": ">= 8.0.0"
   },
   "dependencies": {
-    "@eden-js/eslint-config-eden": "^1.0.5",
     "@eden-js/model": "^1.12.0",
     "@edenjs/core": "^1.0.14",
     "app-module-path": "^2.2.0",
@@ -54,7 +53,6 @@
     "core-js": "^2.5.7",
     "dot-prop": "^4.2.0",
     "dot-prop-immutable": "^1.5.0",
-    "eslint": "^5.9.0",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "fs-extra": "^7.0.1",
@@ -79,5 +77,13 @@
     "uuid": "^3.3.2",
     "whatwg-fetch": "^3.0.0",
     "winston": "^3.1.0"
+  },
+  "devDependencies": {
+    "@edenjs/eslint-config-eden": "^2.0.1",
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.11.1"
   }
 }
