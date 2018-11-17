@@ -53,7 +53,7 @@ class App {
    */
   run() {
     // Load eden
-    const eden = require('lib/eden'); // eslint-disable-line global-require
+    const eden = require('eden'); // eslint-disable-line global-require
 
     // Log spawning threads
     this._logger.log('info', `Spawned new ${(process.env.express === 'true') ? 'Express' : 'Compute'} thread`, {
