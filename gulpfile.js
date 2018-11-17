@@ -18,11 +18,10 @@ const parser = require('lib/utilities/parser');
  * Create Loader class
  */
 class Loader {
-
   /**
    * Construct Loader class
    */
-  constructor () {
+  constructor() {
     // Check cache exists
     if (!fs.existsSync('./cache')) {
       // Create cache
@@ -30,13 +29,13 @@ class Loader {
     }
 
     // Bind public methods
-    this.build   = this.build.bind(this);
-    this.files   = this.files.bind(this);
-    this.merge   = this.merge.bind(this);
+    this.build = this.build.bind(this);
+    this.files = this.files.bind(this);
+    this.merge = this.merge.bind(this);
     this.restart = this.restart.bind(this);
 
     // Bind private methods
-    this._task  = this._task.bind(this);
+    this._task = this._task.bind(this);
     this._watch = this._watch.bind(this);
 
     // Run build
@@ -46,13 +45,13 @@ class Loader {
     gulp.task('server', ['install'], () => {
       // Run server task
       server.listen({
-        'env' : {
-          'NODE_ENV' : 'development'
+        env : {
+          NODE_ENV : 'development',
         },
-        'args' : [
-          '--color'
+        args : [
+          '--color',
         ],
-        'path' : './app.js'
+        path : './app.js',
       });
 
       // Set server
@@ -71,7 +70,7 @@ class Loader {
    *
    * This has to be a sync method because gulp won't change core to allow async task loading
    */
-  build () {
+  build() {
     // Glob tasks
     let done = [];
 
@@ -81,12 +80,12 @@ class Loader {
     const installers = [];
 
     // Loop tasks
-    for (let i = 0; i < tasks.length; i++) {
+    for (let i = 0; i < tasks.length; i += 1) {
       // Load task
       const task = parser.task(tasks[i]);
 
       // Create task
-      let Task = this._task(task);
+      const Task = this._task(task);
 
       // Add to default task
       if (done.indexOf(task.task) === -1) installers.push(task.task);
@@ -100,7 +99,7 @@ class Loader {
         done = done.concat(task.before);
 
         // Remove before from defaults
-        for (let a = 0; a < task.before.length; a++) {
+        for (let a = 0; a < task.before.length; a += 1) {
           // Set index
           const index = installers.indexOf(task.before[a]);
 
@@ -115,7 +114,7 @@ class Loader {
         done = done.concat(task.after);
 
         // Remove after from defaults
-        for (let b = 0; b < task.after.length; b++) {
+        for (let b = 0; b < task.after.length; b += 1) {
           // Set index
           const index = installers.indexOf(task.after[b]);
 
@@ -125,11 +124,11 @@ class Loader {
       }
 
       // Add watch to watchers
-      if (Task.watch) watchers.push(task.task + '.watch');
+      if (Task.watch) watchers.push(`${task.task}.watch`);
     }
 
     // Create tasks
-    gulp.task('watch',   watchers);
+    gulp.task('watch', watchers);
     gulp.task('install', installers);
   }
 
@@ -138,7 +137,7 @@ class Loader {
    *
    * @private
    */
-  restart () {
+  restart() {
     // Check if running
     if (!this.server) return;
 
@@ -152,11 +151,11 @@ class Loader {
    * @param {string} name
    * @param {object} obj
    */
-  write (name, obj) {
+  write(name, obj) {
     // Write file
-    fs.writeFile('./cache/' + name + '.json', JSON.stringify(obj), (err) => {
+    fs.writeFile(`./cache/${name}.json`, JSON.stringify(obj), (err) => {
       // Check if error
-      if (err) console.error(err);
+      if (err) console.error(err); // eslint-disable-line no-console
     });
   }
 
@@ -168,21 +167,21 @@ class Loader {
    *
    * @returns {object}
    */
-  merge (obj1, obj2) {
+  merge(obj1, obj2) {
     // Loop object
-    for (let p in obj2) {
+    for (const p of Object.keys(obj2)) {
       try {
         // Property in destination object set; update its value.
         if (obj2[p].constructor === Object) {
-          obj1[p] = this.merge(obj1[p], obj2[p]);
+          obj1[p] = this.merge(obj1[p], obj2[p]); // eslint-disable-line no-param-reassign
         } else if (obj2[p].constructor === Array) {
-          obj1[p] = obj1[p].concat(obj2[p]);
+          obj1[p] = obj1[p].concat(obj2[p]); // eslint-disable-line no-param-reassign
         } else {
-          obj1[p] = obj2[p];
+          obj1[p] = obj2[p]; // eslint-disable-line no-param-reassign
         }
       } catch (e) {
         // Property in destination object not set; create it and set its value.
-        obj1[p] = obj2[p];
+        obj1[p] = obj2[p]; // eslint-disable-line no-param-reassign
       }
     }
 
@@ -196,37 +195,37 @@ class Loader {
    *
    * @return {string[]}
    */
-  files (files) {
+  files(files) {
     // Check array
-    if (!Array.isArray(files)) files = [files];
+    const filesArr = !Array.isArray(files) ? [files] : files;
 
     // Let filtered files
-    let filtered = [];
+    const filtered = [];
 
     // Get config
-    let locals = [].concat(...((config.modules || []).map((p) => {
+    const locals = [].concat(...((config.modules || []).map((p) => {
       // Get paths
-      p = path.resolve(p);
+      const fullP = path.resolve(p);
 
       // Return path
       return [
-        p + '/bundles/node_modules/*/bundles/*/',
-        p + '/bundles/node_modules/*/*/bundles/*/',
-        p + '/bundles/*/'
+        `${fullP}/bundles/node_modules/*/bundles/*/`,
+        `${fullP}/bundles/node_modules/*/*/bundles/*/`,
+        `${fullP}/bundles/*/`,
       ];
     })));
 
     // Loop files
     [
-      global.appRoot + '/node_modules/*/bundles/*/',
-      global.appRoot + '/node_modules/*/*/bundles/*/',
-      global.appRoot + '/app/bundles/node_modules/*/bundles/*/',
-      global.appRoot + '/app/bundles/node_modules/*/*/bundles/*/',
+      `${global.appRoot}/node_modules/*/bundles/*/`,
+      `${global.appRoot}/node_modules/*/*/bundles/*/`,
+      `${global.appRoot}/app/bundles/node_modules/*/bundles/*/`,
+      `${global.appRoot}/app/bundles/node_modules/*/*/bundles/*/`,
 
-      ...locals
+      ...locals,
     ].forEach((loc) => {
       // Loop files
-      files.forEach((file) => {
+      filesArr.forEach((file) => {
         // Push to newFiles
         filtered.push(loc + file);
       });
@@ -245,18 +244,15 @@ class Loader {
    *
    * @private
    */
-  _task (task) {
+  _task(task) {
     // Create task
-    let Task = require(task.file);
+    let Task = require(task.file); // eslint-disable-line global-require, import/no-dynamic-require
 
     // New task
     Task = new Task(this);
 
     // Create gulp task
-    gulp.task(task.task + '.run', () => {
-      // Return run
-      return Task.run(Task.watch ? this.files(Task.watch()) : undefined);
-    });
+    gulp.task(`${task.task}.run`, () => Task.run(Task.watch ? this.files(Task.watch()) : undefined));
 
     // Create task args
     let args = [];
@@ -268,7 +264,7 @@ class Loader {
     }
 
     // Push actual function
-    args.push(task.task + '.run');
+    args.push(`${task.task}.run`);
 
     // Check after
     if (task.after && task.after.length) {
@@ -279,13 +275,13 @@ class Loader {
     // Create task
     gulp.task(task.task, (cb) => {
       // Push cb
-      let newArgs = args.slice();
+      const newArgs = args.slice();
 
       // Push new callback
       newArgs.push(cb);
 
       // Run gulp sequence
-      sequence.apply(null, newArgs);
+      sequence(...newArgs);
     });
 
     // Check watch
@@ -306,17 +302,13 @@ class Loader {
    *
    * @private
    */
-  _watch (task, Task) {
+  _watch(task, Task) {
     // Create watch task
-    gulp.task(task + '.watch', () => {
-      // Return watch task
-      return watch(this.files(Task.watch()), () => {
-        // Start task
-        gulp.start(task);
-      });
-    });
+    gulp.task(`${task}.watch`, () => watch(this.files(Task.watch()), () => {
+      // Start task
+      gulp.start(task);
+    }));
   }
-
 }
 
 /**

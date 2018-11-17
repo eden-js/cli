@@ -61,6 +61,7 @@
     "gulp-develop-server": "^0.5.2",
     "gulp-watch": "^5.0.1",
     "jquery": "^3.3.1",
+    "minimist": "^1.2.0",
     "mocha": "^5.2.0",
     "multer": "^1.4.1",
     "nconf": "^0.10.0",
@@ -79,7 +80,7 @@
     "winston": "^3.1.0"
   },
   "devDependencies": {
-    "@edenjs/eslint-config-eden": "^2.0.1",
+    "@edenjs/eslint-config-eden": "^2.0.11",
     "eslint": "^5.9.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0",

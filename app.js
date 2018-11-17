@@ -21,49 +21,52 @@ global.envrionment = process.env.NODE_ENV || config.get('environment');
  * Create App class
  */
 class App {
-
   /**
    * Construct App class
    */
-  constructor () {
+  constructor() {
     // Bind private variables
-    this._master  = cluster.isMaster;
-    this._logger  = false;
+    this._master = cluster.isMaster;
+    this._logger = false;
     this._workers = {};
 
     // Bind public methods
-    this.run      = this.run.bind(this);
-    this.exit     = this.exit.bind(this);
-    this.spawn    = this.spawn.bind(this);
-    this.logger   = this.logger.bind(this);
+    this.run = this.run.bind(this);
+    this.exit = this.exit.bind(this);
+    this.spawn = this.spawn.bind(this);
+    this.logger = this.logger.bind(this);
     this.children = this.children.bind(this);
 
     // Build logger
     this.logger();
 
     // Spawn children
-    this._master ? this.children() : this.run();
+    if (this._master) {
+      this.children();
+    } else {
+      this.run();
+    }
   }
 
   /**
    * Runs Eden
    */
-  run () {
+  run() {
     // Load eden
-    const eden = require('lib/eden');
+    const eden = require('lib/eden'); // eslint-disable-line global-require
 
     // Log spawning threads
-    this._logger.log('info', 'Spawned new ' + ((process.env.express === 'true') ? 'Express' : 'Compute') + ' thread', {
-      'class' : 'Eden'
+    this._logger.log('info', `Spawned new ${(process.env.express === 'true') ? 'Express' : 'Compute'} thread`, {
+      class : 'Eden',
     });
 
     // Run single Eden instance
     eden.start({
-      'id'      : process.env.id,
-      'port'    : parseInt(process.env.port),
-      'host'    : process.env.host,
-      'logger'  : this._logger,
-      'express' : (process.env.express === 'true')
+      id      : process.env.id,
+      port    : parseInt(process.env.port, 10),
+      host    : process.env.host,
+      logger  : this._logger,
+      express : (process.env.express === 'true'),
     });
   }
 
@@ -72,13 +75,13 @@ class App {
    *
    * @param {object} worker
    */
-  exit (worker) {
+  exit(worker) {
     // Set id
-    const id      = worker.process.env.id;
+    const { id }  = worker.process.env;
     const express = worker.process.env.express === 'true';
 
     // Spawn new thread
-    this.spawn(parseInt(id), express, (parseInt(config.get('port')) + parseInt(id)));
+    this.spawn(parseInt(id, 10), express, (parseInt(config.get('port'), 10) + parseInt(id, 10)));
   }
 
   /**
@@ -88,89 +91,89 @@ class App {
    * @param {boolean} express
    * @param {number}  port
    */
-  spawn (id, express, port) {
+  spawn(id, express, port) {
     // Clone environment
     const env = Object.assign({}, process.env);
 
     // Set thread id
-    env.id      = id;
+    env.id = id;
     env.express = express ? 'true' : 'false';
 
     // Check port
     if (port) env.port = port;
 
     // Fork new thread
-    this._workers[(express ? 'express' : 'compute') + ':' + id] = cluster.fork(env);
-    this._workers[(express ? 'express' : 'compute') + ':' + id].process.env = env;
+    this._workers[`${express ? 'express' : 'compute'}:${id}`] = cluster.fork(env);
+    this._workers[`${express ? 'express' : 'compute'}:${id}`].process.env = env;
   }
 
   /**
    * Builds logger
    */
-  logger () {
+  logger() {
     // Set logger
     this._logger = winston.createLogger({
-      'level'      : config.get('logLevel')  || 'info',
-      'format'     : log,
-      'transports' : [
-        new winston.transports.Console()
-      ]
+      level      : config.get('logLevel') || 'info',
+      format     : log,
+      transports : [
+        new winston.transports.Console(),
+      ],
     });
   }
 
   /**
    * Spawns child processes
    */
-  children () {
+  children() {
     // Log running Eden
     this._logger.log('info', 'Running Eden', {
-      'class' : 'Eden'
+      class : 'Eden',
     });
 
     // Set process name
     try {
       // Set process name
-      process.title = config.get('domain') + ' - master';
-    } catch (e) {}
+      process.title = `${config.get('domain')} - master`;
+    } catch (e) { /* */ }
 
     // Spawn express threads
-    let threads = (global.arguments.threads || '').split(':');
+    const threads = (global.arguments.threads || '').split(':');
 
     // Check should run express
     if (!threads[0] || threads[0] === 'express') {
       // Get default express threads
-      const defaultExpressThreads = '0-' + ((config.get('expressThreads') || config.get('expressThreads') === 0 ? config.get('expressThreads') : os.cpus().length) - 1);
+      const defaultExpressThreads = `0-${(config.get('expressThreads') || config.get('expressThreads') === 0 ? config.get('expressThreads') : os.cpus().length) - 1}`;
 
       // Count frontend express threads
-      const expressThreads = (threads[1] ? threads[1].split('-')[0] + '-' + (threads[1].split('-')[1] || threads[1].split('-')[0]) : defaultExpressThreads).split('-').map((thread) => parseInt(thread));
+      const expressThreads = (threads[1] ? `${threads[1].split('-')[0]}-${threads[1].split('-')[1] || threads[1].split('-')[0]}` : defaultExpressThreads).split('-').map(thread => parseInt(thread, 10));
 
       // Log spawning Express threads
-      this._logger.log('info', 'spawning express threads ' + expressThreads[0] + '-' + expressThreads[1], {
-        'class' : 'Eden'
+      this._logger.log('info', `spawning express threads ${expressThreads[0]}-${expressThreads[1]}`, {
+        class : 'Eden',
       });
 
       // Loop each express thread
-      for (let i = expressThreads[0]; i <= expressThreads[1]; i++) {
+      for (let i = expressThreads[0]; i <= expressThreads[1]; i += 1) {
         // Spawn new thread
-        this.spawn(i, true, (parseInt(config.get('port')) + i));
+        this.spawn(i, true, (parseInt(config.get('port'), 10) + i));
       }
     }
 
     // Check should run express
     if (!threads[0] || threads[0] === 'compute') {
       // Get default express threads
-      const defaultComputeThreads = '0-' + ((config.get('computeThreads') || config.get('computeThreads') === 0 ? config.get('computeThreads') : os.cpus().length) - 1);
+      const defaultComputeThreads = `0-${(config.get('computeThreads') || config.get('computeThreads') === 0 ? config.get('computeThreads') : os.cpus().length) - 1}`;
 
       // Count frontend express threads
-      const computeThreads = (threads[1] ? threads[1].split('-')[0] + '-' + (threads[1].split('-')[1] || threads[1].split('-')[0]) : defaultComputeThreads).split('-').map((thread) => parseInt(thread));
+      const computeThreads = (threads[1] ? `${threads[1].split('-')[0]}-${threads[1].split('-')[1] || threads[1].split('-')[0]}` : defaultComputeThreads).split('-').map(thread => parseInt(thread, 10));
 
       // Log spawning Express threads
-      this._logger.log('info', 'spawning compute threads ' + computeThreads[0] + '-' + computeThreads[1], {
-        'class' : 'Eden'
+      this._logger.log('info', `spawning compute threads ${computeThreads[0]}-${computeThreads[1]}`, {
+        class : 'Eden',
       });
 
       // Loop each express thread
-      for (let i = computeThreads[0]; i <= computeThreads[1]; i++) {
+      for (let i = computeThreads[0]; i <= computeThreads[1]; i += 1) {
         // Spawn new thread
         this.spawn(i, false);
       }
@@ -179,7 +182,6 @@ class App {
     // On cluster exit
     cluster.on('exit', this.exit);
   }
-
 }
 
 /**

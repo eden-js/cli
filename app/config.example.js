@@ -12,7 +12,7 @@ const config = {};
 
 // Set application title
 config.title = 'EdenJS';
-config.direction = 1; // 0 = page title only, 1 = title before page title, 2 = title after page title
+config.direction = 1; // 0 = page only, 1 = title before page title, 2 = title after page title
 
 // Set application domain
 config.domain = 'edenjs.com';
@@ -40,60 +40,61 @@ config.port = 1337;
 // Set server host
 config.host = '0.0.0.0';
 
-// Set amount of express threads to run. Setting this as null will count your CPU cores
+// Set amount of express threads. Setting this as null will count your CPU cores
 config.expressThreads = 1;
 
-// Set amount of compute threads to run. Setting this as null will use 1 compute thread. Compute threads are threads
-// used for backend processes they do not run the express application, but do run all daemons
+// Set amount of compute threads. Setting this as null will use 1 compute thread.
+// Compute threads are threads used for backend processes
+// they do not run the express application, but do run all daemons
 config.computeThreads = 1;
 
 // Websocket configuration
 config.socket = {
-  'url'    : `//${config.domain}`,
-  'params' : {
-    'reconnect' : true
-  }
+  url    : `//${config.domain}`,
+  params : {
+    reconnect : true,
+  },
 };
 
 // Redis configuration
 config.redis = {
-  'host' : 'localhost',
-  'port' : 6379
+  host : 'localhost',
+  port : 6379,
 };
 
 // Lock configuration
 config.lock = {
-  'maxPending' : 1000000
+  maxPending : 1000000,
 };
 
 
 // I18n configuration
 config.i18n = {
-  'cache'        : {
-    'prefix'         : 'lang_',
-    'enabled'        : true,
-    'versions'       : {},
-    'expirationTime' : 7 * 24 * 60 * 60 * 1000
+  cache        : {
+    prefix         : 'lang_',
+    enabled        : true,
+    versions       : {},
+    expirationTime : 7 * 24 * 60 * 60 * 1000,
   },
-  'detection'    : {
-    'caches'            : ['cookie'],
-    'lookupCookie'      : 'lang',
-    'lookupQuerystring' : 'lang'
+  detection    : {
+    caches            : ['cookie'],
+    lookupCookie      : 'lang',
+    lookupQuerystring : 'lang',
   },
-  'defaultNS'    : 'default',
-  'fallbackNS'   : 'default',
-  'fallbackLng'  : 'en-au',
-  'lowerCaseLng' : true
+  defaultNS    : 'default',
+  fallbackNS   : 'default',
+  fallbackLng  : 'en-au',
+  lowerCaseLng : true,
 };
 
 // Add media dir
 config.asset = {
-  'migrate' : false // Migrate media
+  migrate : false, // Migrate media
 };
 
 // Create sitemap
 config.sitemap = {
-  'enabled' : true
+  enabled : true,
 };
 
 /**
@@ -102,11 +103,11 @@ config.sitemap = {
 
 // Set config database object
 config.database = {
-  'plug'   : 'MongoPlug', // Can be MongoPlug, RethinkPlug, CouchPlug or ElasticPlug
-  'config' : {
-    'db'  : config.domain.split('.')[0],
-    'url' : 'mongodb://localhost:27017'
-  }
+  plug   : 'MongoPlug', // Can be MongoPlug, RethinkPlug, CouchPlug or ElasticPlug
+  config : {
+    db  : config.domain.split('.')[0],
+    url : 'mongodb://localhost:27017',
+  },
 };
 
 
@@ -116,11 +117,11 @@ config.database = {
 
 // Set SMTP config email object
 config.email = {
-  'service' : 'Zoho',
-  'auth'    : {
-    'user' : 'email@domain.com',
-    'pass' : 'superSecretPassword'
-  }
+  service : 'Zoho',
+  auth    : {
+    user : 'email@domain.com',
+    pass : 'superSecretPassword',
+  },
 };
 
 
@@ -130,7 +131,7 @@ config.email = {
 
 // Set scss imports. These are imported into app.min.css
 config.sass = [
-  './node_modules/bootstrap/scss/bootstrap.scss'
+  './node_modules/bootstrap/scss/bootstrap.scss',
 ];
 
 // Set js imports. These are imported into app.min.js at the top
@@ -138,7 +139,7 @@ config.js = [
   './node_modules/whatwg-fetch/dist/fetch.umd.js',
   './node_modules/jquery/dist/jquery.min.js',
   './node_modules/popper.js/dist/umd/popper.min.js',
-  './node_modules/bootstrap/dist/js/bootstrap.js'
+  './node_modules/bootstrap/dist/js/bootstrap.js',
 ];
 
 
@@ -151,12 +152,13 @@ config.secret = 'someStrongSecretHash';
 
 // Set config session object
 config.session = {
-  'key'    : `${config.domain.split('.')[0]}.session.id`,
-  'cookie' : {
-    // Setting secure to true allows for secure sessions over HTTPS; if you are not using https then sessions will break
-    'secure'   : false,
-    'httpOnly' : false
-  }
+  key    : `${config.domain.split('.')[0]}.session.id`,
+  cookie : {
+    // Setting secure to true allows for secure sessions over HTTPS;
+    // if you are not using https then sessions will break
+    secure   : false,
+    httpOnly : false,
+  },
 };
 
 
@@ -167,22 +169,22 @@ config.session = {
 // Set config ACL object
 config.acl = {
   // Default ACL for user. This is added by default to every registered user
-  'default' : [
+  default : [
     {
-      'name'  : 'User',
-      'value' : [
-        'user.authenticated'
-      ]
-    }
+      name  : 'User',
+      value : [
+        'user.authenticated',
+      ],
+    },
   ],
 
   // Default ACL for first user (admin). This ACL is added only to the first user
-  'admin' : [
+  admin : [
     {
-      'name'  : 'Admin',
-      'value' : true // Assigning true to value gives access to everything
-    }
-  ]
+      name  : 'Admin',
+      value : true, // Assigning true to value gives access to everything
+    },
+  ],
 };
 
 
@@ -192,11 +194,11 @@ config.acl = {
 
 // Set config view object
 config.view = {
-  'engine'  : 'riot',
-  'include' : {
-    'alert'  : 'alert/public/js/bootstrap', // Include alert module
-    'socket' : 'socket/public/js/bootstrap' // Include socket module
-  }
+  engine  : 'riot',
+  include : {
+    alert  : 'alert/public/js/bootstrap', // Include alert module
+    socket : 'socket/public/js/bootstrap', // Include socket module
+  },
 };
 
 
@@ -213,4 +215,4 @@ config.logLevel = config.environment === 'dev' ? 'debug' : 'info';
  *
  * @type {Object}
  */
-exports = module.exports = config;
+module.exports = config;
