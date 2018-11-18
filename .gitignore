@@ -4,8 +4,8 @@ npm-debug.log
 # Error log from yarn
 yarn-error.log
 
-# Package lock - use yarn pls
-package-lock.json
+# yarn lock - do work pls
+yarn.lock
 
 # IDE
 .idea
