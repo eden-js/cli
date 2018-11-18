@@ -8,7 +8,7 @@
 Awesome isomorphic NodeJS skeleton for structured applications. Just have a look at the "bundles" that make up an EdenJS application.
 
 ## Getting Started
-These instructions will get a copy of the project up and running on your local machine. 
+These instructions will get a copy of the project up and running on your local machine.
 
 See deployment for notes on how to deploy the project.
 
@@ -27,9 +27,6 @@ git init; git remote add origin https://github.com/eden-js/eden.git; git pull;
 
 ### Running the tests
 ```
-// Test EdenJS with Yarn
-yarn test;
-
 // Test EdenJS with NPM
 npm test;
 ```
