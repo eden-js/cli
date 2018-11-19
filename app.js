@@ -14,7 +14,7 @@ const log    = require('lib/utilities/log');
 const config = require('config');
 
 // Set global environment
-global.arguments = minimist(process.argv.slice(2));
+global.processArgs = minimist(process.argv.slice(2));
 global.envrionment = process.env.NODE_ENV || config.get('environment');
 
 /**
@@ -137,7 +137,7 @@ class App {
     } catch (e) { /* */ }
 
     // Spawn express threads
-    const threads = (global.arguments.threads || '').split(':');
+    const threads = (global.processArgs.threads || '').split(':');
 
     // Check should run express
     if (!threads[0] || threads[0] === 'express') {
