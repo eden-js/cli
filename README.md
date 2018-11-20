@@ -51,9 +51,6 @@ A basic tutorial on how to get started with EdenJS is available: [TUTORIAL.md](T
 * [Riot.js](https://riot.js.org/) - Simple and elegant component-based UI library.
 * [Mongorito](http://mongorito.com/) - MongoDB ODM for Node.js based on ES6 generators. No callbacks or promises.
 
-## Contributing
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
-
 ## Versioning
 We use [SemVer](http://semver.org/) for versioning.
 
