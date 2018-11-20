@@ -11,7 +11,7 @@ const server   = require('gulp-develop-server');
 const sequence = require('run-sequence');
 
 // Require local dependencies
-const config = require('app/config');
+const config = require('config');
 const parser = require('lib/utilities/parser');
 
 /**
@@ -23,9 +23,9 @@ class Loader {
    */
   constructor() {
     // Check cache exists
-    if (!fs.existsSync('./cache')) {
+    if (!fs.existsSync(`${global.appRoot}/data/cache`)) {
       // Create cache
-      fs.mkdirSync('./cache');
+      fs.mkdirSync(`${global.appRoot}/data/cache`);
     }
 
     // Bind public methods
@@ -49,9 +49,10 @@ class Loader {
           NODE_ENV : 'development',
         },
         args : [
-          '--color',
+          'run',
+          '.',
         ],
-        path : './app.js',
+        path : './index.js',
       });
 
       // Set server
@@ -153,7 +154,7 @@ class Loader {
    */
   write(name, obj) {
     // Write file
-    fs.writeFile(`./cache/${name}.json`, JSON.stringify(obj), (err) => {
+    fs.writeFile(`${global.appRoot}/data/cache/${name}.json`, JSON.stringify(obj), (err) => {
       // Check if error
       if (err) console.error(err); // eslint-disable-line no-console
     });
@@ -217,10 +218,11 @@ class Loader {
 
     // Loop files
     [
-      `${global.appRoot}/node_modules/*/bundles/*/`,
-      `${global.appRoot}/node_modules/*/*/bundles/*/`,
-      `${global.appRoot}/app/bundles/node_modules/*/bundles/*/`,
-      `${global.appRoot}/app/bundles/node_modules/*/*/bundles/*/`,
+      `${global.edenRoot}/node_modules/*/bundles/*/`,
+      `${global.edenRoot}/node_modules/*/*/bundles/*/`,
+      `${global.appRoot}/bundles/*/`,
+      `${global.appRoot}/bundles/node_modules/*/bundles/*/`,
+      `${global.appRoot}/bundles/node_modules/*/*/bundles/*/`,
 
       ...locals,
     ].forEach((loc) => {

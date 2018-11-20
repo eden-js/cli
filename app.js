@@ -7,15 +7,10 @@ require('./lib/env');
 const os       = require('os');
 const cluster  = require('cluster');
 const winston  = require('winston');
-const minimist = require('minimist');
 
 // Require local dependencies
 const log    = require('lib/utilities/log');
 const config = require('config');
-
-// Set global environment
-global.processArgs = minimist(process.argv.slice(2));
-global.envrionment = process.env.NODE_ENV || config.get('environment');
 
 /**
  * Create App class
@@ -24,11 +19,12 @@ class App {
   /**
    * Construct App class
    */
-  constructor() {
+  constructor(opts = {}) {
     // Bind private variables
     this._master = cluster.isMaster;
     this._logger = false;
     this._workers = {};
+    this._opts = opts;
 
     // Bind public methods
     this.run = this.run.bind(this);
@@ -91,16 +87,18 @@ class App {
    * @param {boolean} express
    * @param {number}  port
    */
-  spawn(id, express, port) {
-    // Clone environment
-    const env = Object.assign({}, process.env);
+  spawn(id, express, port = null) {
+    // Clone environment and set thread id
+    const env = {
+      ...process.env,
+      id,
+      express : express ? 'true' : 'false',
+    };
 
-    // Set thread id
-    env.id = id;
-    env.express = express ? 'true' : 'false';
-
-    // Check port
-    if (port) env.port = port;
+    // Set if port
+    if (port !== null) {
+      env.port = port;
+    }
 
     // Fork new thread
     this._workers[`${express ? 'express' : 'compute'}:${id}`] = cluster.fork(env);
@@ -136,45 +134,40 @@ class App {
       process.title = `${config.get('domain')} - master`;
     } catch (e) { /* */ }
 
-    // Spawn express threads
-    const threads = (global.processArgs.threads || '').split(':');
-
     // Check should run express
-    if (!threads[0] || threads[0] === 'express') {
+    if (this._opts.expressThreads !== false) {
       // Get default express threads
-      const defaultExpressThreads = `0-${(config.get('expressThreads') || config.get('expressThreads') === 0 ? config.get('expressThreads') : os.cpus().length) - 1}`;
+      const defaultExpressThreads = [...[...new Array(parseInt(config.get('expressThreads') !== 0 ? config.get('expressThreads') : os.cpus().length, 10))].keys()];
 
-      // Count frontend express threads
-      const expressThreads = (threads[1] ? `${threads[1].split('-')[0]}-${threads[1].split('-')[1] || threads[1].split('-')[0]}` : defaultExpressThreads).split('-').map(thread => parseInt(thread, 10));
+      // Get threads from either opts or default
+      const expressThreads = this._opts.expressThreads || defaultExpressThreads;
 
       // Log spawning Express threads
-      this._logger.log('info', `spawning express threads ${expressThreads[0]}-${expressThreads[1]}`, {
+      this._logger.log('info', `spawning express threads ${expressThreads}`, {
         class : 'Eden',
       });
 
-      // Loop each express thread
-      for (let i = expressThreads[0]; i <= expressThreads[1]; i += 1) {
-        // Spawn new thread
+      // Loop threads to launch
+      for (const i of expressThreads) {
         this.spawn(i, true, (parseInt(config.get('port'), 10) + i));
       }
     }
 
-    // Check should run express
-    if (!threads[0] || threads[0] === 'compute') {
-      // Get default express threads
-      const defaultComputeThreads = `0-${(config.get('computeThreads') || config.get('computeThreads') === 0 ? config.get('computeThreads') : os.cpus().length) - 1}`;
+    // Check should run compute
+    if (this._opts.computeThreads !== false) {
+      // Get default compute threads
+      const defaultcomputeThreads = [...[...new Array(parseInt(config.get('computeThreads') !== 0 ? config.get('computeThreads') : os.cpus().length, 10))].keys()];
 
-      // Count frontend express threads
-      const computeThreads = (threads[1] ? `${threads[1].split('-')[0]}-${threads[1].split('-')[1] || threads[1].split('-')[0]}` : defaultComputeThreads).split('-').map(thread => parseInt(thread, 10));
+      // Get threads from either opts or default
+      const computeThreads = this._opts.computeThreads || defaultcomputeThreads;
 
-      // Log spawning Express threads
-      this._logger.log('info', `spawning compute threads ${computeThreads[0]}-${computeThreads[1]}`, {
+      // Log spawning compute threads
+      this._logger.log('info', `spawning compute threads ${computeThreads}`, {
         class : 'Eden',
       });
 
-      // Loop each express thread
-      for (let i = computeThreads[0]; i <= computeThreads[1]; i += 1) {
-        // Spawn new thread
+      // Loop threads to launch
+      for (const i of computeThreads) {
         this.spawn(i, false);
       }
     }
@@ -185,8 +178,8 @@ class App {
 }
 
 /**
- * Export new Eden App instance
+ * Export Eden App class
  *
  * @type {App}
  */
-module.exports = new App();
+module.exports = App;
