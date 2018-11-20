@@ -1,9 +1,9 @@
 {
   "name": "@edenjs/framework",
   "description": "Web Application Framework built on Express.js, Redis and RiotJS",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "bin": {
-    "edenjs" : "./index.js"
+    "edenjs": "./index.js"
   },
   "author": {
     "name": "Alex Taylor (EdenCoder)",
@@ -25,12 +25,10 @@
   "bugs": {
     "web": "https://github.com/eden-js/eden/issues"
   },
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/eden-js/eden.git"
-    }
-  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eden-js/eden.git"
+  },
   "license": "(MIT OR Apache-2.0)",
   "homepage": "https://edenjs.com/",
   "scripts": {
@@ -41,7 +39,7 @@
   },
   "dependencies": {
     "@eden-js/model": "^1.12.0",
-    "@edenjs/core": "^2.0.1",
+    "@edenjs/core": "^2.0.2",
     "app-module-path": "^2.2.0",
     "assert": "^1.4.1",
     "body-parser": "^1.18.3",
