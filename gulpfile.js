@@ -210,8 +210,12 @@ class Loader {
 
       // Return path
       return [
+        `${fullP}/node_modules/*/bundles/*/`,
+        `${fullP}/node_modules/*/*/bundles/*/`,
+
         `${fullP}/bundles/node_modules/*/bundles/*/`,
         `${fullP}/bundles/node_modules/*/*/bundles/*/`,
+
         `${fullP}/bundles/*/`,
       ];
     })));
@@ -220,9 +224,14 @@ class Loader {
     [
       `${global.edenRoot}/node_modules/*/bundles/*/`,
       `${global.edenRoot}/node_modules/*/*/bundles/*/`,
+
       `${global.appRoot}/bundles/*/`,
+
       `${global.appRoot}/bundles/node_modules/*/bundles/*/`,
       `${global.appRoot}/bundles/node_modules/*/*/bundles/*/`,
+
+      `${global.appRoot}/node_modules/*/bundles/*/`,
+      `${global.appRoot}/node_modules/*/*/bundles/*/`,
 
       ...locals,
     ].forEach((loc) => {
