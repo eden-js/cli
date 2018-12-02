@@ -50,9 +50,8 @@ class Loader {
         },
         args : [
           'run',
-          '.',
         ],
-        path : './index.js',
+        path : `${__dirname}/index.js`,
       });
 
       // Set server
