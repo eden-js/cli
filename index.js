@@ -11,7 +11,7 @@ function range(bottom, top) {
 }
 
 (async () => {
-  if (processArgs._[0] === 'build') {
+  if (processArgs._[0] === 'build' || processArgs._[0] === 'run-dev') {
     const gulp = require('gulp'); // eslint-disable-line global-require
     require('./gulpfile.js'); // eslint-disable-line global-require
 
@@ -44,7 +44,7 @@ function range(bottom, top) {
 
     /* eslint-enable no-console */
 
-    gulp.start('install');
+    gulp.start(processArgs._[0] === 'build' ? 'install' : 'default');
   } else if (processArgs._[0] === 'run') {
     const App = require('./app.js'); // eslint-disable-line global-require
 
