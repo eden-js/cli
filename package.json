@@ -1,7 +1,7 @@
 {
   "name": "@edenjs/framework",
   "description": "Web Application Framework built on Express.js, Redis and RiotJS",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "bin": {
     "edenjs": "./index.js"
   },
