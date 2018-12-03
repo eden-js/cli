@@ -203,7 +203,7 @@ class Loader {
     const filtered = [];
 
     // Get config
-    const locals = [].concat(...((config.modules || []).map((p) => {
+    const locals = [].concat(...((config.get('modules') || []).map((p) => {
       // Get paths
       const fullP = path.resolve(p);
 
