@@ -1,7 +1,7 @@
 {
   "name": "@edenjs/framework",
   "description": "Web Application Framework built on Express.js, Redis and RiotJS",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "bin": {
     "edenjs": "./index.js"
   },
@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@eden-js/model": "^1.12.0",
-    "@edenjs/core": "^2.0.6",
+    "@edenjs/core": "^2.0.8",
     "app-module-path": "^2.2.0",
     "assert": "^1.4.1",
     "body-parser": "^1.18.3",
