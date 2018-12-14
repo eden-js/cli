@@ -42,7 +42,7 @@ function runGulp(runServer = false) {
     console.log('gulp error', e);
   });
 
-  gulp.start(runServer);
+  gulp.start(runServer ? 'default' : 'install');
 }
 
 function runEden(expressThreads, computeThreads) {
