@@ -253,6 +253,8 @@ class Loader {
       return accum;
     }, []));
 
+    filtered.reverse();
+
     // Return new files
     return filtered;
   }
