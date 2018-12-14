@@ -18,8 +18,6 @@ function runGulp(runServer = false) {
   const gulp = require('gulp'); // eslint-disable-line global-require
   require('./gulpfile.js'); // eslint-disable-line global-require
 
-  // Enable console as is only for a pre-application install script
-
   gulp.on('task_start', (e) => {
     console.log('Gulp task started:', e.task);
   });

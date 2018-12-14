@@ -218,7 +218,7 @@ class Loader {
         `${fullP}/bundles/*/`,
       ];
     })));
-    
+
     // Loop files
     [
       `${global.edenRoot}/node_modules/*/bundles/*/`,
@@ -240,18 +240,18 @@ class Loader {
         filtered.push(loc + file);
       });
     });
-    
+
     // fix and reduce
     filtered = (filtered.reverse().reduce((accum, loc) => {
       // check exists already
       if (accum.includes(loc)) return accum;
-      
+
       // push loc
       accum.push(loc);
-      
+
       // return accum
       return accum;
-    });
+    }, []));
 
     // Return new files
     return filtered;
