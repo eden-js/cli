@@ -200,7 +200,7 @@ class Loader {
     const filesArr = !Array.isArray(files) ? [files] : files;
 
     // Let filtered files
-    const filtered = [];
+    let filtered = [];
 
     // Get config
     const locals = [].concat(...((config.get('modules') || []).map((p) => {
@@ -218,13 +218,11 @@ class Loader {
         `${fullP}/bundles/*/`,
       ];
     })));
-
+    
     // Loop files
     [
       `${global.edenRoot}/node_modules/*/bundles/*/`,
       `${global.edenRoot}/node_modules/*/*/bundles/*/`,
-
-      `${global.appRoot}/bundles/*/`,
 
       `${global.appRoot}/bundles/node_modules/*/bundles/*/`,
       `${global.appRoot}/bundles/node_modules/*/*/bundles/*/`,
@@ -233,12 +231,26 @@ class Loader {
       `${global.appRoot}/node_modules/*/*/bundles/*/`,
 
       ...locals,
+
+      `${global.appRoot}/bundles/*/`,
     ].forEach((loc) => {
       // Loop files
       filesArr.forEach((file) => {
         // Push to newFiles
         filtered.push(loc + file);
       });
+    });
+    
+    // fix and reduce
+    filtered = (filtered.reverse().reduce((accum, loc) => {
+      // check exists already
+      if (accum.includes(loc)) return accum;
+      
+      // push loc
+      accum.push(loc);
+      
+      // return accum
+      return accum;
     });
 
     // Return new files
