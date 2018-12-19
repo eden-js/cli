@@ -181,8 +181,8 @@ async function initEden(suppliedDirType = null, migrateGit = false) {
 
   // Add our dev dependencies for eslint
   packageData.devDependencies = Object.assign({}, packageData.devDependencies, {
-    '@edenjs/eslint-config-eden' : 'latest',
-    eslint                       : '^5.9.0',
+    '@edenjs/eslint-config-eden' : '^2.0.14',
+    eslint                       : '^5.10.0',
     'eslint-config-airbnb'       : '^17.1.0',
     'eslint-plugin-import'       : '^2.14.0',
     'eslint-plugin-jsx-a11y'     : '^6.1.2',

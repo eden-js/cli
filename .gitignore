@@ -7,6 +7,9 @@ yarn-error.log
 # yarn lock - do work pls
 yarn.lock
 
+# nodejs modules
+node_modules/
+
 # IDE
 .idea
 .remote-sync.json
@@ -15,20 +18,18 @@ yarn.lock
 *.log
 *.sentry
 
-# EdenJS config
-nginx.conf
-
-# Application bundles
-app/bundles
-
 # Redis
 *.rdb
 
-# ignore all but
-/*/
-!/lib
-!/app
-
-# local app
-app/bundles
-app/config.js
+# sqlite files
+*.db
+*.sdb
+*.sqlite
+*.db3
+*.s3db
+*.sqlite3
+*.sl3
+*.db2
+*.s2db
+*.sqlite2
+*.sl2
