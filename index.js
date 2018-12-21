@@ -71,7 +71,16 @@ async function edenExistsIn(dir) {
     const bundlesPath = path.join(dir, 'bundles');
 
     if (await fs.pathExists(bundlesPath)) {
-      return 'module';
+      // Make sure if there is an index file it has placeholder edenjs text
+      let indexText = null;
+
+      try {
+        indexText = await fs.readFile(path.join(dir, 'index.js'), 'utf8');
+      } catch (err) { /* */ }
+
+      if (indexText === null || indexText === undefined || indexText === '// EdenJS module does not require an index\n') {
+        return 'module';
+      }
     }
 
     const olderBundlesPath = path.join(dir, 'app', 'bundles');
@@ -86,6 +95,11 @@ async function edenExistsIn(dir) {
 
 async function initEden(suppliedDirType = null, migrateGit = false) {
   const dirType = suppliedDirType || await edenExistsIn(process.cwd());
+
+  // If no type manually specified, and nothing existing found, do nothing
+  if (suppliedDirType === null && dirType === 'none') {
+    return;
+  }
 
   let hasConfig = false;
 
