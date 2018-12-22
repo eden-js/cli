@@ -6,9 +6,7 @@ const fs       = require('fs-extra');
 const gulp     = require('gulp');
 const path     = require('path');
 const glob     = require('globby');
-const watch    = require('gulp-watch');
 const server   = require('gulp-develop-server');
-const sequence = require('run-sequence');
 
 // Require local dependencies
 const config = require('config');
@@ -42,7 +40,7 @@ class Loader {
     this.build();
 
     // Add dev server task
-    gulp.task('server', ['install'], () => {
+    gulp.task('server', gulp.series('install', () => {
       // Run server task
       server.listen({
         env : {
@@ -56,13 +54,10 @@ class Loader {
 
       // Set server
       this.server = true;
-
-      // Run watch task
-      gulp.start('watch');
-    });
+    }, 'watch'));
 
     // Build default task
-    gulp.task('default', ['server']);
+    gulp.task('default', gulp.series('server'));
   }
 
   /**
@@ -128,8 +123,8 @@ class Loader {
     }
 
     // Create tasks
-    gulp.task('watch', watchers);
-    gulp.task('install', installers);
+    if (watchers.length) gulp.task('watch', gulp.series(...watchers));
+    if (installers.length) gulp.task('install', gulp.series(...installers));
   }
 
   /**
@@ -276,7 +271,10 @@ class Loader {
     Task = new Task(this);
 
     // Create gulp task
-    gulp.task(`${task.task}.run`, () => Task.run(Task.watch ? this.files(Task.watch()) : undefined));
+    gulp.task(`${task.task}.run`, gulp.series(() => {
+      // return task
+      return Task.run(Task.watch ? this.files(Task.watch()) : undefined);
+    }));
 
     // Create task args
     let args = [];
@@ -297,16 +295,7 @@ class Loader {
     }
 
     // Create task
-    gulp.task(task.task, (cb) => {
-      // Push cb
-      const newArgs = args.slice();
-
-      // Push new callback
-      newArgs.push(cb);
-
-      // Run gulp sequence
-      sequence(...newArgs);
-    });
+    gulp.task(task.task, gulp.series(...args));
 
     // Check watch
     if (Task.watch) {
@@ -328,9 +317,9 @@ class Loader {
    */
   _watch(task, Task) {
     // Create watch task
-    gulp.task(`${task}.watch`, () => watch(this.files(Task.watch()), () => {
-      // Start task
-      gulp.start(task);
+    gulp.task(`${task}.watch`, gulp.series(() => {
+      // return watch
+      return gulp.watch(this.files(Task.watch()), gulp.series(task));
     }));
   }
 }

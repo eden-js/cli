@@ -35,31 +35,23 @@ function runGulp(runServer = false) {
   const gulp = require('gulp'); // eslint-disable-line global-require
   require('./gulpfile.js'); // eslint-disable-line global-require
 
-  gulp.on('task_start', (e) => {
-    console.log('Gulp task started:', e.task);
+  gulp.on('start', (e) => {
+    console.log('Gulp task started:', e.name);
   });
 
-  gulp.on('task_stop', (e) => {
+  gulp.on('stop', (e) => {
     if (e.task === 'install') {
       console.log('Installation over.');
     } else {
-      console.log('Gulp task stopped:', e.task);
+      console.log('Gulp task stopped:', e.name);
     }
   });
 
-  gulp.on('task_err', (e) => {
+  gulp.on('error', (e) => {
     console.log('gulp task error', e);
   });
 
-  gulp.on('task_not_found', (e) => {
-    console.log('Gulp cant find task:', e.task);
-  });
-
-  gulp.on('err', (e) => {
-    console.log('gulp error', e);
-  });
-
-  gulp.start(runServer ? 'default' : 'install');
+  gulp.task(runServer ? 'default' : 'install')();
 }
 
 function runEden(expressThreads, computeThreads) {
