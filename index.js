@@ -207,16 +207,20 @@ async function initEden(suppliedDirType = null, migrateGit = false) {
   await fs.copy(path.join(__dirname, '.editorconfig'), path.join(process.cwd(), '.editorconfig'));
 
   // Put standard edenjs files into place if they dont exist
-  if (await fs.pathExists(path.join(process.cwd(), '.gitignore'))) {
+  if (!(await fs.pathExists(path.join(process.cwd(), '.gitignore')))) {
     await fs.copy(path.join(__dirname, '.gitignore'), path.join(process.cwd(), '.gitignore'));
   }
 
-  if (await fs.pathExists(path.join(process.cwd(), '.gitattributes'))) {
+  if (!(await fs.pathExists(path.join(process.cwd(), '.gitattributes')))) {
     await fs.copy(path.join(__dirname, '.gitattributes'), path.join(process.cwd(), '.gitattributes'));
   }
 
   if (shouldMakeIntoApp && !hasConfig && !(await fs.pathExists(path.join(process.cwd(), 'config.js')))) {
     await fs.copy(path.join(__dirname, 'config.example.js'), path.join(process.cwd(), 'config.js'));
+  }
+
+  if (shouldMakeIntoModule && !(await fs.pathExists(path.join(process.cwd(), '.npmignore')))) {
+    await fs.copy(path.join(__dirname, '.npmignore'), path.join(process.cwd(), '.npmignore'));
   }
 
   // Add to or create package.json
