@@ -271,10 +271,10 @@ class Loader {
     Task = new Task(this);
 
     // Create gulp task
-    gulp.task(`${task.task}.run`, gulp.series(() => {
+    gulp.task(`${task.task}.run`, () => {
       // return task
       return Task.run(Task.watch ? this.files(Task.watch()) : undefined);
-    }));
+    });
 
     // Create task args
     let args = [];
@@ -317,10 +317,10 @@ class Loader {
    */
   _watch(task, Task) {
     // Create watch task
-    gulp.task(`${task}.watch`, gulp.series(() => {
+    gulp.task(`${task}.watch`, () => {
       // return watch
       return gulp.watch(this.files(Task.watch()), gulp.series(task));
-    }));
+    });
   }
 }
 
