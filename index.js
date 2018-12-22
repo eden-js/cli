@@ -11,7 +11,6 @@ const glob = require('globby');
 const commonBadFiles = [
   '.npmignore',
   'yarn.lock',
-  'package-lock.json',
   'node_modules',
   'npm-debug.log',
   'yarn-error.log',
@@ -19,9 +18,7 @@ const commonBadFiles = [
   '.remote-sync.json',
   '.editorconfig',
   '.eslintrc.json',
-  '.gitattributes',
   '.htaccess',
-  '.gitignore',
 ];
 
 // Parse arguments
@@ -143,9 +140,12 @@ async function initEden(suppliedDirType = null, migrateGit = false) {
       fs.remove(path.join(process.cwd(), 'lib')),
       fs.remove(path.join(process.cwd(), 'tests')),
       fs.remove(path.join(process.cwd(), 'package.json')),
+      fs.remove(path.join(process.cwd(), 'package-lock.json')),
       fs.remove(path.join(process.cwd(), 'www')),
       fs.remove(path.join(process.cwd(), 'app')),
       fs.remove(path.join(process.cwd(), '.git')),
+      fs.remove(path.join(process.cwd(), '.gitignore')),
+      fs.remove(path.join(process.cwd(), '.gitattributes')),
 
       ...commonBadFiles.map(file => fs.remove(path.join(process.cwd(), file))),
     ]);
@@ -168,13 +168,10 @@ async function initEden(suppliedDirType = null, migrateGit = false) {
     dirType = 'app';
   }
 
-  // Cleanup app-y junk
-  if (dirType === 'app') {
-    // Remove edenjs install and junk
-    await Promise.all([
-      ...commonBadFiles.map(file => fs.remove(path.join(process.cwd(), file))),
-    ]);
-  }
+  // Remove common junk
+  await Promise.all([
+    ...commonBadFiles.map(file => fs.remove(path.join(process.cwd(), file))),
+  ]);
 
   // Make sure data directory is clean
   if (!shouldMakeIntoModule) {
