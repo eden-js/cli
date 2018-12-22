@@ -8,6 +8,22 @@ const fs = require('fs-extra');
 const path = require('path');
 const glob = require('globby');
 
+const commonBadFiles = [
+  '.npmignore',
+  'yarn.lock',
+  'package-lock.json',
+  'node_modules',
+  'npm-debug.log',
+  'yarn-error.log',
+  '.idea',
+  '.remote-sync.json',
+  '.editorconfig',
+  '.eslintrc.json',
+  '.gitattributes',
+  '.htaccess',
+  '.gitignore',
+];
+
 // Parse arguments
 const processArgs = minimist(process.argv.slice(2));
 
@@ -135,14 +151,11 @@ async function initEden(suppliedDirType = null, migrateGit = false) {
       fs.remove(path.join(process.cwd(), 'lib')),
       fs.remove(path.join(process.cwd(), 'tests')),
       fs.remove(path.join(process.cwd(), 'package.json')),
-      fs.remove(path.join(process.cwd(), 'package-lock.json')),
       fs.remove(path.join(process.cwd(), 'www')),
       fs.remove(path.join(process.cwd(), 'app')),
       fs.remove(path.join(process.cwd(), '.git')),
-      fs.remove(path.join(process.cwd(), '.editorconfig')),
-      fs.remove(path.join(process.cwd(), '.eslintrc.json')),
-      fs.remove(path.join(process.cwd(), '.gitattributes')),
-      fs.remove(path.join(process.cwd(), '.gitignore')),
+
+      ...commonBadFiles.map(file => fs.remove(path.join(process.cwd(), file))),
     ]);
 
     dirType = 'app';
@@ -157,7 +170,6 @@ async function initEden(suppliedDirType = null, migrateGit = false) {
     await fs.ensureDir(path.join(process.cwd(), 'bundles'));
 
     for (const p of paths) {
-      console.log('mv', path.join(process.cwd(), p), path.join(process.cwd(), 'bundles', p));
       await fs.move(path.join(process.cwd(), p), path.join(process.cwd(), 'bundles', p));
     }
 
@@ -168,13 +180,7 @@ async function initEden(suppliedDirType = null, migrateGit = false) {
   if (dirType === 'app') {
     // Remove edenjs install and junk
     await Promise.all([
-      fs.remove(path.join(process.cwd(), 'yarn.lock')),
-      fs.remove(path.join(process.cwd(), '.htaccess')),
-      fs.remove(path.join(process.cwd(), '.npm-debug.log')),
-      fs.remove(path.join(process.cwd(), '.yarn-error.log')),
-      fs.remove(path.join(process.cwd(), 'node_modules')),
-      fs.remove(path.join(process.cwd(), '.idea')),
-      fs.remove(path.join(process.cwd(), '.remote-sync.json')),
+      ...commonBadFiles.map(file => fs.remove(path.join(process.cwd(), file))),
     ]);
   }
 
@@ -186,19 +192,8 @@ async function initEden(suppliedDirType = null, migrateGit = false) {
   if (dirType === 'module' || dirType === 'app') {
     // Remove junk files in bundles/
     await Promise.all([
-      fs.remove(path.join(process.cwd(), 'bundles', 'yarn.lock')),
-      fs.remove(path.join(process.cwd(), 'bundles', 'package-lock.json')),
       fs.remove(path.join(process.cwd(), 'bundles', 'package.json')),
-      fs.remove(path.join(process.cwd(), 'bundles', 'node_modules')),
-      fs.remove(path.join(process.cwd(), 'bundles', 'npm-debug.log')),
-      fs.remove(path.join(process.cwd(), 'bundles', 'yarn-error.log')),
-      fs.remove(path.join(process.cwd(), 'bundles', '.idea')),
-      fs.remove(path.join(process.cwd(), 'bundles', '.remote-sync.json')),
-      fs.remove(path.join(process.cwd(), 'bundles', '.editorconfig')),
-      fs.remove(path.join(process.cwd(), 'bundles', '.eslintrc.json')),
-      fs.remove(path.join(process.cwd(), 'bundles', '.gitattributes')),
-      fs.remove(path.join(process.cwd(), 'bundles', '.htaccess')),
-      fs.remove(path.join(process.cwd(), 'bundles', '.gitignore')),
+      ...commonBadFiles.map(file => fs.remove(path.join(process.cwd(), 'bundles', file))),
     ]);
   }
 
