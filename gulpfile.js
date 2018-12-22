@@ -5,7 +5,7 @@ require('./lib/env');
 const fs       = require('fs-extra');
 const gulp     = require('gulp');
 const path     = require('path');
-const glob     = require('glob-all');
+const glob     = require('globby');
 const watch    = require('gulp-watch');
 const server   = require('gulp-develop-server');
 const sequence = require('run-sequence');

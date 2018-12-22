@@ -57,7 +57,7 @@
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "fs-extra": "^7.0.1",
-    "glob-all": "^3.1.0",
+    "globby": "^8.0.1",
     "gulp": "^4.0.0",
     "gulp-develop-server": "^0.5.2",
     "gulp-watch": "^5.0.1",

@@ -6,6 +6,7 @@
 const minimist = require('minimist');
 const fs = require('fs-extra');
 const path = require('path');
+const glob = require('globby');
 
 // Parse arguments
 const processArgs = minimist(process.argv.slice(2));
@@ -56,6 +57,12 @@ function runEden(expressThreads, computeThreads) {
 
 async function edenExistsIn(dir) {
   try {
+    const olderBundlesPath = path.join(dir, 'app', 'bundles');
+
+    if (await fs.pathExists(olderBundlesPath)) {
+      return 'oldApp';
+    }
+
     const configPath = path.join(dir, 'config.js');
 
     if (await fs.pathExists(configPath)) {
@@ -68,25 +75,26 @@ async function edenExistsIn(dir) {
       }
     }
 
+    const rootJsPaths = await glob('./*.js');
+
     const bundlesPath = path.join(dir, 'bundles');
 
     if (await fs.pathExists(bundlesPath)) {
-      // Make sure if there is an index file it has placeholder edenjs text
-      let indexText = null;
-
-      try {
-        indexText = await fs.readFile(path.join(dir, 'index.js'), 'utf8');
-      } catch (err) { /* */ }
-
-      if (indexText === null || indexText === undefined || indexText === '// EdenJS module does not require an index\n') {
+      if (rootJsPaths.length === 0) {
         return 'module';
+      } if (rootJsPaths.length === 1 && rootJsPaths[0] === 'index.js') {
+        const indexText = await fs.readFile(path.join(dir, 'index.js'), 'utf8');
+
+        if (indexText.match(/^\/\/ EdenJS module does not require an index$/m)) {
+          return 'module';
+        }
       }
     }
 
-    const olderBundlesPath = path.join(dir, 'app', 'bundles');
+    const edenStructuredFiles = await glob('./*/{controllers,models,views,daemons,helpers}/*.js');
 
-    if (await fs.pathExists(olderBundlesPath)) {
-      return 'oldApp';
+    if (edenStructuredFiles.length > 3) {
+      return 'oldAppBundles';
     }
   } catch (err) { /* */ }
 
@@ -94,17 +102,20 @@ async function edenExistsIn(dir) {
 }
 
 async function initEden(suppliedDirType = null, migrateGit = false) {
-  const dirType = suppliedDirType || await edenExistsIn(process.cwd());
+  let dirType = await edenExistsIn(process.cwd());
 
   // If no type manually specified, and nothing existing found, do nothing
   if (suppliedDirType === null && dirType === 'none') {
     return;
   }
 
+  const shouldMakeIntoApp = (suppliedDirType === null && (dirType === 'app' || dirType === 'oldApp' || dirType === 'oldAppBundles')) || suppliedDirType === 'app';
+  const shouldMakeIntoModule = (suppliedDirType === null && dirType === 'module') || suppliedDirType === 'module';
+
   let hasConfig = false;
 
-  // Cleanup junk
-  if (dirType === 'oldApp') {
+  // oldApp => app
+  if (dirType === 'oldApp' && shouldMakeIntoApp) {
     // Move config and bundles to correct place
     await fs.copy(path.join(process.cwd(), 'app', 'bundles'), path.join(process.cwd(), 'bundles'));
 
@@ -124,51 +135,87 @@ async function initEden(suppliedDirType = null, migrateGit = false) {
       fs.remove(path.join(process.cwd(), 'lib')),
       fs.remove(path.join(process.cwd(), 'tests')),
       fs.remove(path.join(process.cwd(), 'package.json')),
-      fs.remove(path.join(process.cwd(), 'yarn.lock')),
       fs.remove(path.join(process.cwd(), 'package-lock.json')),
       fs.remove(path.join(process.cwd(), 'www')),
       fs.remove(path.join(process.cwd(), 'app')),
-      fs.remove(path.join(process.cwd(), 'node_modules')),
       fs.remove(path.join(process.cwd(), '.git')),
       fs.remove(path.join(process.cwd(), '.editorconfig')),
       fs.remove(path.join(process.cwd(), '.eslintrc.json')),
       fs.remove(path.join(process.cwd(), '.gitattributes')),
-      fs.remove(path.join(process.cwd(), '.htaccess')),
       fs.remove(path.join(process.cwd(), '.gitignore')),
+    ]);
+
+    dirType = 'app';
+  }
+
+  // oldAppBundles => app
+  if (dirType === 'oldAppBundles' && shouldMakeIntoApp) {
+    const paths = await glob(['./*'], {
+      onlyFiles : false,
+    });
+
+    await fs.ensureDir(path.join(process.cwd(), 'bundles'));
+
+    for (const p of paths) {
+      console.log('mv', path.join(process.cwd(), p), path.join(process.cwd(), 'bundles', p));
+      await fs.move(path.join(process.cwd(), p), path.join(process.cwd(), 'bundles', p));
+    }
+
+    dirType = 'app';
+  }
+
+  // Cleanup app-y junk
+  if (dirType === 'app') {
+    // Remove edenjs install and junk
+    await Promise.all([
+      fs.remove(path.join(process.cwd(), 'yarn.lock')),
+      fs.remove(path.join(process.cwd(), '.htaccess')),
+      fs.remove(path.join(process.cwd(), '.npm-debug.log')),
+      fs.remove(path.join(process.cwd(), '.yarn-error.log')),
+      fs.remove(path.join(process.cwd(), 'node_modules')),
+      fs.remove(path.join(process.cwd(), '.idea')),
+      fs.remove(path.join(process.cwd(), '.remote-sync.json')),
     ]);
   }
 
   // Make sure data directory is clean
-  if (dirType !== 'module') {
+  if (!shouldMakeIntoModule) {
     await fs.ensureDir(path.join(process.cwd(), 'data'));
   }
 
-  // Remove junk files in bundles/
-  await Promise.all([
-    fs.remove(path.join(process.cwd(), 'bundles', 'yarn.lock')),
-    fs.remove(path.join(process.cwd(), 'bundles', 'package-lock.json')),
-    fs.remove(path.join(process.cwd(), 'bundles', 'node_modules')),
-    fs.remove(path.join(process.cwd(), 'bundles', '.editorconfig')),
-    fs.remove(path.join(process.cwd(), 'bundles', '.eslintrc.json')),
-    fs.remove(path.join(process.cwd(), 'bundles', '.gitattributes')),
-    fs.remove(path.join(process.cwd(), 'bundles', '.htaccess')),
-    fs.remove(path.join(process.cwd(), 'bundles', '.gitignore')),
-  ]);
+  if (dirType === 'module' || dirType === 'app') {
+    // Remove junk files in bundles/
+    await Promise.all([
+      fs.remove(path.join(process.cwd(), 'bundles', 'yarn.lock')),
+      fs.remove(path.join(process.cwd(), 'bundles', 'package-lock.json')),
+      fs.remove(path.join(process.cwd(), 'bundles', 'package.json')),
+      fs.remove(path.join(process.cwd(), 'bundles', 'node_modules')),
+      fs.remove(path.join(process.cwd(), 'bundles', 'npm-debug.log')),
+      fs.remove(path.join(process.cwd(), 'bundles', 'yarn-error.log')),
+      fs.remove(path.join(process.cwd(), 'bundles', '.idea')),
+      fs.remove(path.join(process.cwd(), 'bundles', '.remote-sync.json')),
+      fs.remove(path.join(process.cwd(), 'bundles', '.editorconfig')),
+      fs.remove(path.join(process.cwd(), 'bundles', '.eslintrc.json')),
+      fs.remove(path.join(process.cwd(), 'bundles', '.gitattributes')),
+      fs.remove(path.join(process.cwd(), 'bundles', '.htaccess')),
+      fs.remove(path.join(process.cwd(), 'bundles', '.gitignore')),
+    ]);
+  }
 
   // Put standard edenjs files into place
   await fs.copy(path.join(__dirname, '.eslintrc.json'), path.join(process.cwd(), '.eslintrc.json'));
   await fs.copy(path.join(__dirname, '.editorconfig'), path.join(process.cwd(), '.editorconfig'));
 
   // Put standard edenjs files into place if they dont exist
-  if (dirType === 'none' || !(await fs.pathExists(path.join(process.cwd(), '.gitignore')))) {
+  if (await fs.pathExists(path.join(process.cwd(), '.gitignore'))) {
     await fs.copy(path.join(__dirname, '.gitignore'), path.join(process.cwd(), '.gitignore'));
   }
 
-  if (dirType === 'none' || !(await fs.pathExists(path.join(process.cwd(), '.gitattributes')))) {
+  if (await fs.pathExists(path.join(process.cwd(), '.gitattributes'))) {
     await fs.copy(path.join(__dirname, '.gitattributes'), path.join(process.cwd(), '.gitattributes'));
   }
 
-  if (!hasConfig && (dirType !== 'module') && (dirType === 'none' || !(await fs.pathExists(path.join(process.cwd(), 'config.js'))))) {
+  if (shouldMakeIntoApp && !hasConfig && !(await fs.pathExists(path.join(process.cwd(), 'config.js')))) {
     await fs.copy(path.join(__dirname, 'config.example.js'), path.join(process.cwd(), 'config.js'));
   }
 
