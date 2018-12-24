@@ -48,7 +48,7 @@ class Loader {
           NODE_ENV : 'development',
         },
         args : [
-          'run',
+          'start',
         ],
         path : `${__dirname}/index.js`,
       });

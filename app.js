@@ -4,9 +4,9 @@
 require('./lib/env');
 
 // Require dependencies
-const os       = require('os');
-const cluster  = require('cluster');
-const winston  = require('winston');
+const os      = require('os');
+const cluster = require('cluster');
+const winston = require('winston');
 
 // Require local dependencies
 const log    = require('lib/utilities/log');
