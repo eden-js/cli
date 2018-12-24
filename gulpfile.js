@@ -7,6 +7,7 @@ const gulp     = require('gulp');
 const path     = require('path');
 const glob     = require('globby');
 const server   = require('gulp-develop-server');
+const deepMerge = require('deepmerge');
 
 // Require local dependencies
 const config = require('config');
@@ -69,8 +70,11 @@ class Loader {
     // Glob tasks
     let done = [];
 
+    this._appHasNodeModules = fs.existsSync(`${global.appRoot}/node_modules`);
+    this._appHasBundles = fs.existsSync(`${global.appRoot}/bundles`);
+
     // Get files
-    const tasks      = glob.sync(this.files('tasks/*.js'));
+    const tasks      = glob.sync(this.files('tasks/*.js'), { allowEmpty : true });
     const watchers   = [];
     const installers = [];
 
@@ -163,24 +167,7 @@ class Loader {
    * @returns {object}
    */
   merge(obj1, obj2) {
-    // Loop object
-    for (const p of Object.keys(obj2)) {
-      try {
-        // Property in destination object set; update its value.
-        if (obj2[p].constructor === Object) {
-          obj1[p] = this.merge(obj1[p], obj2[p]); // eslint-disable-line no-param-reassign
-        } else if (obj2[p].constructor === Array) {
-          obj1[p] = obj1[p].concat(obj2[p]); // eslint-disable-line no-param-reassign
-        } else {
-          obj1[p] = obj2[p]; // eslint-disable-line no-param-reassign
-        }
-      } catch (e) {
-        // Property in destination object not set; create it and set its value.
-        obj1[p] = obj2[p]; // eslint-disable-line no-param-reassign
-      }
-    }
-
-    return obj1;
+    return deepMerge(obj1, obj2);
   }
 
   /**
@@ -207,28 +194,32 @@ class Loader {
         `${fullP}/node_modules/*/bundles/*/`,
         `${fullP}/node_modules/*/*/bundles/*/`,
 
-        `${fullP}/bundles/node_modules/*/bundles/*/`,
-        `${fullP}/bundles/node_modules/*/*/bundles/*/`,
-
         `${fullP}/bundles/*/`,
       ];
     })));
 
-    // Loop files
-    [
+    const filePaths = [
       `${global.edenRoot}/node_modules/*/bundles/*/`,
       `${global.edenRoot}/node_modules/*/*/bundles/*/`,
+    ];
 
-      `${global.appRoot}/bundles/node_modules/*/bundles/*/`,
-      `${global.appRoot}/bundles/node_modules/*/*/bundles/*/`,
+    if (this._appHasNodeModules) {
+      filePaths.push(...[
+        `${global.appRoot}/node_modules/*/bundles/*/`,
+        `${global.appRoot}/node_modules/*/*/bundles/*/`,
+      ]);
+    }
 
-      `${global.appRoot}/node_modules/*/bundles/*/`,
-      `${global.appRoot}/node_modules/*/*/bundles/*/`,
+    filePaths.push(...locals);
 
-      ...locals,
+    if (this._appHasBundles) {
+      filePaths.push(...[
+        `${global.appRoot}/bundles/*/`,
+      ]);
+    }
 
-      `${global.appRoot}/bundles/*/`,
-    ].forEach((loc) => {
+    // Loop files
+    filePaths.forEach((loc) => {
       // Loop files
       filesArr.forEach((file) => {
         // Push to newFiles
