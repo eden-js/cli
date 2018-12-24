@@ -74,9 +74,12 @@ class EdenJS extends Events {
    * @return {*}
    */
   start() {
-    //
+    // set inital express threads
     let expressThreads = null;
     let computeThreads = null;
+
+    // setup globals
+    global.isCLI = false;
 
     // check express threads
     if (this._args.expressThreads) {
