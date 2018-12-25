@@ -15,13 +15,13 @@ config.title = 'EdenJS';
 config.direction = 1; // 0 = page only, 1 = title before page title, 2 = title after page title
 
 // Set application domain
-config.domain = 'edenjs.com';
+config.domain = 'eden';
 
 // Set application version (recommend: semver)
 config.version = '0.1.0';
 
 // Set logo
-config.logo = '/public/assets/images/logo.svg';
+config.logo = '/data/www/public/assets/images/logo.svg';
 
 
 /**
@@ -41,12 +41,12 @@ config.port = 1337;
 config.host = '0.0.0.0';
 
 // Set amount of express threads. Setting this as null will count your CPU cores
-config.expressThreads = 1;
+config.expressThreads = 2;
 
 // Set amount of compute threads. Setting this as null will use 1 compute thread.
 // Compute threads are threads used for backend processes
 // they do not run the express application, but do run all daemons
-config.computeThreads = 1;
+config.computeThreads = 2;
 
 // Websocket configuration
 config.socket = {
@@ -130,18 +130,10 @@ config.email = {
  */
 
 // Set scss imports. These are imported into app.min.css
-config.sass = [
-  './node_modules/bootstrap/scss/bootstrap.scss',
-];
+config.sass = [];
 
 // Set js imports. These are imported into app.min.js at the top
-config.js = [
-  './node_modules/whatwg-fetch/dist/fetch.umd.js',
-  './node_modules/jquery/dist/jquery.min.js',
-  './node_modules/popper.js/dist/umd/popper.min.js',
-  './node_modules/bootstrap/dist/js/bootstrap.js',
-];
-
+config.js = [];
 
 /**
  * Set application session secret
@@ -195,10 +187,7 @@ config.acl = {
 // Set config view object
 config.view = {
   engine  : 'riot',
-  include : {
-    alert  : 'alert/public/js/bootstrap', // Include alert module
-    socket : 'socket/public/js/bootstrap', // Include socket module
-  },
+  include : {},
 };
 
 
