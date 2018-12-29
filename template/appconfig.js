@@ -130,12 +130,12 @@ config.email = {
  */
 
 // Set scss imports. These are imported into app.min.css
-config.sass = [	 config.sass = [];
+config.sass = [
   './node_modules/bootstrap/scss/bootstrap.scss',
 ];
 
 // Set js imports. These are imported into app.min.js at the top
-config.js = [	 config.js = [];
+config.js = [
   './node_modules/whatwg-fetch/dist/fetch.umd.js',
   './node_modules/jquery/dist/jquery.min.js',
   './node_modules/popper.js/dist/umd/popper.min.js',
@@ -196,9 +196,9 @@ config.view = {
   engine  : 'riot',
   include : {
     include : {},
-    alert  : 'alert/public/js/bootstrap', // Include alert module
-    socket : 'socket/public/js/bootstrap', // Include socket module
-   },
+    alert   : 'alert/public/js/bootstrap', // Include alert module
+    socket  : 'socket/public/js/bootstrap', // Include socket module
+  },
 };
 
 
