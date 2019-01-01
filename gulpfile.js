@@ -2,12 +2,12 @@
 require('./lib/env');
 
 // Require dependencies
-const fs       = require('fs-extra');
-const gulp     = require('gulp');
-const path     = require('path');
-const glob     = require('globby');
-const server   = require('gulp-develop-server');
+const fs        = require('fs-extra');
+const gulp      = require('gulp');
+const path      = require('path');
+const glob      = require('globby');
 const deepMerge = require('deepmerge');
+const Cp        = require('child_process');
 
 // Require local dependencies
 const config = require('config');
@@ -37,25 +37,19 @@ class Loader {
     this._task = this._task.bind(this);
     this._watch = this._watch.bind(this);
 
+    this.server = null;
+    this.serverRestartingPromise = null;
+    this.serverRestartWaiting = false;
+
     // Run build
     this.build();
 
     // Add dev server task
     gulp.task('server', gulp.series('install', () => {
-      // Run server task
-      server.listen({
-        env : {
-          NODE_ENV : 'development',
-        },
-        args : [
-          'start',
-        ],
-        path : `${__dirname}/index.js`,
-      });
+      this.restart(true);
 
-      // Set server
-      this.server = true;
-    }, 'watch'));
+      gulp.task('watch')();
+    }));
 
     // Build default task
     gulp.task('default', gulp.series('server'));
@@ -127,21 +121,64 @@ class Loader {
     }
 
     // Create tasks
-    if (watchers.length) gulp.task('watch', gulp.series(...watchers));
-    if (installers.length) gulp.task('install', gulp.series(...installers));
+    gulp.task('watch', gulp.parallel(...watchers));
+    gulp.task('install', gulp.series(...installers));
+  }
+
+  async _restart() {
+    this.serverRestartingPromise = true;
+
+    if (this.server !== null) {
+      const deadPromise =  new Promise(resolve => this.server.once('exit', resolve));
+      this.server.kill();
+      await deadPromise;
+    }
+
+    this.server = Cp.fork(`${__dirname}/index.js`, ['start']);
   }
 
   /**
    * Restarts dev server
-   *
-   * @private
    */
-  restart() {
-    // Check if running
-    if (!this.server) return;
+  restart(create = false) {
+    // Clearly not a production env
+    process.env.NODE_ENV = 'development';
 
-    // Restart server
-    server.restart();
+    if (this.server === null && !create) {
+      // Nothing to restart, and not initial start
+      return;
+    }
+
+    if (this.serverRestartWaiting) {
+      // Wait for other queue'd task to run instead of ours, they are just as good
+      return;
+    }
+
+    (async () => {
+      let didSetWaiting = false;
+
+      // Already ongoing, lets wait
+      if (this.serverRestartingPromise !== null) {
+        // Note that we set waiting, so we can unset it
+        didSetWaiting = true;
+        // Let other callers know we're already waiting
+        this.serverRestartWaiting = true;
+        // Wait for ongoing task
+        await this.serverRestartingPromise;
+      }
+
+      // Set ongoing to be our task
+      this.serverRestartingPromise = this._restart();
+
+      // Let other callers know we're done waiting
+      if (didSetWaiting) this.serverRestartWaiting = false;
+
+      // Await our task
+      await this.serverRestartingPromise;
+
+      // Reset ongoing task promise
+      this.serverRestartingPromise = null;
+    })();
   }
 
   /**
