@@ -195,7 +195,6 @@ config.acl = {
 config.view = {
   engine  : 'riot',
   include : {
-    include : {},
     alert   : 'alert/public/js/bootstrap', // Include alert module
     socket  : 'socket/public/js/bootstrap', // Include socket module
   },
