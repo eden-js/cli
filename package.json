@@ -54,7 +54,7 @@
     "express-session": "^1.15.6",
     "extract-comments": "^1.1.0",
     "fs-extra": "^7.0.1",
-    "globby": "^8.0.1",
+    "globby": "^9.0.0",
     "gulp": "^4.0.0",
     "gulp-develop-server": "^0.5.2",
     "minimist": "^1.2.0",
