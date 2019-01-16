@@ -5,9 +5,10 @@ require('./lib/env');
 const fs        = require('fs-extra');
 const gulp      = require('gulp');
 const path      = require('path');
-const glob      = require('globby');
+const glob      = require('@edenjs/glob');
 const deepMerge = require('deepmerge');
 const Cp        = require('child_process');
+const util      = require('util');
 
 // Require local dependencies
 const config = require('config');
@@ -21,17 +22,11 @@ class Loader {
    * Construct Loader class
    */
   constructor() {
-    // Check cache exists
-    if (!fs.existsSync(`${global.appRoot}/data/cache`)) {
-      // Create cache
-      fs.mkdirSync(`${global.appRoot}/data/cache`);
-    }
-
     // Bind public methods
     this.build = this.build.bind(this);
     this.files = this.files.bind(this);
-    this.merge = this.merge.bind(this);
     this.restart = this.restart.bind(this);
+    this.merge = util.deprecate(this.merge, 'Please use a custom method instead').bind(this);
 
     // Bind private methods
     this._task = this._task.bind(this);
@@ -61,21 +56,22 @@ class Loader {
    * This has to be a sync method because gulp won't change core to allow async task loading
    */
   build() {
+    fs.ensureDirSync(`${global.appRoot}/data/cache`);
+
     // Glob tasks
     let done = [];
 
-    this._appHasNodeModules = fs.existsSync(`${global.appRoot}/node_modules`);
-    this._appHasBundles = fs.existsSync(`${global.appRoot}/bundles`);
+    this._staticLocations = this._genStaticLocations();
 
     // Get files
-    const tasks      = glob.sync(this.files('tasks/*.js'), { allowEmpty : true });
+    const tasks      = glob.sync(this.files('tasks/*.js'));
     const watchers   = [];
     const installers = [];
 
     // Loop tasks
-    for (let i = 0; i < tasks.length; i += 1) {
+    for (const rawTask of tasks) {
       // Load task
-      const task = parser.task(tasks[i]);
+      const task = parser.task(rawTask);
 
       // Create task
       const Task = this._task(task);
@@ -92,9 +88,9 @@ class Loader {
         done = done.concat(task.before);
 
         // Remove before from defaults
-        for (let a = 0; a < task.before.length; a += 1) {
+        for (const taskBefore of task.before) {
           // Set index
-          const index = installers.indexOf(task.before[a]);
+          const index = installers.indexOf(taskBefore);
 
           // Check defaults
           if (index > -1) installers.splice(index, 1);
@@ -107,9 +103,9 @@ class Loader {
         done = done.concat(task.after);
 
         // Remove after from defaults
-        for (let b = 0; b < task.after.length; b += 1) {
+        for (const taskAfter of task.after) {
           // Set index
-          const index = installers.indexOf(task.after[b]);
+          const index = installers.indexOf(taskAfter);
 
           // Check defaults
           if (index > -1) installers.splice(index, 1);
@@ -187,12 +183,9 @@ class Loader {
    * @param {string} name
    * @param {object} obj
    */
-  write(name, obj) {
+  async write(name, obj) {
     // Write file
-    fs.writeFile(`${global.appRoot}/data/cache/${name}.json`, JSON.stringify(obj), (err) => {
-      // Check if error
-      if (err) console.error(err); // eslint-disable-line no-console
-    });
+    await fs.writeJson(`${global.appRoot}/data/cache/${name}.json`, obj);
   }
 
   /**
@@ -207,20 +200,7 @@ class Loader {
     return deepMerge(obj1, obj2);
   }
 
-  /**
-   * Returns files
-   *
-   * @param  {string[]|string} files
-   *
-   * @return {string[]}
-   */
-  files(files) {
-    // Check array
-    const filesArr = !Array.isArray(files) ? [files] : files;
-
-    // Let filtered files
-    let filtered = [];
-
+  _genStaticLocations() {
     // Get config
     const locals = [].concat(...((config.get('modules') || []).map((p) => {
       // Get paths
@@ -235,12 +215,9 @@ class Loader {
       ];
     })));
 
-    const filePaths = [
-      `${global.edenRoot}/node_modules/*/bundles/*/`,
-      `${global.edenRoot}/node_modules/*/*/bundles/*/`,
-    ];
+    const filePaths = [];
 
-    if (this._appHasNodeModules) {
+    if (fs.existsSync(`${global.appRoot}/node_modules`)) {
       filePaths.push(...[
         `${global.appRoot}/node_modules/*/bundles/*/`,
         `${global.appRoot}/node_modules/*/*/bundles/*/`,
@@ -249,36 +226,39 @@ class Loader {
 
     filePaths.push(...locals);
 
-    if (this._appHasBundles) {
-      filePaths.push(...[
-        `${global.appRoot}/bundles/*/`,
-      ]);
+    if (fs.existsSync(`${global.appRoot}/bundles`)) {
+      filePaths.push(`${global.appRoot}/bundles/*/`);
     }
 
-    // Loop files
-    filePaths.forEach((loc) => {
-      // Loop files
+    return filePaths;
+  }
+
+  /**
+   * Returns possible file locations for gulp task
+   *
+   * @param  {string[]|string} files
+   *
+   * @return {string[]}
+   */
+  files(files) {
+    // Ensure files is an array
+    const filesArr = !Array.isArray(files) ? [files] : files;
+
+    let filtered = [];
+
+    // Combine locations with the searched files
+    this._staticLocations.forEach((loc) => {
       filesArr.forEach((file) => {
-        // Push to newFiles
         filtered.push(loc + file);
       });
     });
 
-    // fix and reduce
-    filtered = (filtered.reverse().reduce((accum, loc) => {
-      // check exists already
-      if (accum.includes(loc)) return accum;
-
-      // push loc
-      accum.push(loc);
-
-      // return accum
+    // Return reverse-deduplicated files
+    filtered = filtered.reduceRight((accum, loc) => {
+      if (!accum.includes(loc)) accum.unshift(loc);
       return accum;
-    }, []));
+    }, []);
 
-    filtered.reverse();
-
-    // Return new files
     return filtered;
   }
 
