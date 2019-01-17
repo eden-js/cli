@@ -4,7 +4,6 @@ require('./lib/env');
 // Require dependencies
 const fs        = require('fs-extra');
 const gulp      = require('gulp');
-const path      = require('path');
 const glob      = require('@edenjs/glob');
 const deepMerge = require('deepmerge');
 const Cp        = require('child_process');
@@ -12,6 +11,7 @@ const util      = require('util');
 
 // Require local dependencies
 const config = require('config');
+const loader = require('lib/loader');
 const parser = require('lib/utilities/parser');
 
 /**
@@ -61,7 +61,7 @@ class Loader {
     // Glob tasks
     let done = [];
 
-    this._staticLocations = this._genStaticLocations();
+    this._locations = loader.getLocations(config.get('modules'), true);
 
     // Get files
     const tasks      = glob.sync(this.files('tasks/*.js'));
@@ -200,66 +200,8 @@ class Loader {
     return deepMerge(obj1, obj2);
   }
 
-  _genStaticLocations() {
-    // Get config
-    const locals = [].concat(...((config.get('modules') || []).map((p) => {
-      // Get paths
-      const fullP = path.resolve(p);
-
-      // Return path
-      return [
-        `${fullP}/node_modules/*/bundles/*/`,
-        `${fullP}/node_modules/*/*/bundles/*/`,
-
-        `${fullP}/bundles/*/`,
-      ];
-    })));
-
-    const filePaths = [];
-
-    if (fs.existsSync(`${global.appRoot}/node_modules`)) {
-      filePaths.push(...[
-        `${global.appRoot}/node_modules/*/bundles/*/`,
-        `${global.appRoot}/node_modules/*/*/bundles/*/`,
-      ]);
-    }
-
-    filePaths.push(...locals);
-
-    if (fs.existsSync(`${global.appRoot}/bundles`)) {
-      filePaths.push(`${global.appRoot}/bundles/*/`);
-    }
-
-    return filePaths;
-  }
-
-  /**
-   * Returns possible file locations for gulp task
-   *
-   * @param  {string[]|string} files
-   *
-   * @return {string[]}
-   */
   files(files) {
-    // Ensure files is an array
-    const filesArr = !Array.isArray(files) ? [files] : files;
-
-    let filtered = [];
-
-    // Combine locations with the searched files
-    this._staticLocations.forEach((loc) => {
-      filesArr.forEach((file) => {
-        filtered.push(loc + file);
-      });
-    });
-
-    // Return reverse-deduplicated files
-    filtered = filtered.reduceRight((accum, loc) => {
-      if (!accum.includes(loc)) accum.unshift(loc);
-      return accum;
-    }, []);
-
-    return filtered;
+    return loader.getFiles(this._locations, files);
   }
 
   /**

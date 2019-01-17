@@ -1,7 +1,7 @@
 {
   "name": "@edenjs/cli",
   "description": "Web Application Framework built on Express.js, Redis and RiotJS",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "bin": {
     "edenjs": "./index.js"
   },
@@ -49,14 +49,13 @@
     "command-line-usage": "^5.0.5",
     "connect-redis": "^3.4.0",
     "cookie-parser": "^1.4.3",
-    "deepmerge": "^3.0.0",
+    "deepmerge": "^3.1.0",
     "dot-prop-immutable": "^1.5.0",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "extract-comments": "^1.1.0",
     "fs-extra": "^7.0.1",
     "gulp": "^4.0.0",
-    "gulp-develop-server": "^0.5.2",
     "minimist": "^1.2.0",
     "multer": "^1.4.1",
     "nconf": "^0.10.0",

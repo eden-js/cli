@@ -137,7 +137,7 @@ class App {
     // Check should run express
     if (this._opts.expressThreads !== false) {
       // Get default express threads
-      const defaultExpressThreads = [...[...new Array(parseInt(config.get('expressThreads') !== 0 ? config.get('expressThreads') : os.cpus().length, 10))].keys()];
+      const defaultExpressThreads = [...[...new Array(config.get('expressThreads') !== null ? parseInt(config.get('expressThreads'), 10) : os.cpus().length)].keys()];
 
       // Get threads from either opts or default
       const expressThreads = this._opts.expressThreads || defaultExpressThreads;
@@ -156,10 +156,10 @@ class App {
     // Check should run compute
     if (this._opts.computeThreads !== false) {
       // Get default compute threads
-      const defaultcomputeThreads = [...[...new Array(parseInt(config.get('computeThreads') !== 0 ? config.get('computeThreads') : os.cpus().length, 10))].keys()];
+      const defaultComputeThreads = [...[...new Array(config.get('computeThreads') !== null ? parseInt(config.get('computeThreads'), 10) : os.cpus().length)].keys()];
 
       // Get threads from either opts or default
-      const computeThreads = this._opts.computeThreads || defaultcomputeThreads;
+      const computeThreads = this._opts.computeThreads || defaultComputeThreads;
 
       // Log spawning compute threads
       this._logger.log('info', `spawning compute threads ${computeThreads}`, {

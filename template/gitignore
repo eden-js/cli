@@ -10,6 +10,11 @@ yarn.lock
 # nodejs modules
 node_modules/
 
+# edenjs stuff
+data/
+config.js
+edenappconfig.js
+
 # IDE
 .idea
 .remote-sync.json
