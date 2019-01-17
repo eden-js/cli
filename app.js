@@ -19,12 +19,11 @@ class App {
   /**
    * Construct App class
    */
-  constructor(opts = {}) {
+  constructor() {
     // Bind private variables
     this._master = cluster.isMaster;
     this._logger = false;
     this._workers = {};
-    this._opts = opts;
 
     // Bind public methods
     this.run = this.run.bind(this);
@@ -135,12 +134,9 @@ class App {
     } catch (e) { /* */ }
 
     // Check should run express
-    if (this._opts.expressThreads !== false) {
+    if (config.get('expressThreads') !== false) {
       // Get default express threads
-      const defaultExpressThreads = [...[...new Array(config.get('expressThreads') !== null ? parseInt(config.get('expressThreads'), 10) : os.cpus().length)].keys()];
-
-      // Get threads from either opts or default
-      const expressThreads = this._opts.expressThreads || defaultExpressThreads;
+      const expressThreads = [...[...new Array(config.get('expressThreads') !== null ? parseInt(config.get('expressThreads'), 10) : os.cpus().length)].keys()];
 
       // Log spawning Express threads
       this._logger.log('info', `spawning express threads ${expressThreads}`, {
@@ -154,12 +150,9 @@ class App {
     }
 
     // Check should run compute
-    if (this._opts.computeThreads !== false) {
+    if (config.get('computeThreads') !== false) {
       // Get default compute threads
-      const defaultComputeThreads = [...[...new Array(config.get('computeThreads') !== null ? parseInt(config.get('computeThreads'), 10) : os.cpus().length)].keys()];
-
-      // Get threads from either opts or default
-      const computeThreads = this._opts.computeThreads || defaultComputeThreads;
+      const computeThreads = [...[...new Array(config.get('computeThreads') !== null ? parseInt(config.get('computeThreads'), 10) : os.cpus().length)].keys()];
 
       // Log spawning compute threads
       this._logger.log('info', `spawning compute threads ${computeThreads}`, {

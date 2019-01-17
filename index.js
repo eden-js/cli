@@ -1,81 +1,119 @@
 #!/usr/bin/env node
 
-/* eslint no-console: 0 */
+/*
+  Awesome isomorphic NodeJS skeleton for structured applications.
+  Just have a look at the "bundles" that make up an EdenJS application.
+*/
+
+/*
+  ███████╗██████╗ ███████╗███╗   ██╗     ██╗███████╗
+  ██╔════╝██╔══██╗██╔════╝████╗  ██║     ██║██╔════╝
+  █████╗  ██║  ██║█████╗  ██╔██╗ ██║     ██║███████╗
+  ██╔══╝  ██║  ██║██╔══╝  ██║╚██╗██║██   ██║╚════██║
+  ███████╗██████╔╝███████╗██║ ╚████║╚█████╔╝███████║
+  ╚══════╝╚═════╝ ╚══════╝╚═╝  ╚═══╝ ╚════╝ ╚══════╝
+*/
 
 // Require dependencies
-const gulp = require('gulp');
-const colors = require('colors');
-const Events = require('events');
-const winston = require('winston');
-const minimist = require('minimist');
-const cliUsage = require('command-line-usage');
-const prettyTime = require('pretty-hrtime');
-const PrettyError = require('pretty-error');
+const gulp             = require('gulp');
+const chalk            = require('chalk');
+const yargonaut        = require('yargonaut'); // Must precede yargs
+const yargs            = require('yargs');
+const { EventEmitter } = require('events');
+const winston          = require('winston');
+const prettyTime       = require('pretty-hrtime');
+const PrettyError      = require('pretty-error');
+const extractComments  = require('extract-comments');
+const fs               = require('fs-extra');
 
 // require config files
 const log = require('./lib/utilities/log');
-const usage = require('./lib/usage');
 const initEden = require('./lib/utilities/init');
 
 // setup globals
 global.isCLI = true;
 
-/**
- * create events class
- *
- * @extends events
- */
-class EdenJS extends Events {
-  /**
-   * construct EdenJS
-   */
+// Set yargs colors
+yargonaut
+  .style('underline.green')
+  .errorsStyle('red');
+
+/* eslint no-console: 0 */
+
+class EdenCLI extends EventEmitter {
   constructor(...args) {
     // run super
     super(...args);
 
+    // Hashbang must be removed for comment parser to work
+    // I know this is stupid but it looks cool at the top of this script too :)
+    const extractedComments = extractComments(fs.readFileSync(__filename, 'utf8').split('\n').slice(1).join('\n'));
+    const subText = extractedComments[0].raw;
+    const logo = extractedComments[1].raw;
+
     // set process arguments
-    this._args = minimist(process.argv.slice(2));
+    this._args = yargs
+      .usage(`${chalk.green(logo)}\n${chalk.bold(subText)}\n\nUsage: $0 <command> [options]`)
+      .strict()
+      .wrap(Math.min(100, yargs.terminalWidth()))
+      .command('start', 'Starts EdenJS in production.', () => {
+        return yargs
+          .strict(false); // Additional options will be done in lib/aliases/config.js
+      })
+      .command('run [fn]', 'Runs EdenJS gulp function.', () => {
+        return yargs
+          .strict(false) // Additional options will be done in lib/aliases/config.js
+          .positional('fn', {
+            desc    : 'Gulp function to run',
+            default : 'dev',
+            type    : 'string',
+          })
+          .choices('fn', ['dev', 'install']);
+      })
+      .command('init <dirType>', 'Initialize new or fix existing EdenJS directory.', () => {
+        return yargs
+          .positional('dirType', {
+            desc : 'EdenJS directory type',
+            type : 'string',
+          })
+          .choices('dirType', ['app', 'module'])
+          .option('migrateGit', {
+            alias    : 'g',
+            describe : 'Migrate .git directory if misplaced in current directory',
+          });
+      })
+      .demandCommand(1)
+      .help('help', 'Show usage instructions')
+      .alias('help', 'h')
+      .argv;
 
     // create logger
     this.logger();
 
     // get function
-    const fn = this._args._.shift();
+    const [command] = this._args._;
 
-    // check function exists
-    if (fn && this[fn]) {
-      // log
-      this._logger.log('info', `[${colors.green(fn)}] Running`);
+    this._logger.log('info', `[${chalk.green(command)}] Running`);
 
-      // run actual function with subsequent args
-      this[fn](...this._args._);
-    } else {
-      // run help
-      this.help();
+    if (command === 'start') {
+      this.start();
+    } else if (command === 'run') {
+      this.run();
+    } else if (command === 'init') {
+      this.init();
     }
-  }
-
-  /**
-   * returns edenjs help
-   */
-  help() {
-    // create usage
-    const usageText = cliUsage(usage);
-
-    // log usage
-    console.log(usageText);
   }
 
   /**
    * Init edenjs directory
    */
-  async init(dirType = null) {
-    const res = await initEden(dirType, this._args.migrateGit);
+  async init() {
+    const res = await initEden(this._args.dirType, this._args.migrateGit);
 
     if (res !== null) {
-      this._logger.log('info', `[${colors.green('init')}] Finished initializing ${res}`);
+      this._logger.log('info', `[${chalk.green('init')}] Finished initializing ${res}`);
     } else {
-      this._logger.log('error', `[${colors.green('init')}] No existing directory type detected and none supplied`);
+      this._logger.log('error', `[${chalk.green('init')}] No existing directory type detected and none supplied`);
     }
   }
 
@@ -127,7 +165,7 @@ class EdenJS extends Events {
    *
    * @return {*}
    */
-  run(fn) {
+  run() {
     // run gulp logic
     require('./gulpfile.js'); // eslint-disable-line global-require
 
@@ -140,7 +178,7 @@ class EdenJS extends Events {
       const level = evt.branch ? 'debug' : 'info';
 
       // log
-      this._logger.log(level, `[${colors.cyan(evt.name)}] Starting`);
+      this._logger.log(level, `[${chalk.cyan(evt.name)}] Starting`);
     });
 
     // add stop logging
@@ -152,7 +190,7 @@ class EdenJS extends Events {
       const level = evt.branch ? 'debug' : 'info';
 
       // log
-      this._logger.log(level, `[${colors.cyan(evt.name)}] Finished in ${colors.magenta(time)}`);
+      this._logger.log(level, `[${chalk.cyan(evt.name)}] Finished in ${chalk.magenta(time)}`);
     });
 
     // on error
@@ -167,14 +205,14 @@ class EdenJS extends Events {
       const level = evt.branch ? 'debug' : 'info';
 
       // log
-      this._logger.log(level, `[${colors.cyan(evt.name)}] Errored after ${colors.magenta(time)}`);
+      this._logger.log(level, `[${chalk.cyan(evt.name)}] Errored after ${chalk.magenta(time)}`);
 
       // log error
       console.log(err);
     });
 
     // run task
-    gulp.task(fn || 'default')();
+    gulp.task(this._args.fn === 'install' ? 'install' : 'default')();
   }
 
   /**
@@ -210,4 +248,4 @@ class EdenJS extends Events {
  *
  * @type {EdenJS}
  */
-new EdenJS(); // eslint-disable-line no-new
+new EdenCLI(); // eslint-disable-line no-new
