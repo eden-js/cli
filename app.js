@@ -130,7 +130,7 @@ class App {
     // Set process name
     try {
       // Set process name
-      process.title = `${config.get('domain')} - master`;
+      process.title = `edenjs - ${config.get('domain')} - master`;
     } catch (e) { /* */ }
 
     // Check should run express

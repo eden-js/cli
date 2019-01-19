@@ -61,7 +61,7 @@ class Loader {
     // Glob tasks
     let done = [];
 
-    this._locations = loader.getLocations(config.get('modules'), true);
+    this._locations = global.bundleLocations;
 
     // Get files
     const tasks      = glob.sync(this.files('tasks/*.js'));

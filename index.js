@@ -14,78 +14,58 @@
   ╚══════╝╚═════╝ ╚══════╝╚═╝  ╚═══╝ ╚════╝ ╚══════╝
 */
 
+// Require environment
+require('./lib/env');
+
 // Require dependencies
 const gulp             = require('gulp');
 const chalk            = require('chalk');
-const yargonaut        = require('yargonaut'); // Must precede yargs
-const yargs            = require('yargs');
 const { EventEmitter } = require('events');
 const winston          = require('winston');
 const prettyTime       = require('pretty-hrtime');
 const PrettyError      = require('pretty-error');
-const extractComments  = require('extract-comments');
-const fs               = require('fs-extra');
+const glob             = require('@edenjs/glob');
+const yargs            = require('yargs');
 
-// require config files
-const log = require('./lib/utilities/log');
-const initEden = require('./lib/utilities/init');
+// Require internal utils
+const loader = require('lib/loader');
+const log = require('lib/utilities/log');
+const initEden = require('lib/utilities/init');
 
 // setup globals
 global.isCLI = true;
 
-// Set yargs colors
-yargonaut
-  .style('underline.green')
-  .errorsStyle('red');
-
-/* eslint no-console: 0 */
-
 class EdenCLI extends EventEmitter {
-  constructor(...args) {
+  constructor() {
     // run super
-    super(...args);
+    super();
 
-    // Hashbang must be removed for comment parser to work
-    // I know this is stupid but it looks cool at the top of this script too :)
-    const extractedComments = extractComments(fs.readFileSync(__filename, 'utf8').split('\n').slice(1).join('\n'));
-    const subText = extractedComments[0].raw;
-    const logo = extractedComments[1].raw;
+    this.building = this.build();
+  }
 
-    // set process arguments
-    this._args = yargs
-      .usage(`${chalk.green(logo)}\n${chalk.bold(subText)}\n\nUsage: $0 <command> [options]`)
-      .strict()
-      .wrap(Math.min(100, yargs.terminalWidth()))
-      .command('start', 'Starts EdenJS in production.', () => {
-        return yargs
-          .strict(false); // Additional options will be done in lib/aliases/config.js
-      })
-      .command('run [fn]', 'Runs EdenJS gulp function.', () => {
-        return yargs
-          .strict(false) // Additional options will be done in lib/aliases/config.js
-          .positional('fn', {
-            desc    : 'Gulp function to run',
-            default : 'dev',
-            type    : 'string',
-          })
-          .choices('fn', ['dev', 'install']);
-      })
-      .command('init <dirType>', 'Initialize new or fix existing EdenJS directory.', () => {
-        return yargs
-          .positional('dirType', {
-            desc : 'EdenJS directory type',
-            type : 'string',
-          })
-          .choices('dirType', ['app', 'module'])
-          .option('migrateGit', {
-            alias    : 'g',
-            describe : 'Migrate .git directory if misplaced in current directory',
-          });
-      })
-      .demandCommand(1)
-      .help('help', 'Show usage instructions')
-      .alias('help', 'h')
-      .argv;
+  async build() {
+    const cliLocations = loader.getFiles(global.bundleLocations, 'cli/**/*.js');
+    const cliCommands = [];
+
+    for (const cliPath of await glob(cliLocations)) {
+      // eslint-disable-next-line global-require, import/no-dynamic-require
+      const cliModuleCommands = require(cliPath);
+
+      cliCommands.push(...cliModuleCommands);
+    }
+
+    let yy = yargs;
+
+    for (const command of cliCommands) {
+      if (command.command === null) {
+        yy = command.fn(yy);
+        continue;
+      }
+
+      yy = yy.command(command.command, command.description, command.fn);
+    }
+
+    this._args = yy.argv;
 
     // create logger
     this.logger();
@@ -208,7 +188,7 @@ class EdenCLI extends EventEmitter {
       this._logger.log(level, `[${chalk.cyan(evt.name)}] Errored after ${chalk.magenta(time)}`);
 
       // log error
-      console.log(err);
+      console.error(err); // eslint-disable-line no-console
     });
 
     // run task
