@@ -57,13 +57,8 @@ class JavascriptTask {
 
     // Browserify javascript
     let b = browserify({
-      paths : [
-        ...await glob(global.bundlesLocations), // This one must come first, who knows why
-        ...global.importLocations,
-      ],
-      // this breaks when on, https://github.com/browserify/browserify/issues/1500 maybe?
-      // debug         : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
-      debug         : false,
+      paths         : global.importLocations,
+      debug         : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
       entries       : await glob(files),
       commondir     : false,
       insertGlobals : true,
