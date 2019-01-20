@@ -1,15 +1,19 @@
-const chalk            = require('chalk');
-const extractComments  = require('extract-comments');
-const fs               = require('fs-extra');
-const Path             = require('path');
-const yargonaut        = require('yargonaut'); // Must precede yargs
+const chalk           = require('chalk');
+const extractComments = require('extract-comments');
+const fs              = require('fs-extra');
+const Path            = require('path');
+const yargonaut       = require('yargonaut'); // Must precede yargs
+const gulp            = require('gulp');
+const prettyTime      = require('pretty-hrtime');
+
+const initEden = require('lib/utilities/init');
 
 // Set yargs colors
 yargonaut
   .style('underline.green')
   .errorsStyle('red');
 
-function cli(yy) {
+function cliCommand(yy) {
   // Hashbang must be removed for comment parser to work
   // I know this is stupid but it looks cool at the top of the script too :)
   const extractedComments = extractComments(fs.readFileSync(Path.join(global.edenRoot, 'index.js'), 'utf8').split('\n').slice(1).join('\n'));
@@ -26,12 +30,23 @@ function cli(yy) {
     .alias('help', 'h');
 }
 
-function start(yy) {
+function startCommand(yy) {
   return yy
     .strict(false); // Additional options will be done in lib/aliases/config.js
 }
 
-function run(yy) {
+async function startHandler() {
+  // setup globals
+  global.isCLI = false;
+
+  // require base app
+  const App = require(Path.join(global.edenRoot, 'app.js')); // eslint-disable-line global-require, import/no-dynamic-require
+
+  // run base app
+  new App(); // eslint-disable-line no-new
+}
+
+function runCommand(yy) {
   return yy
     .strict(false) // Additional options will be done in lib/aliases/config.js
     .positional('fn', {
@@ -42,7 +57,36 @@ function run(yy) {
     .choices('fn', ['dev', 'install']);
 }
 
-function init(yy) {
+async function runHandler() {
+  // run gulp logic
+  require(Path.join(global.edenRoot, 'gulpfile.js')); // eslint-disable-line global-require, import/no-dynamic-require
+
+  const loggedErrors = [];
+
+  // add start logging
+  gulp.on('start', (evt) => {
+    this._logger.log(evt.branch ? 'debug' : 'info', `[${chalk.cyan(evt.name)}] Starting`);
+  });
+
+  // add stop logging
+  gulp.on('stop', (evt) => {
+    this._logger.log(evt.branch ? 'debug' : 'info', `[${chalk.cyan(evt.name)}] Finished in ${chalk.magenta(prettyTime(evt.duration))}`);
+  });
+
+  // on error
+  gulp.on('error', (evt) => {
+    this._logger.log(evt.branch ? 'debug' : 'error', `[${chalk.cyan(evt.name)}] Errored after ${chalk.magenta(prettyTime(evt.duration))}`);
+    if (!loggedErrors.includes(evt.error)) {
+      loggedErrors.push(evt.error);
+      global.printError(evt.error);
+    }
+  });
+
+  // run task
+  gulp.task(this._args.fn === 'install' ? 'install' : 'default')();
+}
+
+function initCommand(yy) {
   return yy
     .positional('dirType', {
       desc : 'EdenJS directory type',
@@ -55,25 +99,38 @@ function init(yy) {
     });
 }
 
+async function initHandler() {
+  const res = await initEden(this._args.dirType, this._args.migrateGit);
+
+  if (res !== null) {
+    this._logger.log('info', `[${chalk.green('init')}] Finished initializing ${res}`);
+  } else {
+    this._logger.log('error', `[${chalk.green('init')}] No existing directory type detected and none supplied`);
+  }
+}
+
 module.exports = [
   {
     command     : null,
-    fn          : cli,
+    fn          : cliCommand,
     description : null,
   },
   {
     command     : 'start',
-    fn          : start,
+    handler     : startHandler,
+    fn          : startCommand,
     description : 'Starts EdenJS in production.',
   },
   {
     command     : 'run [fn]',
-    fn          : run,
+    handler     : runHandler,
+    fn          : runCommand,
     description : 'Runs EdenJS gulp function.',
   },
   {
     command     : 'init <dirType>',
-    fn          : init,
+    handler     : initHandler,
+    fn          : initCommand,
     description : 'Initialize new or fix existing EdenJS directory.',
   },
 ];
