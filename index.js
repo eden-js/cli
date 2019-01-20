@@ -53,7 +53,10 @@ class EdenCLI extends EventEmitter {
     let yy = yargs;
 
     // Iterate with non-command modules first
-    const sortedCommands = cliCommands.sort((a, b) => (a.command === null && b.command !== null ? -1 : 1));
+    const sortedCommands = cliCommands.sort((a, b) => {
+      return (a.command === null && b.command !== null ? -1 : 1);
+    });
+
     for (const command of sortedCommands) {
       if (command.command === null) {
         yy = command.fn(yy);
