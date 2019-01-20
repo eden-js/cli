@@ -1,13 +1,15 @@
 // Require dependencies
 const fs             = require('fs-extra');
 const os             = require('os');
-const path           = require('path');
+const Path           = require('path');
+const glob           = require('@edenjs/glob');
 const gulp           = require('gulp');
 const gulpRename     = require('gulp-rename');
-const gulpSass       = require('gulp-sass');
+const gulpSass       = require('gulp-dart-sass');
 const gulpPrefix     = require('gulp-autoprefixer');
 const gulpSourcemaps = require('gulp-sourcemaps');
-const through        = require('through2');
+const vinylSource    = require('vinyl-source-stream');
+const vinylBuffer    = require('vinyl-buffer');
 
 // Require local dependencies
 const config = require('config');
@@ -17,22 +19,18 @@ function customImporter(url) {
     return null;
   }
 
-  const edenPath = path.resolve(global.edenRoot, 'node_modules', url.substr(1));
+  let location = null;
 
-  if (fs.existsSync(path.dirname(edenPath))) {
-    return { file : edenPath };
-  }
+  try {
+    location = require.resolve(`${url.substr(1)}.css`);
+  } catch (err) { /* */ }
 
-  const appPath = path.resolve(global.appRoot, 'node_modules', url.substr(1));
+  try {
+    location = require.resolve(`${url.substr(1)}.scss`);
+  } catch (err) { /* */ }
 
-  if (fs.existsSync(path.dirname(appPath))) {
-    return { file : appPath };
-  }
-
-  const legacyAppPath = path.resolve(global.appRoot, 'bundles', 'node_modules', url.substr(1));
-
-  if (fs.existsSync(path.dirname(legacyAppPath))) {
-    return { file : legacyAppPath };
+  if (location !== null) {
+    return { file : location };
   }
 
   return null;
@@ -56,9 +54,6 @@ class SASSTask {
     // Bind public methods
     this.run = this.run.bind(this);
     this.watch = this.watch.bind(this);
-
-    // Bind private methods
-    this._tmp = this._tmp.bind(this);
   }
 
   /**
@@ -67,17 +62,49 @@ class SASSTask {
    * @returns {Promise}
    */
   async run() {
-    await this._tmp();
+    // Grab gulp source for sass. Create local variables array for sass files
+    const sassFiles = this._runner.files('public/scss/variables.scss');
 
-    // Run gulp task
-    let job = gulp.src(`${global.appRoot}/data/cache/tmp.scss`);
+    // Load sass
+    const configSass = config.get('sass');
+
+    // Loop config sass files
+    if (configSass) {
+      for (let i = 0; i < configSass.length; i += 1) {
+        sassFiles.push(Path.join(global.edenRoot, configSass[i]));
+        sassFiles.push(Path.join(global.appRoot, configSass[i]));
+      }
+    }
+
+    // Push local bootstrap files
+    sassFiles.push(...this._runner.files('public/scss/bootstrap.scss'));
+
+    // Create body for main file
+    let body = '';
+
+    // Add imports or embeds for all files to body
+    for (const file of await glob(sassFiles)) {
+      // Check type
+      if (Path.extname(file) === 'css') {
+        body += `${await fs.readFile(file, 'utf8')}${os.EOL}`;
+      } else {
+        body += `@import "${file}";${os.EOL}`;
+      }
+    }
+
+    // Create job
+    let job = vinylSource('master.scss');
+    job.end(body);
+
+    // Buffer for compatibility
+    job = job.pipe(vinylBuffer());
 
     // Init gulpSourcemaps
     if (config.get('environment') === 'dev' && !config.get('noSourcemaps')) {
       job = job.pipe(gulpSourcemaps.init());
     }
 
-    job = job.pipe(gulpSass({
+    job = job.pipe(gulpSass.sync({
       importer    : customImporter,
       outputStyle : 'compressed',
     }));
@@ -102,82 +129,6 @@ class SASSTask {
     // Wait for job to end
     await new Promise((resolve, reject) => {
       job.once('end', resolve);
-      job.once('error', reject);
-    });
-  }
-
-  /**
-   * Builds temporary scss file
-   *
-   * @returns {Promise}
-   *
-   * @private
-   */
-  async _tmp() {
-    // Set variables
-    let all = '';
-
-    // Grab gulp source for sass. Create local variables array for sass files
-    const sassFiles = this._runner.files('public/scss/variables.scss');
-
-    // Load sass
-    const configSass = config.get('sass');
-
-    // Loop config sass files
-    if (configSass) {
-      for (let i = 0; i < configSass.length; i += 1) {
-        sassFiles.push(path.join(global.edenRoot, configSass[i]));
-        sassFiles.push(path.join(global.appRoot, configSass[i]));
-      }
-    }
-
-    // Push local bootstrap files
-    sassFiles.push(...this._runner.files('public/scss/bootstrap.scss'));
-
-    // Create job
-    let job = gulp.src(sassFiles, { allowEmpty : true });
-
-    // Run gulp on sass files
-    job = job.pipe(through.obj(async function thru(chunk, enc, cb) {
-      // Run through callback
-      let type = chunk.path.split('.');
-
-      // Update type
-      type = type[type.length - 1];
-
-      // Check type
-      if (type === 'css') {
-        // Prepend
-        const prepend = await fs.readFile(chunk.path, 'utf8');
-
-        // Push to this
-        this.push({
-          all : prepend + os.EOL,
-        });
-      } else {
-        // Push to this
-        this.push({
-          all : `@import "${chunk.path}";${os.EOL}`,
-        });
-      }
-
-      // Run callback
-      cb(null, chunk);
-    }));
-
-    // Wait for job to end
-    await new Promise((resolve, reject) => {
-      job.on('data', (data) => {
-        if (data.all) {
-          all += data.all;
-        }
-      });
-
-      job.once('end', async () => {
-        await fs.writeFile(`${global.appRoot}/data/cache/tmp.scss`, all);
-        resolve();
-      });
-
       job.once('error', reject);
     });
   }
