@@ -85,7 +85,7 @@ class SASSTask {
     // Add imports or embeds for all files to body
     for (const file of await glob(sassFiles)) {
       // Check type
-      if (Path.extname(file) === 'css') {
+      if (Path.extname(file) === '.css') {
         body += `${await fs.readFile(file, 'utf8')}${os.EOL}`;
       } else {
         body += `@import "${file}";${os.EOL}`;

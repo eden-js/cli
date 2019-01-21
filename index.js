@@ -40,7 +40,7 @@ class EdenCLI extends EventEmitter {
   }
 
   async build() {
-    const cliLocations = loader.getFiles(global.bundleLocations, 'cli/**/*.js');
+    const cliLocations = loader.getFiles('cli/**/*.js', global.bundleLocations);
     const cliCommands = [];
 
     for (const cliPath of await glob(cliLocations)) {

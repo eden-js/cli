@@ -14,6 +14,8 @@ const gulpHeader     = require('gulp-header');
 const vinylSource    = require('vinyl-source-stream');
 const vinylBuffer    = require('vinyl-buffer');
 
+const loader = require('lib/loader');
+
 // Globally require babel plugins (i wish eslint would thank me too)
 const babelPresets = {
   presetEnv : require('@babel/preset-env'), // eslint-disable-line global-require
@@ -122,7 +124,7 @@ class JavascriptTask {
 
     // Build vendor prepend
     let head = '';
-    const js = config.get('js');
+    const js = loader.getFiles(config.get('js'));
 
     for (const file of (js || [])) {
       if (await fs.pathExists(path.join(global.edenRoot, file))) {

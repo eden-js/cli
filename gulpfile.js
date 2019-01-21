@@ -10,7 +10,6 @@ const Cp        = require('child_process');
 const util      = require('util');
 
 // Require local dependencies
-const config = require('config');
 const loader = require('lib/loader');
 const parser = require('lib/utilities/parser');
 
@@ -201,7 +200,7 @@ class Loader {
   }
 
   files(files) {
-    return loader.getFiles(this._locations, files);
+    return loader.getFiles(files, this._locations);
   }
 
   /**
