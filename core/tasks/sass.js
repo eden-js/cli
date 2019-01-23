@@ -69,35 +69,22 @@ class SASSTask {
    */
   async run() {
     // Grab gulp source for sass. Create local variables array for sass files
-    const sassFiles = [];
+    const sassFiles = this._runner.files('public/scss/variables.scss');
 
     // Load sass
-    const configSass = config.get('sass');
+    const configSass = config.get('sass') || [];
 
-    // Loop config sass files
-    if (configSass) {
-      for (let i = 0; i < configSass.length; i += 1) {
-        sassFiles.push(Path.join(global.edenRoot, configSass[i]));
-        sassFiles.push(Path.join(global.appRoot, configSass[i]));
-      }
-    }
+    // Add config sass files
+    sassFiles.push(...configSass.map(p => Path.join(global.appRoot, p)));
 
     // Push local bootstrap files
-    sassFiles.push(...this._runner.files('public/scss/variables.scss'));
     sassFiles.push(...this._runner.files('public/scss/bootstrap.scss'));
 
     // Create body for main file
-    let body = '';
-
-    // Add imports or embeds for all files to body
-    for (const file of await glob(sassFiles)) {
-      // Check type
-      if (Path.extname(file) === '.css') {
-        body += `${await fs.readFile(file, 'utf8')}${os.EOL}`;
-      } else {
-        body += `@import "${file}";${os.EOL}`;
-      }
-    }
+    const body = (await Promise.all((await glob(sassFiles)).map(async (file) => {
+      // Correct embedment based off type
+      return Path.extname(file) === '.css' ? await fs.readFile(file, 'utf8') : `@import "${file}";`;
+    }))).join(os.EOL);
 
     // Create job
     let job = vinylSource('master.scss');

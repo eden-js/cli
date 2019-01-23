@@ -35,7 +35,9 @@ class DaemonsTask {
    */
   run(files) {
     // Set variables
-    let daemons = {};
+    let daemons = {
+      daemons : {}, // Stop errors if never defined
+    };
 
     // Get all routes
     return gulp.src(files)

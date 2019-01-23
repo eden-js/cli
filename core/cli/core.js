@@ -3,7 +3,6 @@ const extractComments = require('extract-comments');
 const fs              = require('fs-extra');
 const Path            = require('path');
 const yargonaut       = require('yargonaut'); // Must precede yargs
-const gulp            = require('gulp');
 const prettyTime      = require('pretty-hrtime');
 
 const initEden = require('lib/utilities/init');
@@ -58,7 +57,8 @@ function runCommand(yy) {
 }
 
 async function runHandler() {
-  // run gulp logic
+  // run gulp logic (imports are local here for CLI optimization)
+  const gulp = require('gulp'); // eslint-disable-line global-require
   require(Path.join(global.edenRoot, 'gulpfile.js')); // eslint-disable-line global-require, import/no-dynamic-require
 
   const loggedErrors = [];
