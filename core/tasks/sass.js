@@ -19,15 +19,21 @@ function customImporter(url) {
     return null;
   }
 
+  const filePath = url.substr(1);
+
   let location = null;
 
-  try {
-    location = require.resolve(`${url.substr(1)}.css`);
-  } catch (err) { /* */ }
+  if (location === null) try { location = require.resolve(`${filePath}.css`); } catch (err) { /* */ }
 
-  try {
-    location = require.resolve(`${url.substr(1)}.scss`);
-  } catch (err) { /* */ }
+  if (location === null) try { location = require.resolve(`${filePath}.scss`); } catch (err) { /* */ }
+
+  // Make `~example/files/file` find `example/files/_file.scss`
+  if (location === null) {
+    try {
+      const slashPos = filePath.lastIndexOf('/') + 1;
+      location = require.resolve(`${filePath.substring(0, slashPos)}_${filePath.substring(slashPos, filePath.length)}.scss`);
+    } catch (err) { /* */ }
+  }
 
   if (location !== null) {
     return { file : location };
@@ -77,6 +83,7 @@ class SASSTask {
     }
 
     // Push local bootstrap files
+    sassFiles.push(...this._runner.files('public/scss/variables.scss'));
     sassFiles.push(...this._runner.files('public/scss/bootstrap.scss'));
 
     // Create body for main file
