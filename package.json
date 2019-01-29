@@ -59,7 +59,6 @@
     "express-session": "^1.15.6",
     "extract-comments": "^1.1.0",
     "fs-extra": "^7.0.1",
-    "greenlock-express": "^2.6.7",
     "gulp": "^4.0.0",
     "gulp-autoprefixer": "^6.0.0",
     "gulp-dart-sass": "^0.9.1",
