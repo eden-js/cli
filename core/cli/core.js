@@ -43,6 +43,9 @@ async function startHandler() {
 
   // run base app
   new App(); // eslint-disable-line no-new
+
+  // The ride never ends
+  return new Promise(() => {});
 }
 
 function runCommand(yy) {
@@ -56,7 +59,7 @@ function runCommand(yy) {
     .choices('fn', ['dev', 'install']);
 }
 
-async function runHandler() {
+async function runHandler(args) {
   // run gulp logic (imports are local here for CLI optimization)
   const gulp = require('gulp'); // eslint-disable-line global-require
   require(Path.join(global.edenRoot, 'gulpfile.js')); // eslint-disable-line global-require, import/no-dynamic-require
@@ -83,7 +86,15 @@ async function runHandler() {
   });
 
   // run task
-  gulp.task(this._args.fn === 'install' ? 'install' : 'default')();
+  await new Promise((resolve, reject) => {
+    gulp.series([args.fn === 'dev' ? 'default' : args.fn])((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
 }
 
 function initCommand(yy) {
@@ -99,8 +110,8 @@ function initCommand(yy) {
     });
 }
 
-async function initHandler() {
-  const res = await initEden(this._args.dirType, this._args.migrateGit);
+async function initHandler(args) {
+  const res = await initEden(args.dirType, args.migrateGit);
 
   if (res !== null) {
     this._logger.log('info', `[${chalk.green('init')}] Finished initializing ${res}`);

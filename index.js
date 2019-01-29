@@ -26,7 +26,7 @@ const yargs            = require('yargs');
 
 // Require internal utils
 const loader = require('lib/loader');
-const log = require('lib/utilities/log');
+const log    = require('lib/utilities/log');
 
 // setup globals
 global.isCLI = true;
@@ -71,11 +71,22 @@ class EdenCLI extends EventEmitter {
     this.logger();
 
     // get function
-    const [command] = this._args._;
+    const [baseCommandName] = this._args._;
 
-    this._logger.log('info', `[${chalk.green(command)}] Running`);
+    this._logger.log('info', `[${chalk.green(baseCommandName)}] Running`);
 
-    cliCommands.find(c => (c.command || '').split(' ')[0] === command).handler.bind(this)();
+    const callCommand = async (commandName, args = {}) => {
+      await cliCommands.find(c => (c.command || '').split(' ')[0] === commandName).handler.bind(this)(Object.assign({}, this._args, args), callCommand);
+    };
+
+    try {
+      await callCommand(baseCommandName);
+    } catch (err) {
+      global.printError(err);
+      process.exit(1);
+    }
+
+    process.exit(0);
   }
 
   /**

@@ -13,20 +13,9 @@ const gulpSourcemaps = require('gulp-sourcemaps');
 const gulpHeader     = require('gulp-header');
 const vinylSource    = require('vinyl-source-stream');
 const vinylBuffer    = require('vinyl-buffer');
+const babelPresetEnv = require('@babel/preset-env');
 
 const loader = require('lib/loader');
-
-// Globally require babel plugins (i wish eslint would thank me too)
-const babelPresets = {
-  presetEnv : require('@babel/preset-env'), // eslint-disable-line global-require
-};
-
-const babelPlugins = {
-  pollyfill        : require('@babel/polyfill'), // eslint-disable-line global-require
-  transformClasses : require('@babel/plugin-transform-classes'), // eslint-disable-line global-require
-  transformAsync   : require('@babel/plugin-transform-async-to-generator'), // eslint-disable-line global-require
-  transformRuntime : require('@babel/plugin-transform-runtime'), // eslint-disable-line global-require
-};
 
 // Require local dependencies
 const config = require('config');
@@ -61,7 +50,7 @@ class JavascriptTask {
     let b = browserify({
       paths         : global.importLocations,
       debug         : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
-      entries       : await glob(files),
+      entries       : [require.resolve('@babel/polyfill'), ...await glob(files)],
       commondir     : false,
       insertGlobals : true,
       cache         : {},
@@ -71,24 +60,11 @@ class JavascriptTask {
     b = b.transform(babelify, {
       sourceMaps : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
       presets    : [
-        babel.createConfigItem([babelPresets.presetEnv, {
+        babel.createConfigItem([babelPresetEnv, {
           useBuiltIns : 'entry',
           targets     : {
-            browsers : [
-              '>0.25%',
-              'not ie 11',
-              'not op_mini all',
-            ],
+            browsers : config.get('browserlist'),
           },
-        }]),
-      ],
-      plugins : [
-        babel.createConfigItem(babelPlugins.pollyfill),
-        babel.createConfigItem(babelPlugins.transformClasses),
-        babel.createConfigItem(babelPlugins.transformAsync),
-        babel.createConfigItem([babelPlugins.transformRuntime, {
-          helpers      : false,
-          regenerators : true,
         }]),
       ],
     });

@@ -5,6 +5,11 @@
  */
 const config = {};
 
+// Secret for crypto
+config.secret = 'someStrongSecretHash';
+
+config.browserlist = ['last 3 versions', 'not < 0.25%', 'not dead', 'not ie 11', 'not op_mini all'];
+
 config.title = 'EdenJS';
 config.direction = 1; // 0 = page only, 1 = title before page title, 2 = title after page title
 
@@ -34,17 +39,6 @@ config.lock = {
 
 // I18n configuration
 config.i18n = {
-  cache        : {
-    prefix         : 'lang_',
-    enabled        : true,
-    versions       : {},
-    expirationTime : 7 * 24 * 60 * 60 * 1000,
-  },
-  detection    : {
-    caches            : ['cookie'],
-    lookupCookie      : 'lang',
-    lookupQuerystring : 'lang',
-  },
   defaultNS    : 'default',
   fallbackNS   : 'default',
   fallbackLng  : 'en-au',
@@ -74,9 +68,6 @@ config.email = {
     pass : 'superSecretPassword',
   },
 };
-
-// Secret for crypto
-config.secret = 'someStrongSecretHash';
 
 // Set config ACL object
 config.acl = {

@@ -104,11 +104,7 @@ class SASSTask {
     }));
 
     job = job.pipe(gulpPrefix({
-      browsers : [
-        '>0.25%',
-        'not ie 11',
-        'not op_mini all',
-      ],
+      browsers : config.get('browserlist'),
     }));
 
     job = job.pipe(gulpRename('app.min.css'));
