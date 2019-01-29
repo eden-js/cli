@@ -69,7 +69,7 @@ class SASSTask {
    */
   async run() {
     // Grab gulp source for sass. Create local variables array for sass files
-    const sassFiles = this._runner.files('public/scss/variables.scss');
+    const sassFiles = this._runner.files('public/scss/variables.scss').reverse();
 
     // Load sass
     const configSass = config.get('sass') || [];

@@ -87,9 +87,11 @@ class JavascriptTask {
   async run(files) {
     const b = await this._browserify(files);
 
-    // Create job from browserify
-    let job = b
-      .bundle()
+    // Create browserify bundle
+    const bundle = b.bundle();
+
+    // Create job from browserify bundle
+    let job = bundle
       .pipe(vinylSource('app.min.js')) // Convert to gulp stream
       .pipe(vinylBuffer()); // Needed for terser, sourcemaps
 
@@ -147,6 +149,7 @@ class JavascriptTask {
     await new Promise((resolve, reject) => {
       job.once('end', resolve);
       job.once('error', reject);
+      bundle.once('error', reject);
     });
   }
 
