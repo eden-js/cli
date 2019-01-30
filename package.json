@@ -1,7 +1,7 @@
 {
   "name": "@edenjs/cli",
   "description": "Web Application Framework built on Express.js, Redis and RiotJS",
-  "version": "1.1.11",
+  "version": "1.1.12",
   "bin": {
     "edenjs": "./index.js"
   },
@@ -79,7 +79,7 @@
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
     "watchify": "^3.11.0",
-    "winston": "^3.1.0",
+    "winston": "^3.2.1",
     "yargonaut": "^1.1.4",
     "yargs": "^12.0.5"
   },
@@ -87,8 +87,8 @@
     "@edenjs/eslint-config-eden": "^2.0.14",
     "eslint": "^5.12.1",
     "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.15.0",
-    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jsx-a11y": "^6.2.0",
     "eslint-plugin-react": "^7.12.4"
   }
 }
