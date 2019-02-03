@@ -100,10 +100,10 @@ async function runHandler(args) {
 function initCommand(yy) {
   return yy
     .positional('dirType', {
-      desc : 'EdenJS directory type',
-      type : 'string',
+      desc    : 'EdenJS directory type',
+      type    : 'string',
     })
-    .choices('dirType', ['app', 'module'])
+    .choices('dirType', ['app', 'module', 'none'])
     .option('migrateGit', {
       alias    : 'g',
       describe : 'Migrate .git directory if misplaced in current directory',
@@ -113,11 +113,7 @@ function initCommand(yy) {
 async function initHandler(args) {
   const res = await initEden(args.dirType, args.migrateGit);
 
-  if (res !== null) {
-    this._logger.log('info', `[${chalk.green('init')}] Finished initializing ${res}`);
-  } else {
-    this._logger.log('error', `[${chalk.green('init')}] No existing directory type detected and none supplied`);
-  }
+  this._logger.log('info', `[${chalk.green('init')}] Finished initializing ${res}`);
 }
 
 module.exports = [
@@ -139,7 +135,7 @@ module.exports = [
     description : 'Runs EdenJS gulp function.',
   },
   {
-    command     : 'init <dirType>',
+    command     : 'init [dirType]',
     handler     : initHandler,
     fn          : initCommand,
     description : 'Initialize new or fix existing EdenJS directory.',
