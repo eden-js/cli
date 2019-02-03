@@ -113,7 +113,7 @@ function initCommand(yy) {
 async function initHandler(args) {
   const res = await initEden(args.dirType, args.migrateGit);
 
-  this._logger.log('info', `[${chalk.green('init')}] Finished initializing ${res}`);
+  this._logger.log('info', `[${chalk.green('init')}] Finished initializing type: ${res}`);
 }
 
 module.exports = [
