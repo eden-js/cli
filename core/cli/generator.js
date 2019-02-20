@@ -164,6 +164,9 @@ class EdenGenerator extends Events {
       if (element.type === 'directory') {
         // create directory
         await fs.ensureDir(`${global.appRoot}/.generate/${id}${file}`);
+      } else if (['.png', '.jpg', '.svg', 'ico'].includes(element.extension)) {
+        // create directory
+        await fs.copy(file.path, `${global.appRoot}/.generate/${id}${file}`);
       } else {
         // get contents
         let content = await fs.readFile(element.path, 'utf8');
