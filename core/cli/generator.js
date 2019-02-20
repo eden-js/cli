@@ -82,6 +82,9 @@ class EdenGenerator extends Events {
    * @return {*}
    */
   async generateDesign(model) {
+    // generate design
+    if (!model) model = 'design';
+
     // create bundle
     const generated = await this.__generate(`${global.edenRoot}/generator/design`, { model });
 
