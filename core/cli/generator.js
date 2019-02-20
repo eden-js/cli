@@ -47,7 +47,7 @@ class EdenGenerator extends Events {
         type    : 'string',
         default : 'model',
       })
-      .choices('type', ['bundle']);
+      .choices('type', ['bundle', 'design']);
   }
 
   /**
@@ -64,8 +64,30 @@ class EdenGenerator extends Events {
       return this.generateBundle(args.model, args.mount);
     }
 
+    // if design
+    if (args.type === 'design') {
+      // return generate bundle
+      return this.generateDesign(args.model);
+    }
+
     // return nothing to generate
     return;
+  }
+
+  /**
+   * generates bundle
+   *
+   * @param  {String} model
+   *
+   * @return {*}
+   */
+  async generateDesign(model) {
+    // create bundle
+    const generated = await this.__generate(`${global.edenRoot}/generator/design`, { model });
+
+    // move directory
+    await fs.move(`${generated}/${model}`, `${global.appRoot}/bundles/${model}`);
+    await fs.remove(generated);
   }
 
   /**

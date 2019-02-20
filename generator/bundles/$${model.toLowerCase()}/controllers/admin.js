@@ -175,7 +175,6 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}AdminContr
    * @menu     {ADMIN} $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}s
    * @title    $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()} Administration
    * @route    {get} /
-   * @parent   $${mount}
    * @layout   admin
    * @priority 10
    */
