@@ -286,7 +286,7 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}AdminContr
     }
 
     // get form
-    const form = await formHelper.get('ifactory.$${model.toLowerCase()}');
+    const form = await formHelper.get('admin.$${model.toLowerCase()}');
 
     // digest into form
     const sanitised = await formHelper.render(req, form, await Promise.all(form.get('fields').map(async (field) => {
@@ -298,7 +298,7 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}AdminContr
     })));
 
     // get form
-    if (!form.get('_id')) res.form('ifactory.$${model.toLowerCase()}');
+    if (!form.get('_id')) res.form('admin.$${model.toLowerCase()}');
 
     // Render page
     res.render('$${model.toLowerCase()}/admin/update', {

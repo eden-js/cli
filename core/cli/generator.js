@@ -1,5 +1,8 @@
 
 // require events
+const fs     = require('fs-extra');
+const tree   = require('directory-tree');
+const uuid   = require('uuid');
 const Events = require('events');
 
 /**
@@ -39,6 +42,11 @@ class EdenGenerator extends Events {
         type    : 'string',
         default : 'bundle',
       })
+      .positional('model', {
+        desc    : 'EdenJS Bundle Name',
+        type    : 'string',
+        default : 'model',
+      })
       .choices('type', ['bundle']);
   }
 
@@ -72,8 +80,93 @@ class EdenGenerator extends Events {
     // check mount
     if (!mount) mount = `/${model.toLowerCase()}`;
 
+    // create bundle
+    const generated = await this.__generate(`${global.edenRoot}/generator/bundles`, { model, mount });
 
-    console.log(model, mount);
+    // move directory
+    await fs.move(generated, `${global.appRoot}/bundles/${model}`);
+  }
+
+  /**
+   * generates files based on
+   *
+   * @param  {String}  path
+   * @param  {Object}  replacements
+   *
+   * @return {Promise}
+   */
+  async __generate(path, replacements) {
+    // get path tree
+    const pathTree = tree(path);
+
+    // check generate dir
+    if (!await fs.exists(`${global.appRoot}/.generate`)) {
+      // create generate dir
+      await fs.ensureDir(`${global.appRoot}/.generate`);
+    }
+
+    // generate uuid
+    const id = uuid();
+
+    // ensure new directory
+    await fs.ensureDir(`${global.appRoot}/.generate/${id}`);
+
+    // create eval item
+    const evalValues = Object.keys(replacements).reduce((accum, key) => {
+      // eval string
+      accum += `const ${key} = ${JSON.stringify(replacements[key])};`;
+
+      // return accum
+      return accum;
+    }, '');
+
+    // digest element
+    const digest = async (element) => {
+      // create file
+      let file = element.path.replace(path, '');
+
+      // create new file location
+      const fileEvals = Array.from(new Set(file.match(/\$\${([^}]+)}/g)));
+
+      // create that element
+      fileEvals.forEach((val) => {
+        // replace
+        file = file.split(val).join(eval(`${evalValues} (${val.slice(3, -1)})`));
+      });
+
+      // directory
+      if (element.type === 'directory') {
+        // create directory
+        await fs.ensureDir(`${global.appRoot}/.generate/${id}${file}`);
+      } else {
+        // get contents
+        let content = await fs.readFile(element.path, 'utf8');
+
+        // create new file location
+        const contentEvals = Array.from(new Set(content.match(/\$\${([^}]+)}/g)));
+
+        // create that element
+        contentEvals.forEach((val) => {
+          // replace
+          content = content.split(val).join(eval(`${evalValues} (${val.slice(3, -1)})`));
+        });
+
+        // write file
+        await fs.writeFile(`${global.appRoot}/.generate/${id}${file}`, content);
+      }
+
+      // check children
+      if (element.children && element.children.length) {
+        // digest all children
+        await Promise.all(element.children.map(child => digest(child)));
+      }
+    };
+
+    // digest tree items
+    await Promise.all(pathTree.children.map(child => digest(child)));
+
+    // return directory
+    return `${global.appRoot}/.generate/${id}`;
   }
 }
 
@@ -84,7 +177,7 @@ const edenGenerator = new EdenGenerator();
 module.exports = [
   {
     fn          : edenGenerator.decorate,
-    command     : 'generate [type]',
+    command     : 'generate [type] [model]',
     handler     : edenGenerator.generate,
     description : 'Generates EdenJS logic based on type and name.',
   },
