@@ -84,7 +84,7 @@ class EdenGenerator extends Events {
     const generated = await this.__generate(`${global.edenRoot}/generator/bundles`, { model, mount });
 
     // move directory
-    await fs.move(generated, `${global.appRoot}/bundles/${model}`);
+    await fs.move(generated, `${global.appRoot}/bundles/`);
   }
 
   /**
