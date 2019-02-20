@@ -11,7 +11,7 @@ const formHelper = helper('form');
  */
 class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()} extends Model {
   /**
-   * construct audit model
+   * construct $${model.toLowerCase()} model
    */
   constructor() {
     // run super
@@ -22,7 +22,7 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()} extends M
   }
 
   /**
-   * sanitises acl class
+   * sanitises $${model.toLowerCase()} model
    *
    * @return {*}
    */

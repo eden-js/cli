@@ -11,7 +11,6 @@ const Block = model('block');
 
 // require helpers
 const formHelper  = helper('form');
-const modelHelper = helper('model');
 const fieldHelper = helper('form/field');
 const blockHelper = helper('cms/block');
 
@@ -20,20 +19,20 @@ const blockHelper = helper('cms/block');
  *
  * @acl   admin
  * @fail  next
- * @mount /admin/$${mount}
+ * @mount /admin$${mount}
  */
 class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}AdminController extends Controller {
   /**
-   * Construct user $${model.toLowerCase()}AdminController controller
+   * Construct $${model.toLowerCase()} Admin Controller
    */
   constructor() {
-    // Run super
+    // run super
     super();
 
-    // build $${model.toLowerCase()} admin controller
+    // bind build methods
     this.build = this.build.bind(this);
 
-    // Bind methods
+    // bind methods
     this.gridAction = this.gridAction.bind(this);
     this.indexAction = this.indexAction.bind(this);
     this.createAction = this.createAction.bind(this);
@@ -43,15 +42,22 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}AdminContr
     this.updateSubmitAction = this.updateSubmitAction.bind(this);
     this.removeSubmitAction = this.removeSubmitAction.bind(this);
 
-    // Bind private methods
+    // bind private methods
     this._grid = this._grid.bind(this);
 
     // set building
     this.building = this.build();
   }
 
+
+  // ////////////////////////////////////////////////////////////////////////////
+  //
+  // BUILD METHODS
+  //
+  // ////////////////////////////////////////////////////////////////////////////
+
   /**
-   * builds $${model.toLowerCase()} admin controller
+   * build $${model.toLowerCase()} admin controller
    */
   build() {
     //
@@ -151,45 +157,12 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}AdminContr
     });
   }
 
-  /**
-   * socket listen action
-   *
-   * @param  {String} id
-   * @param  {Object} opts
-   *
-   * @call   model.listen.$${model.toLowerCase()}
-   * @return {Async}
-   */
-  async listenAction(id, uuid, opts) {
-    // / return if no id
-    if (!id) return;
 
-    // join room
-    opts.socket.join(`$${model.toLowerCase()}.${id}`);
-
-    // add to room
-    return await modelHelper.listen(opts.sessionID, await $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}.findById(id), uuid, true);
-  }
-
-  /**
-   * socket listen action
-   *
-   * @param  {String} id
-   * @param  {Object} opts
-   *
-   * @call   model.deafen.$${model.toLowerCase()}
-   * @return {Async}
-   */
-  async deafenAction(id, uuid, opts) {
-    // / return if no id
-    if (!id) return;
-
-    // join room
-    opts.socket.leave(`$${model.toLowerCase()}.${id}`);
-
-    // add to room
-    return await modelHelper.deafen(opts.sessionID, await $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}.findById(id), uuid, true);
-  }
+  // ////////////////////////////////////////////////////////////////////////////
+  //
+  // CRUD METHODS
+  //
+  // ////////////////////////////////////////////////////////////////////////////
 
   /**
    * Index action
@@ -201,7 +174,7 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}AdminContr
    * @menu     {ADMIN} $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}s
    * @title    $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()} Administration
    * @route    {get} /
-   * @parent   /${mount}
+   * @parent   $${mount}
    * @layout   admin
    * @priority 10
    */
@@ -210,42 +183,6 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}AdminContr
     res.render('$${model.toLowerCase()}/admin', {
       grid : await (await this._grid(req)).render(req),
     });
-  }
-
-  /**
-   * index action
-   *
-   * @param req
-   * @param res
-   *
-   * @acl   admin
-   * @fail  next
-   * @route {GET} /query
-   */
-  async queryAction(req, res) {
-    // find children
-    let $${model.toLowerCase()}s = await $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()};
-
-    // set query
-    if (req.query.q) {
-      $${model.toLowerCase()}s = $${model.toLowerCase()}s.where({
-        name : new RegExp(escapeRegex(req.query.q || ''), 'i'),
-      });
-    }
-
-    // add roles
-    $${model.toLowerCase()}s = await $${model.toLowerCase()}s.skip(((parseInt(req.query.page, 10) || 1) - 1) * 20).limit(20).sort('name', 1)
-      .find();
-
-    // get children
-    res.json((await Promise.all($${model.toLowerCase()}s.map($${model.toLowerCase()} => $${model.toLowerCase()}.sanitise()))).map((sanitised) => {
-      // return object
-      return {
-        text  : sanitised.name,
-        data  : sanitised,
-        value : sanitised.id,
-      };
-    }));
   }
 
   /**
@@ -431,6 +368,56 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}AdminContr
     return this.indexAction(req, res);
   }
 
+
+  // ////////////////////////////////////////////////////////////////////////////
+  //
+  // QUERY METHODS
+  //
+  // ////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * index action
+   *
+   * @param req
+   * @param res
+   *
+   * @acl   admin
+   * @fail  next
+   * @route {GET} /query
+   */
+  async queryAction(req, res) {
+    // find children
+    let $${model.toLowerCase()}s = await $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()};
+
+    // set query
+    if (req.query.q) {
+      $${model.toLowerCase()}s = $${model.toLowerCase()}s.where({
+        name : new RegExp(escapeRegex(req.query.q || ''), 'i'),
+      });
+    }
+
+    // add roles
+    $${model.toLowerCase()}s = await $${model.toLowerCase()}s.skip(((parseInt(req.query.page, 10) || 1) - 1) * 20).limit(20).sort('name', 1)
+      .find();
+
+    // get children
+    res.json((await Promise.all($${model.toLowerCase()}s.map($${model.toLowerCase()} => $${model.toLowerCase()}.sanitise()))).map((sanitised) => {
+      // return object
+      return {
+        text  : sanitised.name,
+        data  : sanitised,
+        value : sanitised.id,
+      };
+    }));
+  }
+
+
+  // ////////////////////////////////////////////////////////////////////////////
+  //
+  // GRID METHODS
+  //
+  // ////////////////////////////////////////////////////////////////////////////
+
   /**
    * User grid action
    *
@@ -457,7 +444,7 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}AdminContr
     const $${model.toLowerCase()}Grid = new Grid();
 
     // Set route
-    $${model.toLowerCase()}Grid.route('/${mount}/$${model.toLowerCase()}/grid');
+    $${model.toLowerCase()}Grid.route('/admin$${mount}/$${model.toLowerCase()}/grid');
 
     // get form
     const form = await formHelper.get('admin.$${model.toLowerCase()}');
