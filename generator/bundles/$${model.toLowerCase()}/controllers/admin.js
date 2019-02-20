@@ -10,9 +10,10 @@ const $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()} = model('
 const Block = model('block');
 
 // require helpers
-const formHelper  = helper('form');
+const formHelper = helper('form');
 const fieldHelper = helper('form/field');
 const blockHelper = helper('cms/block');
+const $${model.toLowerCase()}Helper = helper('$${model.toLowerCase()}');
 
 /**
  * Build $${model.toLowerCase()} controller

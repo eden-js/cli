@@ -7,6 +7,7 @@ const $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()} = model('
 
 // require helpers
 const modelHelper = helper('model');
+const $${model.toLowerCase()}Helper = helper('$${model.toLowerCase()}');
 
 /**
  * Build $${model.toLowerCase()} controller

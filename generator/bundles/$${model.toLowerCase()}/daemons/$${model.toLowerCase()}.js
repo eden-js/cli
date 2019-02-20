@@ -2,6 +2,9 @@
 // import dependencies
 const Daemon = require('daemon');
 
+// require helpers
+const $${model.toLowerCase()}Helper = helper('$${model.toLowerCase()}');
+
 /**
  * extend $${model.toLowerCase()} Daemon
  *
@@ -37,4 +40,4 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}Daemon ext
  *
  * @type {$${model.toLowerCase()}Daemon}
  */
-module.exports = $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}Daemon();
+module.exports = $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}Daemon;
