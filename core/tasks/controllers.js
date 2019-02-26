@@ -109,7 +109,7 @@ class ControllersTask {
         const route = Object.assign({
           fn       : method.method,
           file     : file.file,
-          path     : tag.tag === 'route' ? (mount + tag.value).split('//').join('/') : (tag.value || '').trim(),
+          path     : tag.tag === 'route' ? (mount + tag.value).split('//').join('/').replace(/\/$/, '') : (tag.value || '').trim(),
           method   : tag.tag === 'route' ? (tag.type || 'get').toLowerCase() : null,
           priority : method.tags.priority ? parseInt(method.tags.priority[0].value, 10) : priority,
         }, parser.acl(combinedTags), tag.tag === 'route' ? parser.upload(method.tags) : {});
@@ -169,9 +169,19 @@ class ControllersTask {
     // return parsed stuff
     return {
       calls,
-      menus,
       routes,
       classes,
+
+      menus : menus.reduce((accum, menu) => {
+        // set menu
+        if (!accum[menu.type]) accum[menu.type] = [];
+
+        // push menu
+        accum[menu.type].push(menu);
+
+        // return accum
+        return accum;
+      }, {}),
     };
   }
 }

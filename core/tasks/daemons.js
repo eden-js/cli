@@ -35,22 +35,23 @@ class DaemonsTask {
    */
   run(files) {
     // Set variables
-    let daemons = {
-      daemons : {}, // Stop errors if never defined
-    };
+    let config = {};
 
     // Get all routes
     return gulp.src(files)
       .pipe(through.obj((chunk, enc, cb) => {
-        // Run pipe chunk
-        daemons = deepMerge(daemons, parser.daemon(chunk));
+        // parse file
+        config = deepMerge(config, this.parse(parser.file(chunk.path)));
 
         // Run callback
         cb(null, chunk);
       }))
       .on('end', () => {
-        // Write config file
-        this._runner.write('daemons', daemons.daemons);
+        // Loop types in config
+        for (const type of Object.keys(config)) {
+          // Write config file
+          this._runner.write(type, config[type]);
+        }
 
         // Restart server
         this._runner.restart();
@@ -67,6 +68,30 @@ class DaemonsTask {
     return [
       'daemons/**/*.js',
     ];
+  }
+
+  /**
+   * parse file
+   *
+   * @param  {Object} file
+   *
+   * @return {Object}
+   */
+  parse(file) {
+    // get mount
+    const thread   = file.tags.thread ? file.tags.thread[0].value : null;
+    const priority = file.tags.priority ? parseInt(file.tags.priority[0].value, 10) : null;
+
+    // set classes
+    const daemons = [Object.assign({}, file, {
+      thread,
+      priority,
+
+      methods : undefined,
+    })];
+
+    // return daemons
+    return { daemons };
   }
 }
 
