@@ -110,10 +110,13 @@ class ControllersTask {
         const route = Object.assign({
           fn       : method.method,
           file     : file.file,
-          path     : tag.tag === 'route' ? (mount + tag.value).split('//').join('/').replace(/\/$/, '') : (tag.value || '').trim(),
+          path     : tag.tag === 'route' ? (mount + tag.value).split('//').join('/') : (tag.value || '').trim(),
           method   : tag.tag === 'route' ? (tag.type || 'get').toLowerCase() : null,
           priority : method.tags.priority ? parseInt(method.tags.priority[0].value, 10) : priority,
         }, parser.acl(combinedTags), tag.tag === 'route' ? parser.upload(method.tags) : {});
+
+        // check path
+        if (route.path !== '/') route.path = route.path.replace(/\/$/, '');
 
         // loop boolean elements
         Object.keys(method.tags).filter(key => !skip.includes(key)).forEach((key) => {
