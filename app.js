@@ -51,17 +51,17 @@ class App {
     const eden = require('eden'); // eslint-disable-line global-require
 
     // Log spawning threads
-    this._logger.log('info', `Spawned new "${process.env.thread}" thread`, {
+    this._logger.log('info', `Spawned new "${process.env.cluster}" cluster`, {
       class : 'Eden',
     });
 
     // Run single Eden instance
     eden.start({
-      id     : process.env.id,
-      port   : parseInt(process.env.port, 10),
-      host   : process.env.host,
-      logger : this._logger,
-      thread : process.env.thread,
+      id      : process.env.id,
+      port    : parseInt(process.env.port, 10),
+      host    : process.env.host,
+      logger  : this._logger,
+      cluster : process.env.cluster,
     });
   }
 
@@ -82,16 +82,16 @@ class App {
    * Spawns new App thread
    *
    * @param {number} id
-   * @param {String} thread
+   * @param {String} label
    * @param {number} port
    */
-  spawn(id, thread, port = null) {
+  spawn(id, label, port = null) {
     // Clone environment and set thread id
     const env = {
       ...process.env,
 
       id,
-      thread,
+      cluster : label,
     };
 
     // Set if port
@@ -100,8 +100,8 @@ class App {
     }
 
     // Fork new thread
-    this._workers[`${thread}:${id}`] = cluster.fork(env);
-    this._workers[`${thread}:${id}`].process.env = env;
+    this._workers[`${label}:${id}`] = cluster.fork(env);
+    this._workers[`${label}:${id}`].process.env = env;
   }
 
   /**
@@ -134,10 +134,10 @@ class App {
     } catch (e) { /* */ }
 
     // spawn threads
-    (config.get('threads') || ['front', 'back']).forEach((thread) => {
+    (config.get('clusters') || ['front', 'back']).forEach((label) => {
       // check count
       for (let i = 0; i < (config.get('count') || 1); i += 1) {
-        this.spawn(i, thread, (config.get('router') || thread === 'front') ? (parseInt(config.get('port'), 10) + i) : null);
+        this.spawn(i, label, (config.get('router') || label === 'front') ? (parseInt(config.get('port'), 10) + i) : null);
       }
     });
 
