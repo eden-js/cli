@@ -89,6 +89,7 @@ class ControllersTask {
     // set classes
     const classes = [Object.assign({}, file, {
       thread,
+      priority,
 
       methods : undefined
     })];
