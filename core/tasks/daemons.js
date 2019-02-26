@@ -79,12 +79,12 @@ class DaemonsTask {
    */
   parse(file) {
     // get mount
-    const thread   = file.tags.thread ? file.tags.thread[0].value : null;
+    const cluster  = file.tags.cluster ? file.tags.cluster.map(c => c.value) : null;
     const priority = file.tags.priority ? parseInt(file.tags.priority[0].value, 10) : null;
 
     // set classes
     const daemons = [Object.assign({}, file, {
-      thread,
+      cluster,
       priority,
 
       methods : undefined,

@@ -79,7 +79,7 @@ class ControllersTask {
   parse(file) {
     // get mount
     const mount    = file.tags.mount ? file.tags.mount[0].value : '';
-    const thread   = file.tags.thread ? file.tags.thread[0].value : null;
+    const cluster  = file.tags.cluster ? file.tags.cluster.map(c => c.value) : null;
     const priority = file.tags.priority ? parseInt(file.tags.priority[0].value, 10) : null;
 
     // skip custom methods
@@ -88,7 +88,7 @@ class ControllersTask {
 
     // set classes
     const classes = [Object.assign({}, file, {
-      thread,
+      cluster,
       priority,
 
       methods : undefined
