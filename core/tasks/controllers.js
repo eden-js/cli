@@ -84,7 +84,7 @@ class ControllersTask {
 
     // skip custom methods
     const skip = ['call', 'param', 'return', 'returns', 'method', 'route', 'priority', 'acl', 'fail', 'upload'];
-    const single = ['title', 'layout', 'cache', 'icon', 'menu', 'parent'];
+    const single = ['view', 'title', 'layout', 'cache', 'icon', 'menu', 'parent'];
 
     // set classes
     const classes = [Object.assign({}, file, {
