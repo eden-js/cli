@@ -57,17 +57,19 @@ class JavascriptTask {
       packageCache  : {},
     });
 
-    b = b.transform(babelify, {
-      sourceMaps : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
-      presets    : [
-        babel.createConfigItem([babelPresetEnv, {
-          useBuiltIns : 'entry',
-          targets     : {
-            browsers : config.get('browserlist'),
-          },
-        }]),
-      ],
-    });
+    if (config.get('environment') === 'production') {
+      b = b.transform(babelify, {
+        sourceMaps : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
+        presets    : [
+          babel.createConfigItem([babelPresetEnv, {
+            useBuiltIns : 'entry',
+            targets     : {
+              browsers : config.get('browserlist'),
+            },
+          }]),
+        ],
+      });
+    }
 
     b.plugin(watchify, {
       poll        : false,
@@ -123,12 +125,12 @@ class JavascriptTask {
     if (config.get('environment') === 'live') {
       // Pipe uglify
       job = job.pipe(gulpTerser({
-        ie8    : false,
-        mangle : true,
-        output : {
+        ie8      : false,
+        mangle   : true,
+        compress : true,
+        output   : {
           comments : false,
         },
-        compress : true,
       }));
     }
 

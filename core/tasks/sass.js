@@ -15,10 +15,7 @@ const vinylBuffer    = require('vinyl-buffer');
 const config = require('config');
 
 function customImporter(url) {
-  if (url[0] !== '~') {
-    return null;
-  }
-
+  if (url[0] !== '~') return null;
   const filePath = url.substr(1);
 
   let location = null;
@@ -27,7 +24,7 @@ function customImporter(url) {
 
   if (location === null) try { location = require.resolve(`${filePath}.scss`); } catch (err) { /* */ }
 
-  // Make `~example/files/file` find `example/files/_file.scss`
+  // Make `~example/files/file` also find `example/files/_file.scss`
   if (location === null) {
     try {
       const slashPos = filePath.lastIndexOf('/') + 1;
@@ -81,13 +78,16 @@ class SASSTask {
     sassFiles.push(...this._runner.files('public/scss/bootstrap.scss'));
 
     // Create body for main file
-    const body = (await Promise.all((await glob(sassFiles)).map(async (file) => {
-      // Correct embedment based off type
-      return Path.extname(file) === '.css' ? await fs.readFile(file, 'utf8') : `@import "${file}";`;
-    }))).join(os.EOL);
+    let body = '';
+
+    for (const file of await glob(sassFiles)) {
+      body += (Path.extname(file) === '.css' ? await fs.readFile(file, 'utf8') : `@import "${file}";`) + os.EOL;
+    }
 
     // Create job
     let job = vinylSource('master.scss');
+
+    // Push main body file to job
     job.end(body);
 
     // Buffer for compatibility
@@ -103,9 +103,11 @@ class SASSTask {
       outputStyle : 'compressed',
     }));
 
-    job = job.pipe(gulpPrefix({
-      browsers : config.get('browserlist'),
-    }));
+    if (config.get('environment') === 'production') {
+      job = job.pipe(gulpPrefix({
+        browsers : config.get('browserlist'),
+      }));
+    }
 
     job = job.pipe(gulpRename('app.min.css'));
 
