@@ -4,7 +4,6 @@
 require('./lib/env');
 
 // Require dependencies
-const os      = require('os');
 const cluster = require('cluster');
 const winston = require('winston');
 
