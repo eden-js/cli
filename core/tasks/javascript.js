@@ -41,7 +41,15 @@ class JavascriptTask {
     this.watch = this.watch.bind(this);
   }
 
+  /**
+   * browserify files
+   *
+   * @param  {*}  files
+   *
+   * @return {Promise}
+   */
   async _browserify(files) {
+    // check b
     if (this._b !== null) {
       return this._b;
     }
@@ -50,34 +58,38 @@ class JavascriptTask {
     let b = browserify({
       paths         : global.importLocations,
       debug         : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
+      cache         : {},
       entries       : [require.resolve('@babel/polyfill'), ...await glob(files)],
       commondir     : false,
-      insertGlobals : true,
-      cache         : {},
       packageCache  : {},
+      insertGlobals : true,
     });
 
-    if (config.get('environment') === 'production') {
+    // check environment
+    if (['production', 'live'].includes(config.get('environment')) || config.get('useBabel')) {
       b = b.transform(babelify, {
-        sourceMaps : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
-        presets    : [
+        presets : [
           babel.createConfigItem([babelPresetEnv, {
-            useBuiltIns : 'entry',
-            targets     : {
+            targets : {
               browsers : config.get('browserlist'),
             },
+            useBuiltIns : 'entry',
           }]),
         ],
+        sourceMaps : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
       });
     }
 
+    // atchify
     b.plugin(watchify, {
       poll        : false,
       ignoreWatch : ['*'],
     });
 
+    // set b
     this._b = b;
 
+    // return b
     return b;
   }
 
@@ -87,6 +99,7 @@ class JavascriptTask {
    * @return {Promise}
    */
   async run(files) {
+    // return promise
     const b = await this._browserify(files);
 
     // Create browserify bundle
