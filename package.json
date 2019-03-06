@@ -1,7 +1,7 @@
 {
   "name": "@edenjs/cli",
   "description": "Web Application Framework built on Express.js, Redis and RiotJS",
-  "version": "1.3.10",
+  "version": "1.3.11",
   "bin": {
     "edenjs": "./index.js"
   },
