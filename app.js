@@ -71,7 +71,8 @@ class App {
    */
   exit(worker) {
     // Set id
-    const { id, thread } = worker.process.env;
+    const { id } = worker.process.env;
+    const thread = worker.process.env.cluster;
 
     // Spawn new thread
     this.spawn(parseInt(id, 10), thread, (parseInt(config.get('port'), 10) + parseInt(id, 10)));
