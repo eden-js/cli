@@ -67,6 +67,7 @@
     "pretty-error": "^2.1.1",
     "pretty-hrtime": "^1.0.3",
     "response-time": "^2.3.2",
+    "serialize-error": "^4.0.0",
     "through2": "^3.0.1",
     "uuid": "^3.3.2",
     "vinyl-buffer": "^1.0.1",

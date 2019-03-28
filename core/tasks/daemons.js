@@ -79,8 +79,9 @@ class DaemonsTask {
    */
   parse(file) {
     // get mount
-    const cluster  = file.tags.cluster ? file.tags.cluster.map(c => c.value) : null;
-    const priority = file.tags.priority ? parseInt(file.tags.priority[0].value, 10) : null;
+    const cluster   = file.tags.cluster ? file.tags.cluster.map(c => c.value) : null;
+    const priority  = file.tags.priority ? parseInt(file.tags.priority[0].value, 10) : null;
+    const endpoints = [];
 
     // set classes
     const daemons = [Object.assign({}, file, {
@@ -90,8 +91,33 @@ class DaemonsTask {
       methods : undefined,
     })];
 
+    // forEach
+    file.methods.forEach((method) => {
+      // combine tags
+      const combinedTags = deepMerge(file.tags || {}, method.tags);
+
+      // parse endpoints
+      [...(method.tags.endpoint || [])].forEach((tag) => {
+        // create route
+        const endpoint = Object.assign({
+          fn       : method.method,
+          all      : method.tags.all ? true : false,
+          file     : file.file,
+          endpoint : (tag.value || '').trim(),
+          priority : method.tags.priority ? parseInt(method.tags.priority[0].value, 10) : priority,
+        }, parser.acl(combinedTags));
+
+        // push endpoint
+        endpoints.push(endpoint);
+      });
+    });
+
     // return daemons
-    return { daemons };
+    return {
+      daemons,
+
+      'daemon.endpoints' : endpoints,
+    };
   }
 }
 
