@@ -35,9 +35,9 @@
     "node": ">= 8.0.0"
   },
   "dependencies": {
-    "@babel/core": "^7.4.0",
-    "@babel/polyfill": "^7.4.0",
-    "@babel/preset-env": "^7.4.2",
+    "@babel/core": "^7.4.3",
+    "@babel/polyfill": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
     "@eden-js/model": "^1.12.0",
     "@edenjs/glob": "^1.0.0",
     "@edenjs/session-store": "0.0.2",
@@ -79,7 +79,7 @@
   },
   "devDependencies": {
     "@edenjs/eslint-config-eden": "^2.0.14",
-    "eslint": "^5.15.3",
+    "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",
