@@ -98,11 +98,27 @@ class ControllersTask {
     const menus = [];
     const calls = [];
     const routes = [];
+    const endpoints = [];
 
     // forEach
     file.methods.forEach((method) => {
       // combine tags
       const combinedTags = deepMerge(file.tags || {}, method.tags);
+
+      // parse endpoints
+      [...(method.tags.endpoint || [])].forEach((tag) => {
+        // create route
+        const endpoint = Object.assign({
+          fn       : method.method,
+          all      : method.tags.all ? true : false,
+          file     : file.file,
+          endpoint : (tag.value || '').trim(),
+          priority : method.tags.priority ? parseInt(method.tags.priority[0].value, 10) : priority,
+        }, parser.acl(combinedTags));
+
+        // push endpoint
+        endpoints.push(endpoint);
+      });
 
       // create route
       [...(method.tags.route || []), ...(method.tags.call || [])].forEach((tag) => {
@@ -188,6 +204,8 @@ class ControllersTask {
         // return accum
         return accum;
       }, {}),
+
+      'controller.endpoints' : endpoints,
     };
   }
 }
