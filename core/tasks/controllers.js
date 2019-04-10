@@ -147,7 +147,7 @@ class ControllersTask {
 
             fn       : method.method,
             file     : file.file,
-            endpoint : (tag.value || '').trim(),
+            hook     : (tag.value || '').trim(),
             priority : method.tags.priority ? parseInt(method.tags.priority[0].value, 10) : priority,
           }, parser.acl(combinedTags));
 
