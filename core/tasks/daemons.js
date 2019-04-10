@@ -79,6 +79,8 @@ class DaemonsTask {
    */
   parse(file) {
     // get mount
+    const hooks     = [];
+    const events    = [];
     const cluster   = file.tags.cluster ? file.tags.cluster.map(c => c.value) : null;
     const priority  = file.tags.priority ? parseInt(file.tags.priority[0].value, 10) : null;
     const endpoints = [];
@@ -110,12 +112,48 @@ class DaemonsTask {
         // push endpoint
         endpoints.push(endpoint);
       });
+
+      // parse events
+      [...(method.tags.on || [])].forEach((tag) => {
+        // create route
+        const e = Object.assign({
+          fn       : method.method,
+          all      : method.tags.all ? true : false,
+          file     : file.file,
+          event    : (tag.value || '').trim(),
+          priority : method.tags.priority ? parseInt(method.tags.priority[0].value, 10) : priority,
+        }, parser.acl(combinedTags));
+
+        // push event
+        events.push(e);
+      });
+
+      // parse endpoints
+      ['pre', 'post'].forEach((type) => {
+        // pre/post
+        [...(method.tags[type] || [])].forEach((tag) => {
+          // create route
+          const hook = Object.assign({
+            type,
+
+            fn       : method.method,
+            file     : file.file,
+            endpoint : (tag.value || '').trim(),
+            priority : method.tags.priority ? parseInt(method.tags.priority[0].value, 10) : priority,
+          }, parser.acl(combinedTags));
+
+          // push hook
+          hooks.push(hook);
+        });
+      });
     });
 
     // return daemons
     return {
       daemons,
 
+      'daemon.hooks'     : hooks,
+      'daemon.events'    : events,
       'daemon.endpoints' : endpoints,
     };
   }

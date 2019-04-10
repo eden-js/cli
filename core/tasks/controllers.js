@@ -97,7 +97,9 @@ class ControllersTask {
     // extract routes
     const menus = [];
     const calls = [];
+    const hooks = [];
     const routes = [];
+    const events = [];
     const endpoints = [];
 
     // forEach
@@ -118,6 +120,40 @@ class ControllersTask {
 
         // push endpoint
         endpoints.push(endpoint);
+      });
+
+      // parse events
+      [...(method.tags.on || [])].forEach((tag) => {
+        // create route
+        const e = Object.assign({
+          fn       : method.method,
+          all      : method.tags.all ? true : false,
+          file     : file.file,
+          event    : (tag.value || '').trim(),
+          priority : method.tags.priority ? parseInt(method.tags.priority[0].value, 10) : priority,
+        }, parser.acl(combinedTags));
+
+        // push endpoint
+        events.push(e);
+      });
+
+      // parse endpoints
+      ['pre', 'post'].forEach((type) => {
+        // pre/post
+        [...(method.tags[type] || [])].forEach((tag) => {
+          // create route
+          const hook = Object.assign({
+            type,
+
+            fn       : method.method,
+            file     : file.file,
+            endpoint : (tag.value || '').trim(),
+            priority : method.tags.priority ? parseInt(method.tags.priority[0].value, 10) : priority,
+          }, parser.acl(combinedTags));
+
+          // push hook
+          hooks.push(hook);
+        });
       });
 
       // create route
@@ -205,6 +241,8 @@ class ControllersTask {
         return accum;
       }, {}),
 
+      'controller.hooks'     : hooks,
+      'controller.events'    : events,
       'controller.endpoints' : endpoints,
     };
   }
