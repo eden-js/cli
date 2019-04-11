@@ -1,7 +1,7 @@
 {
   "name": "@edenjs/cli",
   "description": "Web Application Framework built on Express.js, Redis and RiotJS",
-  "version": "1.5.6",
+  "version": "1.5.7",
   "bin": {
     "edenjs": "./index.js"
   },
@@ -38,7 +38,7 @@
     "@babel/core": "^7.4.3",
     "@babel/polyfill": "^7.4.3",
     "@babel/preset-env": "^7.4.3",
-    "@edenjs/model": "^1.12.1",
+    "@edenjs/model": "^1.12.2",
     "@edenjs/glob": "^1.0.0",
     "@edenjs/session-store": "0.0.2",
     "app-module-path": "^2.2.0",
