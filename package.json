@@ -1,7 +1,7 @@
 {
   "name": "@edenjs/cli",
   "description": "Web Application Framework built on Express.js, Redis and RiotJS",
-  "version": "1.5.7",
+  "version": "1.5.8",
   "bin": {
     "edenjs": "./index.js"
   },
@@ -52,7 +52,7 @@
     "dot-prop": "^5.0.0",
     "dot-prop-immutable": "^1.5.0",
     "express": "^4.16.4",
-    "express-session": "^1.16.0",
+    "express-session": "^1.16.1",
     "extract-comments": "^1.1.0",
     "fs-extra": "^7.0.1",
     "gulp": "^4.0.0",
@@ -81,7 +81,7 @@
     "@edenjs/eslint-config-eden": "^2.0.14",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-import": "^2.17.2",
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.12.4"
   }
