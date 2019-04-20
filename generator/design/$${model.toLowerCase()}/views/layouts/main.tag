@@ -9,6 +9,6 @@
   <script>
     // Add mixins
     this.mixin('layout');
-    
+
   </script>
 </main-layout>
