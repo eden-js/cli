@@ -1,9 +1,9 @@
 # EdenJS
-[![bitHound Overall Score](https://img.shields.io/bithound/code/github/eden-js/eden.svg?label=bitHound%20Overall%20Score&style=flat-square)](https://www.bithound.io/github/eden-js/eden)
-[![Issues](https://img.shields.io/github/issues/eden-js/eden.svg?style=flat-square)](https://github.com/eden-js/eden/issues)
-[![Dependencies](https://david-dm.org/eden-js/eden.svg?style=flat-square)](https://github.com/eden-js/eden)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/eden-js/eden)
-[![Awesome](https://img.shields.io/badge/awesome-true-green.svg?style=flat-square)](https://github.com/eden-js/eden)
+[![bitHound Overall Score](https://img.shields.io/bithound/code/github/eden-js/cli.svg?label=bitHound%20Overall%20Score&style=flat-square)](https://www.bithound.io/github/eden-js/cli)
+[![Issues](https://img.shields.io/github/issues/eden-js/cli.svg?style=flat-square)](https://github.com/eden-js/cli/issues)
+[![Dependencies](https://david-dm.org/eden-js/cli.svg?style=flat-square)](https://github.com/eden-js/cli)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/eden-js/cli)
+[![Awesome](https://img.shields.io/badge/awesome-true-green.svg?style=flat-square)](https://github.com/eden-js/cli)
 
 Awesome isomorphic NodeJS skeleton for structured applications. Just have a look at the "bundles" that make up an EdenJS application.
 
@@ -22,7 +22,7 @@ Required software to install and run EdenJS:
 ### Installation
 ```
 // Deploy EdenJS
-git init; git remote add origin https://github.com/eden-js/eden.git; git pull;
+git init; git remote add origin https://github.com/eden-js/cli.git; git pull;
 ```
 
 ### Running the tests
@@ -59,7 +59,7 @@ We use [SemVer](http://semver.org/) for versioning.
 * **Jack Taylor** - *Developer* - [OhYea777](https://github.com/OhYea777)
 * **Mike Mackenzie** - *Documentation* / *Developer* - [veb](https://github.com/veb)
 
-See also the list of [contributors](https://github.com/eden-js/eden/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/eden-js/cli/contributors) who participated in this project.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
