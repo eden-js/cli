@@ -24,7 +24,7 @@
         </div>
       </div>
     </div>
-    
+
   </div>
 
   <script>
@@ -34,10 +34,10 @@
     // set type
     this.type    = opts.item.type || 'raised';
     this.preview = true;
-    
+
     // require uuid
     const uuid = require('uuid');
-    
+
     // set placements
     this.positions = opts.positions || opts.fields.map((field) => {
       // return field
@@ -52,7 +52,7 @@
         'children' : []
       };
     });
-    
+
     /**
      * on submit
      *
@@ -64,23 +64,23 @@
       // prevent default
       e.preventDefault();
       e.stopPropagation();
-      
+
       // set loading
       this.loading = true;
-      
+
       // update view
       this.update();
-      
+
       // submit form
       await this.refs.form.submit();
-      
+
       // set loading
       this.loading = false;
-      
+
       // update view
       this.update();
     }
-    
+
     /**
      * on preview
      *
@@ -92,10 +92,10 @@
       // prevent default
       e.preventDefault();
       e.stopPropagation();
-      
+
       // set loading
       this.preview = !this.preview;
-      
+
       // update view
       this.update();
     }

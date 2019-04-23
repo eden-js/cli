@@ -5,13 +5,13 @@
 - Run `gulp` (EdenJS will automatically refresh when you change your code!)
 - Go to `http://localhost:1337/` and you should see a welcome page!
 
-In EdenJS, everything is done inside a `bundle` as seen in `/lib/bundles` and the reasoning behind this is you can reuse your bundles in each project you do to quicken development time. 
+In EdenJS, everything is done inside a `bundle` as seen in `/lib/bundles` and the reasoning behind this is you can reuse your bundles in each project you do to quicken development time.
 
-To get started, let's copy `/lib/bundles/example/` to `/app/bundles/myexample`. Once this is copied, go through and change all the file names from `example` to `myexample` then update all the instances inside the files. 
+To get started, let's copy `/lib/bundles/example/` to `/app/bundles/myexample`. Once this is copied, go through and change all the file names from `example` to `myexample` then update all the instances inside the files.
 
-i.e. `class example extends controller ` becomes `class myexample extends controller` 
+i.e. `class example extends controller ` becomes `class myexample extends controller`
 
-Once that's all done, we'll need to make our first route so people can interact with the `myexample` bundle. 
+Once that's all done, we'll need to make our first route so people can interact with the `myexample` bundle.
 
 Open up `/app/bundles/myexample/controllers/test.js` and add your new binding method into the constructor:
 
@@ -43,7 +43,7 @@ Now you can add your new method called `indexAction` below:
   }
 ```
 
-Notice in the comments for this method we have `@name`, `@route` and `@menu`? Those are our descriptors for our new method. It means that if someone were to go to `http://localhost:1337/myexample` then it will fire this method and also show the menu item for us all automatically. 
+Notice in the comments for this method we have `@name`, `@route` and `@menu`? Those are our descriptors for our new method. It means that if someone were to go to `http://localhost:1337/myexample` then it will fire this method and also show the menu item for us all automatically.
 
 Let's add something into the database now.
 
@@ -84,7 +84,7 @@ Make another method and in this one we can do:
 async anotherTestAction(req, res) {
     let car = await Promise.all(await cars.find()).map ((Car) => Car.sanitise()));
     console.log(car);
-  
+
     res.render('home')
 }
 ```
@@ -105,7 +105,7 @@ Now we need to make a sanitise function in our model. Open up `/app/bundles/myex
 
     let sanitised = {
       'name': this.get ('name'),
-      'seller': this.get ('seller'),    
+      'seller': this.get ('seller'),
     };
 
     // return sanitised
@@ -115,7 +115,7 @@ Now we need to make a sanitise function in our model. Open up `/app/bundles/myex
 
 
 
-Save your changes, watch the console  while EdenJS finishes reloading then go to your page. You'll see both the name and seller inside a JSON object. Successfully pulled from the database! 
+Save your changes, watch the console  while EdenJS finishes reloading then go to your page. You'll see both the name and seller inside a JSON object. Successfully pulled from the database!
 
 
 
