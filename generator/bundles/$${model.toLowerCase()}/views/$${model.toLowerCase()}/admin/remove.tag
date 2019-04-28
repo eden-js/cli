@@ -8,9 +8,9 @@
         </a>
       </yield>
     </admin-header>
-    
+
     <div class="container-fluid">
-    
+
       <form method="post" action="/admin/$${mount}/$${model.toLowerCase()}/{ opts.item.id }/remove">
         <div class="card mb-3">
           <div class="card-body">
@@ -21,10 +21,10 @@
         </div>
         <button type="submit" class="btn btn-lg btn-success">Remove $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}</button>
       </form>
-    
+
     </div>
   </div>
-  
+
   <script>
     // do mixins
     this.mixin('i18n');

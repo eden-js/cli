@@ -13,7 +13,7 @@
       </div>
     </div>
   </nav>
-  
+
   <script>
     // do mixins
     this.mixin('config');
@@ -22,6 +22,6 @@
     this.menuClass = {
       'main' : 'navbar-nav'
     };
-    
+
   </script>
 </main-navbar>
