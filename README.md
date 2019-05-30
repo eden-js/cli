@@ -21,8 +21,52 @@ Required software to install and run EdenJS:
 
 ### Installation
 ```
+// Generate new project
+npm i -g @edenjs/cli
+mkdir project
+cd project
+edenjs init app
+npm install --save @edenjs/core bootstrap
+edenjs run
+```
+
+### Deployment
+```
+// Docker
+docker build . -t edenjs/eden
+docker push edenjs/eden
+
+// Docker-Compose
+Will deploy redis and mongodb locally for testing/development
+docker-compose up -d
+```
+
+```
+// kubernetes
+
+Deploy redis and mongodb.
+Our prefered method is via helm
+
+// Install mongodb-replicaset
+helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+helm install --name my-release stable/mongodb-replicaset
+
+// Install redis
+helm install stable/redis
+Get the config values from these and edit config.js
+
+// Create configmap
+kubectl create configmap eden-configmap--from-file=config.js=config.js
+
 // Deploy EdenJS
-git init; git remote add origin https://github.com/eden-js/cli.git; git pull;
+kubectl apply -f kubernetes.yml
+
+// Optional for Continious Deployment
+Will poll the registry every minute for image changes and do a rolling release on production
+
+helm repo add keel-charts https://charts.keel.sh
+helm repo update
+helm upgrade --install keel --namespace=kube-system keel-charts/keel
 ```
 
 ### Running the tests
@@ -33,11 +77,8 @@ npm test;
 
 ### Deployment
 ```
-// Install (for production)
-gulp install;
-
 // Run in production
-node app;
+edenjs start
 ```
 
 ### Tutorial

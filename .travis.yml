@@ -1,0 +1,26 @@
+language: node_js
+node_js:
+- "10"
+
+sudo: false
+
+install:
+  - "npm install --only=dev"
+  - "npm ci"
+
+before_script:
+  - "node node_modules/eslint/bin/eslint.js ."
+
+script:
+  - "node ./index.js help"
+
+after_script:
+  - "npm test"
+
+deploy:
+  provider: npm
+  email: ""
+  api_key:
+    secure: ""
+  on:
+    tags: true
