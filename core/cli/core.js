@@ -1,4 +1,5 @@
 const chalk           = require('chalk');
+const package         = require('../../package.json');
 const extractComments = require('extract-comments');
 const fs              = require('fs-extra');
 const Path            = require('path');
@@ -21,7 +22,7 @@ function cliCommand(yy) {
 
   // set process arguments
   return yy
-    .usage(`${chalk.green(logo)}\n${chalk.bold(subText)}\n\nUsage: $0 <command> [options]`)
+    .usage(`${chalk.green(logo)}\n${chalk.bold(subText)}\n\nVersion: ${package.version}\n\nUsage: $0 <command> [options]`)
     .strict()
     .wrap(Math.min(100, yy.terminalWidth()))
     .demandCommand(1)
