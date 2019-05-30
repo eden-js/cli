@@ -10,6 +10,6 @@ services:
   redis:
     image: redis:latest
     volumes:
-      - ./dataredis
+      - ./data/redis
     ports:
       - "6379:6379"
