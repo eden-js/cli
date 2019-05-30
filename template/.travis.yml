@@ -1,0 +1,10 @@
+sudo: 'required'
+services:
+  - 'docker'
+before_install:
+  - docker login -u ci-token -p $CI_JOB_TOKEN index.docker.io
+
+script:
+  - 'docker build -t index.docker.io/eden-js/eden .'
+after_success:
+  - 'docker push index.docker.io/eden-js/eden'
