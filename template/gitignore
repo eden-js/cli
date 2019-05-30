@@ -50,3 +50,4 @@ edenappconfig.js
 .wafpickle-*
 config.gypi
 CVS
+data/*
