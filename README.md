@@ -47,14 +47,26 @@ docker-compose up -d
 Deploy redis and mongodb.
 Our prefered method is via helm
 
+// Install mongodb-replicaset
 helm repo add stable https://kubernetes-charts.storage.googleapis.com/
 helm install --name my-release stable/mongodb-replicaset
+
+// Install redis
 helm install stable/redis
 Get the config values from these and edit config.js
 
+// Create configmap
 kubectl create configmap eden-configmap--from-file=config.js=config.js
 
+// Deploy EdenJS
 kubectl apply -f kubernetes.yml
+
+// Optional for Continious Deployment
+Will poll the registry every minute for image changes and do a rolling release on production
+
+helm repo add keel-charts https://charts.keel.sh
+helm repo update
+helm upgrade --install keel --namespace=kube-system keel-charts/keel
 ```
 
 ### Running the tests
