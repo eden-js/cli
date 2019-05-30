@@ -65,7 +65,7 @@ spec:
             - containerPort: 1337
           volumeMounts:
             - name: eden-config
-              mountPath: "/go/src/gitlab.com/edenSh/eden/conf"
+              mountPath: "/usr/src/app/conf"
               readOnly: true
           livenessProbe:
             httpGet:
