@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: eden-js
+  labels:
+    app: eden-js
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 1337
+      name: http
+  selector:
+    app: eden-js
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    description: eden eden-js
+    keel.sh/pollSchedule: "@every 1m"
+    keel.sh/notify: deployments # chat channels to sent notification to
+  generation: 1
+  labels:
+    app: eden-js
+    keel.sh/policy: force # update policy (available: patch, minor, major, all, force)
+    keel.sh/trigger: poll # enable active repository checking (webhooks and GCR would still work)
+    keel.sh/approvals: "0" # required approvals to update
+    keel.sh/match-tag: "true" # only makes a difference when used with 'force' policy, will only update if tag matches :dev->:dev, :prod->:prod
+    keel.sh/notify: "devops"  # chat channels to sent notification to
+  name: eden-js
+  # namespace: eden-js
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 20
+  selector:
+    matchLabels:
+      app: eden-js
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        description: eden eden-js
+        prometheus.io/scrape: "true"
+      creationTimestamp: null
+      labels:
+        app: eden-js
+      name: eden-js
+      namespace: eden-js
+    spec:
+      containers:
+        - image: index.docker.io/eden-js/eden
+          imagePullPolicy: Always
+          name: eden-js
+          securityContext:
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          ports:
+            - containerPort: 1337
+          volumeMounts:
+            - name: eden-config
+              mountPath: "/go/src/gitlab.com/edenSh/eden/conf"
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 1337
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 1337
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 5
+      volumes:
+      - name: eden-config
+        configMap:
+          name: eden-configmap
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      imagePullSecrets:
+        - name: regcred
+      terminationGracePeriodSeconds: 30
+status: {}
