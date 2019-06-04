@@ -6,7 +6,7 @@ install:
 - npm install --only=dev
 - npm ci
 before_script:
-- npx eslint.js .
+   - "node node_modules/eslint/bin/eslint.js ."
 script:
 - node ./index.js help
 after_script:
