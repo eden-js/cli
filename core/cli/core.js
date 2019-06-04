@@ -1,11 +1,12 @@
-const chalk           = require('chalk');
+const chalk = require('chalk');
 const extractComments = require('extract-comments');
-const fs              = require('fs-extra');
-const Path            = require('path');
-const yargonaut       = require('yargonaut'); // Must precede yargs
-const prettyTime      = require('pretty-hrtime');
+const fs = require('fs-extra');
+const Path = require('path');
+const yargonaut = require('yargonaut'); // Must precede yargs
+const prettyTime = require('pretty-hrtime');
 
 const initEden = require('lib/utilities/init');
+const packageJSON = require('../../package.json');
 
 // Set yargs colors
 yargonaut
@@ -21,7 +22,7 @@ function cliCommand(yy) {
 
   // set process arguments
   return yy
-    .usage(`${chalk.green(logo)}\n${chalk.bold(subText)}\n\nUsage: $0 <command> [options]`)
+    .usage(`${chalk.green(logo)}\n${chalk.bold(subText)}\n\nVersion: ${packageJSON.version}\n\nUsage: $0 <command> [options]`)
     .strict()
     .wrap(Math.min(100, yy.terminalWidth()))
     .demandCommand(1)
@@ -100,8 +101,8 @@ async function runHandler(args) {
 function initCommand(yy) {
   return yy
     .positional('dirType', {
-      desc    : 'EdenJS directory type',
-      type    : 'string',
+      desc : 'EdenJS directory type',
+      type : 'string',
     })
     .choices('dirType', ['app', 'module', 'none'])
     .option('migrateGit', {
@@ -116,28 +117,27 @@ async function initHandler(args) {
   this._logger.log('info', `[${chalk.green('init')}] Finished initializing type: ${res}`);
 }
 
-module.exports = [
-  {
-    command     : null,
-    fn          : cliCommand,
-    description : null,
-  },
-  {
-    command     : 'start',
-    handler     : startHandler,
-    fn          : startCommand,
-    description : 'Starts EdenJS in production.',
-  },
-  {
-    command     : 'run [fn]',
-    handler     : runHandler,
-    fn          : runCommand,
-    description : 'Runs EdenJS gulp function.',
-  },
-  {
-    command     : 'init [dirType]',
-    handler     : initHandler,
-    fn          : initCommand,
-    description : 'Initialize new or fix existing EdenJS directory.',
-  },
+module.exports = [{
+  command     : null,
+  fn          : cliCommand,
+  description : null,
+},
+{
+  command     : 'start',
+  handler     : startHandler,
+  fn          : startCommand,
+  description : 'Starts EdenJS in production.',
+},
+{
+  command     : 'run [fn]',
+  handler     : runHandler,
+  fn          : runCommand,
+  description : 'Runs EdenJS gulp function.',
+},
+{
+  command     : 'init [dirType]',
+  handler     : initHandler,
+  fn          : initCommand,
+  description : 'Initialize new or fix existing EdenJS directory.',
+},
 ];
