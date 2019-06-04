@@ -4,13 +4,13 @@
 require('./lib/env');
 
 // Require dependencies
-const pack    = require('./package.json');
 const cluster = require('cluster');
 const winston = require('winston');
 
 // Require local dependencies
 const log    = require('lib/utilities/log');
 const config = require('config');
+const pack    = require('./package.json');
 
 /**
  * Create App class

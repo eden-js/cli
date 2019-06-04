@@ -71,7 +71,6 @@ class EdenGenerator extends Events {
     }
 
     // return nothing to generate
-    return;
   }
 
   /**
