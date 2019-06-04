@@ -10,6 +10,7 @@ const winston = require('winston');
 // Require local dependencies
 const log    = require('lib/utilities/log');
 const config = require('config');
+const pack    = require('./package.json');
 
 /**
  * Create App class
@@ -124,14 +125,14 @@ class App {
    */
   children() {
     // Log running Eden
-    this._logger.log('info', 'Running Eden', {
+    this._logger.log('info', `running edenJS v.${pack.version}`, {
       class : 'Eden',
     });
 
     // Set process name
     try {
       // Set process name
-      process.title = `edenjs - ${config.get('domain')} - master`;
+      process.title = `edenjs v.${pack.version} - ${config.get('domain')} - master`;
     } catch (e) { /* */ }
 
     // spawn threads
