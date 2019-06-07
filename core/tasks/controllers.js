@@ -112,7 +112,7 @@ class ControllersTask {
         // create route
         const endpoint = Object.assign({
           fn       : method.method,
-          all      : method.tags.all ? true : false,
+          all      : !!method.tags.all,
           file     : file.file,
           endpoint : (tag.value || '').trim(),
           priority : method.tags.priority ? parseInt(method.tags.priority[0].value, 10) : priority,
@@ -127,7 +127,7 @@ class ControllersTask {
         // create route
         const e = Object.assign({
           fn       : method.method,
-          all      : method.tags.all ? true : false,
+          all      : !!method.tags.all,
           file     : file.file,
           event    : (tag.value || '').trim(),
           priority : method.tags.priority ? parseInt(method.tags.priority[0].value, 10) : priority,
