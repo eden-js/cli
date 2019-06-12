@@ -1,9 +1,16 @@
-sudo: 'required'
+language: node_js
+node_js:
+  - '10'
 services:
   - 'docker'
+sudo: false
 before_install:
   - docker login -u ci-token -p $CI_JOB_TOKEN index.docker.io
-
+install:
+  - npm install --only=dev
+  - npm ci
+before_script:
+   - "node node_modules/eslint/bin/eslint.js ."
 script:
   - 'docker build -t index.docker.io/eden-js/eden .'
 after_success:
