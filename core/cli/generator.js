@@ -16,6 +16,7 @@ class EdenGenerator extends Events {
    */
   constructor() {
     // run super
+    // eslint-disable-next-line prefer-rest-params
     super(...arguments);
 
     // bind methods
@@ -71,6 +72,7 @@ class EdenGenerator extends Events {
     }
 
     // return nothing to generate
+    return null;
   }
 
   /**
