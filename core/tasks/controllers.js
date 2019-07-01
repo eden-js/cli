@@ -109,13 +109,15 @@ class ControllersTask {
 
       // parse endpoints
       [...(method.tags.endpoint || [])].forEach((tag) => {
+        // Comply with max-length of 100 (TravicCI)
+        let methodPriority = method.tags.priority;
         // create route
         const endpoint = Object.assign({
           fn       : method.method,
           all      : !!method.tags.all,
           file     : file.file,
           endpoint : (tag.value || '').trim(),
-          priority : method.tags.priority ? parseInt(method.tags.priority[0].value, 10) : priority,
+          priority : methodPriority ? parseInt(methodPriority[0].value, 10) : priority,
         }, parser.acl(combinedTags));
 
         // push endpoint
@@ -124,13 +126,15 @@ class ControllersTask {
 
       // parse events
       [...(method.tags.on || [])].forEach((tag) => {
+        // Comply with max-length of 100 (TravicCI)
+        let methodPriority = method.tags.priority;
         // create route
         const e = Object.assign({
           fn       : method.method,
           all      : !!method.tags.all,
           file     : file.file,
           event    : (tag.value || '').trim(),
-          priority : method.tags.priority ? parseInt(method.tags.priority[0].value, 10) : priority,
+          priority : methodPriority ? parseInt(methodPriority[0].value, 10) : priority,
         }, parser.acl(combinedTags));
 
         // push endpoint
@@ -141,14 +145,17 @@ class ControllersTask {
       ['pre', 'post'].forEach((type) => {
         // pre/post
         [...(method.tags[type] || [])].forEach((tag) => {
+        // Comply with max-length of 100 (TravicCI)
+        let methodPriority = method.tags.priority;
           // create route
+          let prio = 
           const hook = Object.assign({
             type,
 
             fn       : method.method,
             file     : file.file,
             hook     : (tag.value || '').trim(),
-            priority : method.tags.priority ? parseInt(method.tags.priority[0].value, 10) : priority,
+            priority : methodPriority ? parseInt(methodPriority[0].value, 10) : priority,
           }, parser.acl(combinedTags));
 
           // push hook
