@@ -18,4 +18,4 @@ deploy:
     secure: ieMW30SYLqTT0NVngvdL1XiaEGd9iRjVptejPntj/+Trbjr3hMuTs9hHk2dtf6ziFNtdvSdlzo0eHVKArRRJpHrsDsfc9d1DFVhpZHtZCyg8kyhaxvfwLxLL3i9zC+Xq6gdgcb2/FExSz+LLUnOTM1BPyn+1oVKKX9XPbvXZAYkyIH/bXgfYZ/lhl7THv34je+TFgfS0DMW7jw7wJpMGVTWTD0tLDOZtdQeHsph9AcRPXMIvSZbAQVOS1Ov9LjFpsFNS1iaa/0mX0p7FyyIM5zL84a3De5ZIipXYkWhg+0qtR/kJLQ5EAuAGsiXbT0i1YwV/3YebtQlbiqRPR+yy5WX9BzznR1BY3P6av6hYV/hk0/jBGRS82QGUgJL9FpnanY9fxWUC9VoEo9PPC66SUCmi072gXzePUvAkWTs7cxy/JC4TSi7cCoVEdCn6ZVJ8TEugjFBioaaj1ugI6FeLJmvE9dtG8ATQz9ATty84NKI/1uuM/XkduXbyDiNHjyL5Qlr28mB8ogwccy2Se+3mDLPPPciDudMMdJpmyLhmc9GyCk1Bf+54aKywBAVjM9UxPCG1gqBaOJ/4eUFu3IvN3hh4HYpMwbayhBGub6C1BN1/JcgHOC3tPZuHQkgANggz2daKssK6tAMnHY52j/4EIyB9baPLdLywR8ejhE44NAQ=
   on:
     tags: true
-    repo: "@eden-js/cli"
+    repo: "@edenjs/cli"
