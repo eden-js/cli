@@ -1,23 +1,23 @@
 language: node_js
 node_js:
-  - '10'
+- '10'
 sudo: false
 install:
-  - npm install --only=dev
-  - npm ci
+- npm install --only=dev
+- npm ci
 before_script:
-   - "node node_modules/eslint/bin/eslint.js ."
+- node node_modules/eslint/bin/eslint.js .
 script:
-  - node ./index.js help
+- node ./index.js help
 after_script:
-  - npm test
+- npm test
 deploy:
   provider: npm
-  email: ewhal4@live.com
+  email: alex@edenup.com
   skip_cleanup: true
   api_key:
-    secure: ieMW30SYLqTT0NVngvdL1XiaEGd9iRjVptejPntj/+Trbjr3hMuTs9hHk2dtf6ziFNtdvSdlzo0eHVKArRRJpHrsDsfc9d1DFVhpZHtZCyg8kyhaxvfwLxLL3i9zC+Xq6gdgcb2/FExSz+LLUnOTM1BPyn+1oVKKX9XPbvXZAYkyIH/bXgfYZ/lhl7THv34je+TFgfS0DMW7jw7wJpMGVTWTD0tLDOZtdQeHsph9AcRPXMIvSZbAQVOS1Ov9LjFpsFNS1iaa/0mX0p7FyyIM5zL84a3De5ZIipXYkWhg+0qtR/kJLQ5EAuAGsiXbT0i1YwV/3YebtQlbiqRPR+yy5WX9BzznR1BY3P6av6hYV/hk0/jBGRS82QGUgJL9FpnanY9fxWUC9VoEo9PPC66SUCmi072gXzePUvAkWTs7cxy/JC4TSi7cCoVEdCn6ZVJ8TEugjFBioaaj1ugI6FeLJmvE9dtG8ATQz9ATty84NKI/1uuM/XkduXbyDiNHjyL5Qlr28mB8ogwccy2Se+3mDLPPPciDudMMdJpmyLhmc9GyCk1Bf+54aKywBAVjM9UxPCG1gqBaOJ/4eUFu3IvN3hh4HYpMwbayhBGub6C1BN1/JcgHOC3tPZuHQkgANggz2daKssK6tAMnHY52j/4EIyB9baPLdLywR8ejhE44NAQ=
+    secure: GhH9RqMOv/i5P+IJaaIOEVuuw+q01VsCgPvygo7Bkh2LjEhdlJF+0Z9kcvLHopIZsZVFjM1cIScElAhDyPwPEfoyzxB7Gxz9J7kLNd/aEp3j3+Eudj/6e1q/MJcUAfHDpXqCvr3BQJ3Xec4RCDQSdxQN4or3CKjQhXp3ZWY2Ge7+PgsH8S0znHD1Hd0Xrgeno0hkFAmwK8j5FjEwqwfaS1Gn5vKTXXEZxKUuXLaXm7FAbxj5r/OR4SenxnNQtexk9fPl6SC/rmVaievaobCgC1fZxaESdzgNokpHNyocXkD/M7tc7/CxziKYJt1LNCjNnsWubuTXCN/69eK7E3yfclZed827xkJfVpUoMs1njLncSEtL9tNhqkomKa/h6Mgb53t203pHCJ/WSnIuIUGlBiONiycmuG+Az3n8yN/eAxZ/GWbUdV9pq7BXcuK8vghvjbQb/d1aHiJcWWRO6WccryBAZjaWnG/jwu8A2ktoGF0I/XgHQixTkNS4UTLfHDtdeSHhA8++CvWI7fsv615QDm5tfFFvvGEfs9cRkn/HXnF2TlE7w0CwRQlPUdLN94Nn12nSvGjty5KuRAP3jg0h0vuijwqD3GPkCw4Rkod7rIKGrNc5LWfZgBbmEOPim6xBmey6cMBOx+860KUIu0QCLqocwDlBH+7dfPaeqyP/GcU=
   on:
     tags: true
-    repo: "eden-js/cli"
+    repo: eden-js/cli
     branch: master
