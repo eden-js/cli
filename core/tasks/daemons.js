@@ -101,7 +101,7 @@ class DaemonsTask {
       // parse endpoints
       [...(method.tags.endpoint || [])].forEach((tag) => {
         // Comply with max-length 100 (TravicCI)
-        let methodPriority = method.tags.priority;
+        const methodPriority = method.tags.priority;
         // create route
         const endpoint = Object.assign({
           fn       : method.method,
@@ -118,7 +118,7 @@ class DaemonsTask {
       // parse events
       [...(method.tags.on || [])].forEach((tag) => {
         // Comply with max-length 100 (TravicCI)
-        let methodPriority = method.tags.priority;
+        const methodPriority = method.tags.priority;
         // create route
         const e = Object.assign({
           fn       : method.method,
@@ -136,8 +136,8 @@ class DaemonsTask {
       ['pre', 'post'].forEach((type) => {
         // pre/post
         [...(method.tags[type] || [])].forEach((tag) => {
-        // Comply with max-length 100 (TravicCI)
-        let methodPriority = method.tags.priority;
+          // Comply with max-length 100 (TravicCI)
+          const methodPriority = method.tags.priority;
           // create route
           const hook = Object.assign({
             type,
