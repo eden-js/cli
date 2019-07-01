@@ -183,7 +183,7 @@ class ControllersTask {
         // loop boolean elements
         Object.keys(method.tags).filter(key => !skip.includes(key)).forEach((key) => {
           // check key
-          route[key] = method.tags[key].map((val) => {
+          let routeTag = method.tags[key].map((val) => {
             // check type
             if (!val.type) {
               // return value
@@ -197,11 +197,11 @@ class ControllersTask {
             };
           });
 
-          // destructuring array for TravicCI
-          const routeKey = route[key];
-          const routeKey0 = routeKey[0];
           // set to 0
-          if (single.includes(key)) route[key] = routeKey0;
+          if (single.includes(key)) [routeTag] = routeTag;
+
+          // set to key
+          route[key] = routeTag;
         });
 
         // delete priority

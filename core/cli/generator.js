@@ -158,6 +158,7 @@ class EdenGenerator extends Events {
       // create that element
       fileEvals.forEach((val) => {
         // replace
+        // eslint-disable-next-line no-eval
         file = file.split(val).join(eval(`${evalValues} (${val.slice(3, -1)})`));
       });
 
@@ -178,6 +179,7 @@ class EdenGenerator extends Events {
         // create that element
         contentEvals.forEach((val) => {
           // replace
+          // eslint-disable-next-line no-eval
           content = content.split(val).join(eval(`${evalValues} (${val.slice(3, -1)})`));
         });
 
