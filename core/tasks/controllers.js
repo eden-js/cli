@@ -110,7 +110,7 @@ class ControllersTask {
       // parse endpoints
       [...(method.tags.endpoint || [])].forEach((tag) => {
         // Comply with max-length of 100 (TravicCI)
-        let methodPriority = method.tags.priority;
+        const methodPriority = method.tags.priority;
         // create route
         const endpoint = Object.assign({
           fn       : method.method,
@@ -127,7 +127,7 @@ class ControllersTask {
       // parse events
       [...(method.tags.on || [])].forEach((tag) => {
         // Comply with max-length of 100 (TravicCI)
-        let methodPriority = method.tags.priority;
+        const methodPriority = method.tags.priority;
         // create route
         const e = Object.assign({
           fn       : method.method,
@@ -146,7 +146,7 @@ class ControllersTask {
         // pre/post
         [...(method.tags[type] || [])].forEach((tag) => {
           // Comply with max-length of 100 (TravicCI)
-          let methodPriority = method.tags.priority;
+          const methodPriority = method.tags.priority;
           // create route
           const hook = Object.assign({
             type,
@@ -164,13 +164,15 @@ class ControllersTask {
 
       // create route
       [...(method.tags.route || []), ...(method.tags.call || [])].forEach((tag) => {
+        // Comply with max-length of 100 (TravicCI)
+        const methodPriority = method.tags.priority;
         // create route
         const route = Object.assign({
           fn       : method.method,
           file     : file.file,
           path     : tag.tag === 'route' ? (mount + tag.value).split('//').join('/') : (tag.value || '').trim(),
           method   : tag.tag === 'route' ? (tag.type || 'get').toLowerCase() : null,
-          priority : method.tags.priority ? parseInt(method.tags.priority[0].value, 10) : priority,
+          priority : methodPriority ? parseInt(methodPriority[0].value, 10) : priority,
         }, parser.acl(combinedTags), tag.tag === 'route' ? {
           upload : parser.upload(method.tags),
         } : {});
