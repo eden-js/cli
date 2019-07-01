@@ -197,8 +197,11 @@ class ControllersTask {
             };
           });
 
+          // destructuring array for TravicCI
+          const routeKey = route[key];
+          const routeKey0 = routeKey[0];
           // set to 0
-          if (single.includes(key)) route[key] = route[key][0];
+          if (single.includes(key)) route[key] = routeKey0;
         });
 
         // delete priority
