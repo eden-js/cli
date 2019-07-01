@@ -197,7 +197,7 @@ class ControllersTask {
             };
           });
 
-          // set to 0
+          // set to first element of array
           if (single.includes(key)) [routeTag] = routeTag;
 
           // set to key
