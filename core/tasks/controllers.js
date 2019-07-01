@@ -145,10 +145,9 @@ class ControllersTask {
       ['pre', 'post'].forEach((type) => {
         // pre/post
         [...(method.tags[type] || [])].forEach((tag) => {
-        // Comply with max-length of 100 (TravicCI)
-        let methodPriority = method.tags.priority;
+          // Comply with max-length of 100 (TravicCI)
+          let methodPriority = method.tags.priority;
           // create route
-          let prio = 
           const hook = Object.assign({
             type,
 
