@@ -1,5 +1,5 @@
 # EdenJS
-[![TravisCI](https://travis-ci.org/eden-js/cli.svg?branch=master)](https://travis-ci.org/eden-js/cli)
+[![TravisCI](https://travis-ci.com/eden-js/cli.svg?branch=master)](https://travis-ci.com/eden-js/cli)
 [![Issues](https://img.shields.io/github/issues/eden-js/cli.svg?style=flat-square)](https://github.com/eden-js/cli/issues)
 [![Dependencies](https://david-dm.org/eden-js/cli.svg?style=flat-square)](https://github.com/eden-js/cli)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/eden-js/cli)
