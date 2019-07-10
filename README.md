@@ -1,9 +1,9 @@
 # EdenJS
 [![TravisCI](https://travis-ci.com/eden-js/cli.svg?branch=master)](https://travis-ci.com/eden-js/cli)
-[![Issues](https://img.shields.io/github/issues/eden-js/cli.svg?style=flat-square)](https://github.com/eden-js/cli/issues)
-[![Dependencies](https://david-dm.org/eden-js/cli.svg?style=flat-square)](https://github.com/eden-js/cli)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/eden-js/cli)
-[![Awesome](https://img.shields.io/badge/awesome-true-green.svg?style=flat-square)](https://github.com/eden-js/cli)
+[![Issues](https://img.shields.io/github/issues/eden-js/cli.svg)](https://github.com/eden-js/cli/issues)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/eden-js/cli)
+[![Awesome](https://img.shields.io/badge/awesome-true-green.svg)](https://github.com/eden-js/cli)
+[![Discord](https://img.shields.io/discord/583845970433933312.svg)](https://discord.gg/5u3f3up)
 
 Awesome isomorphic NodeJS skeleton for structured applications. Just have a look at the "bundles" that make up an EdenJS application.
 
