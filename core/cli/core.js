@@ -58,8 +58,8 @@ class EdenCore extends Events {
   /**
    * Init logger
    *
-   * @param {Yargs} yy 
-   * @param {Function} logger 
+   * @param {Yargs} yy
+   * @param {Function} logger
    */
   build(yy, logger) {
     // assign logger

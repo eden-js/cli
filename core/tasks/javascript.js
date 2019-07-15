@@ -5,14 +5,13 @@ const gulp           = require('gulp');
 const path           = require('path');
 const glob           = require('@edenjs/glob');
 const babel          = require('@babel/core');
-const browserify     = require('browserify');
-const watchify       = require('watchify');
 const babelify       = require('babelify');
+const browserify     = require('browserify');
 const gulpTerser     = require('gulp-terser');
-const gulpSourcemaps = require('gulp-sourcemaps');
 const gulpHeader     = require('gulp-header');
 const vinylSource    = require('vinyl-source-stream');
 const vinylBuffer    = require('vinyl-buffer');
+const gulpSourcemaps = require('gulp-sourcemaps');
 const babelPresetEnv = require('@babel/preset-env');
 
 const loader = require('lib/loader');
