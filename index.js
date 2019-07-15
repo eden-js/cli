@@ -18,74 +18,94 @@
 require('./lib/env');
 
 // Require dependencies
-const chalk            = require('chalk');
-const { EventEmitter } = require('events');
-const winston          = require('winston');
 const glob             = require('@edenjs/glob');
+const chalk            = require('chalk');
 const yargs            = require('yargs');
+const winston          = require('winston');
+const { EventEmitter } = require('events');
 
 // Require internal utils
-const loader = require('lib/loader');
 const log    = require('lib/utilities/log');
+const loader = require('lib/loader');
 
 // setup globals
 global.isCLI = true;
 
+/**
+ * create eden CLI
+ */
 class EdenCLI extends EventEmitter {
+  /**
+   * construct eden CLI
+   */
   constructor() {
     // run super
     super();
 
+    // set building promise
     this.building = this.build();
   }
 
+  /**
+   * build as async
+   */
   async build() {
+    // locations
     const cliLocations = loader.getFiles('cli/**/*.js', global.bundleLocations);
-    const cliCommands = [];
 
+    // set cli commands
+    let cliCommands = [];
+
+    // create logger
+    const logger = this.logger();
+
+    // glob import locations
     for (const cliPath of await glob(cliLocations)) {
       // eslint-disable-next-line global-require, import/no-dynamic-require
-      const cliModuleCommands = require(cliPath);
+      const cliModule = require(cliPath);
 
-      cliCommands.push(...cliModuleCommands);
-    }
-
-    let yy = yargs;
-
-    // Iterate with non-command modules first
-    const sortedCommands = cliCommands.sort((a, b) => {
-      return (a.command === null && b.command !== null ? -1 : 1);
-    });
-
-    for (const command of sortedCommands) {
-      if (command.command === null) {
-        yy = command.fn(yy);
-      } else {
-        yy = yy.command(command.command, command.description, command.fn.bind(this));
+      // init
+      if (cliModule.build) {
+        // push commands from init function
+        cliCommands.push(...(await cliModule.build(yargs, logger, this)));
       }
     }
 
-    this._args = yy.argv;
+    // Iterate with non-command modules first
+    cliCommands = cliCommands.sort((a, b) => {
+      // return priorities
+      const aP = a.priority || 10;
+      const bP = b.priority || 10;
 
-    // create logger
-    this.logger();
+      // return commands
+      if (aP > bP) return -1;
+      if (bP > aP) return 1;
 
-    // get function
-    const [baseCommandName] = this._args._;
+      return 0;
+    });
 
+    // yargs
+    const { argv } = yargs;
+
+    // get base command
+    const [baseCommandName] = argv._;
+
+    // log running
     this._logger.log('info', `[${chalk.green(baseCommandName)}] Running`);
 
-    const callCommand = async (commandName, args = {}) => {
-      await cliCommands.find(c => (c.command || '').split(' ')[0] === commandName).handler.bind(this)(Object.assign({}, this._args, args), callCommand);
-    };
+    // find command
+    const command = cliCommands.find(c => (c.command || '').split(' ')[0] === baseCommandName);
 
+    // run command
     try {
-      await callCommand(baseCommandName);
-    } catch (err) {
-      global.printError(err);
+      // run command
+      await command.run(Object.assign({}, argv));
+    } catch (e) {
+      global.printError(e);
       process.exit(1);
     }
 
+    // exit
     process.exit(0);
   }
 
@@ -101,6 +121,9 @@ class EdenCLI extends EventEmitter {
         new winston.transports.Console(),
       ],
     });
+
+    // return logger
+    return this._logger;
   }
 }
 

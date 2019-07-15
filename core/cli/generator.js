@@ -19,13 +19,46 @@ class EdenGenerator extends Events {
     // eslint-disable-next-line prefer-rest-params
     super(...arguments);
 
-    // bind methods
-    this.generate = this.generate.bind(this);
-    this.decorate = this.decorate.bind(this);
-
     // specific generators
     this.generateBundle = this.generateBundle.bind(this);
+
+    // generate
+    this.generate = {
+      handler : this.generateHandler.bind(this),
+      command : this.generateCommand.bind(this),
+    };
   }
+
+
+  // ////////////////////////////////////////////////////////////////////////////
+  //
+  //  INIT METHODS
+  //
+  // ////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Init logger
+   *
+   * @param {Yargs} yy 
+   * @param {Function} logger 
+   */
+  build(yy, logger) {
+    // assign logger
+    this._logger = logger;
+
+    // add namespaced commands
+    return Promise.all(['generate'].map((namespace) => {
+      // return command
+      return this[namespace].command(yy);
+    }));
+  }
+
+
+  // ////////////////////////////////////////////////////////////////////////////
+  //
+  //  GENERATOR METHODS
+  //
+  // ////////////////////////////////////////////////////////////////////////////
 
   /**
    * handle
@@ -34,21 +67,36 @@ class EdenGenerator extends Events {
    *
    * @return {*}
    */
-  decorate(yy) {
-    // return handled function scope
-    return yy
-      .strict(false) // Additional options will be done in lib/aliases/config.js
-      .positional('type', {
-        desc    : 'EdenJS Generator Type',
-        type    : 'string',
-        default : 'bundle',
-      })
-      .positional('model', {
-        desc    : 'EdenJS Bundle Name',
-        type    : 'string',
-        default : 'model',
-      })
-      .choices('type', ['bundle', 'design']);
+  generateCommand(yy) {
+    // set variables
+    const command = 'generate [type] [model]';
+    const description = 'Generates EdenJS logic based on type and name.';
+
+    // create command
+    yy.command(command, description, () => {
+      // return handled function scope
+      return yy
+        .strict(false) // Additional options will be done in lib/aliases/config.js
+        .positional('type', {
+          desc    : 'EdenJS Generator Type',
+          type    : 'string',
+          default : 'bundle',
+        })
+        .positional('model', {
+          desc    : 'EdenJS Bundle Name',
+          type    : 'string',
+          default : 'model',
+        })
+        .choices('type', ['bundle', 'design']);
+    });
+
+    // return handler
+    return {
+      command,
+      description,
+
+      run : this.generate.handler,
+    };
   }
 
   /**
@@ -58,7 +106,7 @@ class EdenGenerator extends Events {
    *
    * @return {*}
    */
-  generate(args) {
+  generateHandler(args) {
     // check if bundle
     if (args.type === 'bundle') {
       // return generate bundle
@@ -206,11 +254,4 @@ class EdenGenerator extends Events {
 const edenGenerator = new EdenGenerator();
 
 // export module
-module.exports = [
-  {
-    fn          : edenGenerator.decorate,
-    command     : 'generate [type] [model]',
-    handler     : edenGenerator.generate,
-    description : 'Generates EdenJS logic based on type and name.',
-  },
-];
+module.exports = edenGenerator;

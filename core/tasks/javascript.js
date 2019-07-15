@@ -58,32 +58,22 @@ class JavascriptTask {
     let b = browserify({
       paths         : global.importLocations,
       debug         : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
-      cache         : {},
       entries       : [require.resolve('@babel/polyfill'), ...await glob(files)],
       commondir     : false,
-      packageCache  : {},
       insertGlobals : true,
     });
 
     // check environment
-    if (['production', 'live'].includes(config.get('environment')) || config.get('useBabel')) {
-      b = b.transform(babelify, {
-        presets : [
-          babel.createConfigItem([babelPresetEnv, {
-            targets : {
-              browsers : config.get('browserlist'),
-            },
-            useBuiltIns : 'entry',
-          }]),
-        ],
-        sourceMaps : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
-      });
-    }
-
-    // atchify
-    b.plugin(watchify, {
-      poll        : false,
-      ignoreWatch : ['*'],
+    b = b.transform(babelify, {
+      presets : [
+        babel.createConfigItem([babelPresetEnv, {
+          targets : {
+            browsers : config.get('browserlist'),
+          },
+          useBuiltIns : 'entry',
+        }]),
+      ],
+      sourceMaps : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
     });
 
     // set b

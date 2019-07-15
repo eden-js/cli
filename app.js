@@ -10,7 +10,9 @@ const winston = require('winston');
 // Require local dependencies
 const log    = require('lib/utilities/log');
 const config = require('config');
-const pack    = require('./package.json');
+
+// require local
+const pack = require('./package.json');
 
 /**
  * Create App class
