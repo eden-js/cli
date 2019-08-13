@@ -152,7 +152,7 @@ class EdenGenerator extends Events {
    */
   async generateBundle(model, mount) {
     // check mount
-    if (!mount) mount = `/${model.toLowerCase()}`;
+    if (!mount) mount = '';
 
     // create bundle
     const generated = await this.__generate(`${global.edenRoot}/generator/bundles`, { model, mount });

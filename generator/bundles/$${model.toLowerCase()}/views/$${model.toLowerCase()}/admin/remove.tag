@@ -3,7 +3,7 @@
 
     <admin-header title="Remove $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}">
       <yield to="right">
-        <a href="/admin/$${mount}/$${model.toLowerCase()}" class="btn btn-lg btn-primary">
+        <a href="/admin$${mount}/$${model.toLowerCase()}" class="btn btn-lg btn-primary">
           Back
         </a>
       </yield>
@@ -11,7 +11,7 @@
 
     <div class="container-fluid">
 
-      <form method="post" action="/admin/$${mount}/$${model.toLowerCase()}/{ opts.item.id }/remove">
+      <form method="post" action="/admin$${mount}/$${model.toLowerCase()}/{ opts.item.id }/remove">
         <div class="card mb-3">
           <div class="card-body">
             <p>

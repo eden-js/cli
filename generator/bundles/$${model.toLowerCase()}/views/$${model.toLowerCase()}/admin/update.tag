@@ -3,7 +3,7 @@
 
     <admin-header title="{ opts.item && opts.item.id ? 'Update' : 'Create ' } $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}" preview={ this.preview } on-preview={ onPreview }>
       <yield to="right">
-        <a href="/admin/$${mount}/$${model.toLowerCase()}" class="btn btn-lg btn-primary mr-2">
+        <a href="/admin$${mount}/$${model.toLowerCase()}" class="btn btn-lg btn-primary mr-2">
           Back
         </a>
         <button class={ 'btn btn-lg' : true, 'btn-primary' : opts.preview, 'btn-success' : !opts.preview } onclick={ opts.onPreview }>
@@ -15,7 +15,7 @@
     <div class="container-fluid">
       <div class="card">
         <div class="card-body">
-          <form-render action="/admin/$${mount}/$${model.toLowerCase()}/{ opts.item && opts.item.id ? opts.item.id + '/update' : 'create' }" method="post" ref="form" form={ opts.form } placement="ifactory.$${model.toLowerCase()}" positions={ this.positions } preview={ this.preview } class="d-block mb-3" />
+          <form-render action="/admin$${mount}/$${model.toLowerCase()}/{ opts.item && opts.item.id ? opts.item.id + '/update' : 'create' }" method="post" ref="form" form={ opts.form } placement="admin.$${model.toLowerCase()}" positions={ this.positions } preview={ this.preview } class="d-block mb-3" />
         </div>
         <div class="card-footer text-right">
           <button type="button" onclick={ onSubmit } class={ 'btn btn-success' : true, 'disabled' : this.loading } disabled={ this.loading }>

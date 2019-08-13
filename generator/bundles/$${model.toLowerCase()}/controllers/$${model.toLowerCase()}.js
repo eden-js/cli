@@ -14,7 +14,7 @@ const $${model.toLowerCase()}Helper = helper('$${model.toLowerCase()}');
  *
  * @acl   admin
  * @fail  next
- * @mount $${mount}
+ * @mount $${mount.length ? mount : model.toLowerCase()}
  */
 class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}Controller extends Controller {
   /**

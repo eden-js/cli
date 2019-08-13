@@ -20,7 +20,7 @@ const $${model.toLowerCase()}Helper = helper('$${model.toLowerCase()}');
  *
  * @acl   admin
  * @fail  next
- * @mount /admin$${mount}
+ * @mount /admin$${mount.length ? mount : '/' + model.toLowerCase()}
  */
 class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}AdminController extends Controller {
   /**
@@ -242,7 +242,7 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}AdminContr
       item   : await $${model.toLowerCase()}.sanitise(),
       form   : sanitised,
       title  : create ? 'Create $${model.toLowerCase()}' : `Update ${$${model.toLowerCase()}.get('_id').toString()}`,
-      fields : config.get('schedule.$${model.toLowerCase()}.fields'),
+      fields : (config.get('admin.$${model.toLowerCase()}.fields') || []),
     });
   }
 
@@ -462,9 +462,9 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}AdminContr
     });
 
     // branch fields
-    await Promise.all((form.get('_id') ? form.get('fields') : config.get('$${model.toLowerCase()}.fields').slice(0)).map(async (field, i) => {
+    await Promise.all((form.get('_id') ? form.get('fields') : (config.get('admin.$${model.toLowerCase()}.fields') || []).slice(0)).map(async (field, i) => {
       // set found
-      const found = config.get('$${model.toLowerCase()}.fields').find(f => f.name === field.name);
+      const found = (config.get('admin.$${model.toLowerCase()}.fields') || []).find(f => f.name === field.name);
 
       // add config field
       await formHelper.column(req, form, $${model.toLowerCase()}Grid, field, {
@@ -493,7 +493,7 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}AdminContr
     });
 
     // branch filters
-    config.get('schedule.$${model.toLowerCase()}.fields').slice(0).filter(field => field.grid).forEach((field) => {
+    (config.get('admin.$${model.toLowerCase()}.fields') || []).slice(0).filter(field => field.grid).forEach((field) => {
       // add config field
       $${model.toLowerCase()}Grid.filter(field.name, {
         type  : 'text',

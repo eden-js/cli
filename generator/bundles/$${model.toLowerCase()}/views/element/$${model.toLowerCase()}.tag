@@ -1,6 +1,6 @@
 <element-$${model.toLowerCase()}>
   <span each={ item, i in this.$${model.toLowerCase()}s }>
-    <a href="/admin/$${mount}/$${model.toLowerCase()}/{ item.id }/update">{ item.name }</a>
+    <a href="/admin$${mount}/$${model.toLowerCase()}/{ item.id }/update">{ item.name }</a>
     { i === this.$${model.toLowerCase()}s.length - 1 ? '' : ', ' }
   </span>
 

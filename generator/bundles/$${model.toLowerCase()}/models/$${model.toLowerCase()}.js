@@ -35,10 +35,10 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()} extends M
     };
 
     // get form
-    const form = await formHelper.get('ifactory.$${model.toLowerCase()}');
+    const form = await formHelper.get('admin.$${model.toLowerCase()}');
 
     // add other fields
-    await Promise.all((form.get('_id') ? form.get('fields') : config.get('schedule.$${model.toLowerCase()}.fields').slice(0)).map(async (field, i) => {
+    await Promise.all((form.get('_id') ? form.get('fields') : (config.get('admin.$${model.toLowerCase()}.fields') || []).slice(0)).map(async (field, i) => {
       // set field name
       const fieldName = field.name || field.uuid;
 

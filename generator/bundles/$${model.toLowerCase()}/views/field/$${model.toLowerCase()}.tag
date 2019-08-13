@@ -6,7 +6,7 @@
           { opts.field.label }
           <i if={ !opts.field.label }>Set Label</i>
         </label>
-        <eden-select ref="select" url="/admin/$${mount}/$${model.toLowerCase()}/query" required={ opts.field.required } name={ opts.field.uuid } multiple={ opts.field.multiple } label={ opts.field.label || 'Search by Name' } data={ opts.data }>
+        <eden-select ref="select" url="/admin$${mount}/$${model.toLowerCase()}/query" required={ opts.field.required } name={ opts.field.uuid } multiple={ opts.field.multiple } label={ opts.field.label || 'Search by Name' } data={ opts.data }>
           <option each={ $${model.toLowerCase()}, i in opts.data.value || [] } selected="true" value={ $${model.toLowerCase()}.id }>
             { $${model.toLowerCase()}.name }
           </option>
