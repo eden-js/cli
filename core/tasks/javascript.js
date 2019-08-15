@@ -147,7 +147,7 @@ class JavascriptTask {
 
     // Restart server on end
     job.on('end', () => {
-      this._runner.restart();
+      this._runner.emit('page', 'reload');
     });
 
     // Wait for job to end

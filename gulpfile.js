@@ -143,12 +143,6 @@ class Loader {
 
     // server
     this.server = Cp.fork(`${__dirname}/index.js`, ['start']);
-
-    // timeout reload page
-    setTimeout(() => {
-      // reload page
-      this.emit('page', 'reload');
-    }, 2000);
   }
 
   /**
