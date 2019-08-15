@@ -120,7 +120,14 @@ class SASSTask {
 
     // Wait for job to end
     await new Promise((resolve, reject) => {
-      job.once('end', resolve);
+      // resolve
+      job.once('end', () => {
+        // resolve
+        resolve();
+
+        // reload js
+        this._runner.emit('scss', 'reload');
+      });
       job.once('error', reject);
     });
   }

@@ -3,11 +3,13 @@ require('./lib/env');
 
 // Require dependencies
 const fs        = require('fs-extra');
+const Cp        = require('child_process');
 const gulp      = require('gulp');
 const glob      = require('@edenjs/glob');
-const deepMerge = require('deepmerge');
-const Cp        = require('child_process');
 const util      = require('util');
+const fetch     = require('node-fetch');
+const config    = require('config');
+const deepMerge = require('deepmerge');
 
 // Require local dependencies
 const loader = require('lib/loader');
@@ -120,16 +122,33 @@ class Loader {
     gulp.task('install', gulp.series(...installers));
   }
 
+  /**
+   * restarts server
+   */
   async _restart() {
+    // set restarting
     this.serverRestartingPromise = true;
 
+    // set server
     if (this.server !== null) {
+      // dead promise
       const deadPromise =  new Promise(resolve => this.server.once('exit', resolve));
+
+      // kill server
       this.server.kill();
+
+      // await dying
       await deadPromise;
     }
 
+    // server
     this.server = Cp.fork(`${__dirname}/index.js`, ['start']);
+
+    // timeout reload page
+    setTimeout(() => {
+      // reload page
+      this.emit('page', 'reload');
+    }, 2000);
   }
 
   /**
@@ -177,6 +196,30 @@ class Loader {
   }
 
   /**
+   * Emits Args
+   *
+   * @param {String} type 
+   * @param  {...any} args 
+   */
+  async emit(type, ...args) {
+    // try/catch
+    try {
+      // emit build event
+      await fetch(`http://localhost:${config.get('port')}/dev/event`, {
+        body : JSON.stringify({
+          type,
+          args,
+        }),
+        headers : {
+          'Content-Type'   : 'application/json',
+          'authentication' : `AUTH:${config.get('secret')}`,
+        },
+        method : 'POST',
+      });
+    } catch (e) {}
+  }
+
+  /**
    * Writes config file
    *
    * @param {string} name
@@ -199,6 +242,11 @@ class Loader {
     return deepMerge(obj1, obj2);
   }
 
+  /**
+   * gets files
+   *
+   * @param {Array} files 
+   */
   files(files) {
     return loader.getFiles(files, this._locations);
   }
@@ -268,7 +316,9 @@ class Loader {
     // Create watch task
     gulp.task(`${task}.watch`, () => {
       // return watch
-      return gulp.watch(this.files(Task.watch()), gulp.series(task));
+      return gulp.watch(this.files(Task.watch()), {
+        awaitWriteFinish : true,
+      }, gulp.series(task));
     });
   }
 }

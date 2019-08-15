@@ -56,6 +56,7 @@ class JavascriptTask {
     // Browserify javascript
     let b = browserify({
       paths         : global.importLocations,
+      watch         : true,
       debug         : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
       entries       : [require.resolve('@babel/polyfill'), ...await glob(files)],
       commondir     : false,
@@ -124,7 +125,7 @@ class JavascriptTask {
     job = job.pipe(gulpHeader(head, false));
 
     // Only minify in live
-    if (config.get('environment') === 'live') {
+    if (config.get('environment') !== 'dev') {
       // Pipe uglify
       job = job.pipe(gulpTerser({
         ie8      : false,
