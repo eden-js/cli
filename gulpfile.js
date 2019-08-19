@@ -213,6 +213,9 @@ class Loader {
     } catch (e) {
       // Remove build errors by setting a random variable
       let gotErrorMessage = e;
+      if(gotErrorMessage !== null) {
+        gotErrorMessage = null;
+      }
     }
   }
 
