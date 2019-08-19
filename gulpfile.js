@@ -211,7 +211,7 @@ class Loader {
         method : 'POST',
       });
     } catch (e) {
-      done(e);
+      return;
     }
   }
 
