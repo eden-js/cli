@@ -89,8 +89,6 @@ A basic tutorial on how to get started with EdenJS is available: [TUTORIAL.md](T
 
 * [Express](https://expressjs.com/) - Fast, unopinionated, minimalist web framework for Node.js.
 * [socket.io](https://socket.io/) - Node.js realtime framework server.
-* [Riot.js](https://riot.js.org/) - Simple and elegant component-based UI library.
-* [Mongorito](http://mongorito.com/) - MongoDB ODM for Node.js based on ES6 generators. No callbacks or promises.
 
 ## Versioning
 We use [SemVer](http://semver.org/) for versioning.
