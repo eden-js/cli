@@ -192,8 +192,8 @@ class Loader {
   /**
    * Emits Args
    *
-   * @param {String} type 
-   * @param  {...any} args 
+   * @param {String} type
+   * @param  {...any} args
    */
   async emit(type, ...args) {
     // try/catch
@@ -206,11 +206,13 @@ class Loader {
         }),
         headers : {
           'Content-Type'   : 'application/json',
-          'authentication' : `AUTH:${config.get('secret')}`,
+          authentication : `AUTH:${config.get('secret')}`,
         },
         method : 'POST',
       });
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   /**
@@ -239,7 +241,7 @@ class Loader {
   /**
    * gets files
    *
-   * @param {Array} files 
+   * @param {Array} files
    */
   files(files) {
     return loader.getFiles(files, this._locations);
