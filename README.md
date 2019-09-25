@@ -95,7 +95,7 @@ We use [SemVer](http://semver.org/) for versioning.
 
 ## Authors
 * **Alex Taylor** - *Lead Developer* - [EdenCoder](https://github.com/EdenCoder)
-* **installgen2** - *Developer* - [notgne2](https://github.com/notgne2)
+* **installgen2** - *Webbed Toes* - [notgne2](https://github.com/notgne2)
 * **Jack Taylor** - *Developer* - [OhYea777](https://github.com/OhYea777)
 * **Mike Mackenzie** - *Documentation* / *Developer* - [veb](https://github.com/veb)
 
