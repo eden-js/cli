@@ -90,7 +90,7 @@ class JavascriptTask {
    */
   async run(files) {
     // return promise
-    const b = await this._browserify(files);
+    const b = await this._browserify(['public/js/bootstrap.{js,jsx,ts,tsx}']);
 
     // Create browserify bundle
     const bundle = b.bundle();
@@ -166,7 +166,7 @@ class JavascriptTask {
   watch() {
     // Return files
     return [
-      'public/js/bootstrap.js',
+      'public/js/bootstrap.{js,jsx,ts,tsx}',
     ];
   }
 }

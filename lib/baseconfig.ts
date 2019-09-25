@@ -122,4 +122,4 @@ function getBaseConfig(config) {
   return baseConfig;
 }
 
-module.exports = getBaseConfig;
+export default getBaseConfig;

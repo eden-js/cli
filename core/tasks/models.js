@@ -52,7 +52,7 @@ class ModelsTask {
   watch() {
     // Return files
     return [
-      'models/**/*.js',
+      'models/**/*.{js,jsx,ts,tsx}',
     ];
   }
 }

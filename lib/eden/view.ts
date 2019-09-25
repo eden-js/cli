@@ -1,6 +1,6 @@
 // Require local dependencies
-const eden   = require('eden');
-const config = require('config');
+import eden from 'eden';
+import config from 'config';
 
 /**
  * Create View class
@@ -270,4 +270,4 @@ class View {
  *
  * @type {View}
  */
-module.exports = new View();
+export default new View();

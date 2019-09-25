@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 
 // Require dependencies
-const fs   = require('fs-extra');
-const Path = require('path');
+import fs from 'fs-extra';
+import Path from 'path';
 
 // Load models
 const models = fs.existsSync(Path.resolve(`${global.appRoot}/data/cache/models.json`)) ? require('cache/models.json') : {};

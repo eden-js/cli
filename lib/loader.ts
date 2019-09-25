@@ -1,7 +1,7 @@
-
-const fs   = require('fs-extra');
-const path = require('path');
-const glob = require('@edenjs/glob');
+// import dependencies
+import fs from 'fs-extra';
+import path from 'path';
+import glob from '@edenjs/glob';
 
 /**
  * eden loader class
@@ -161,4 +161,4 @@ class EdenLoader {
 /**
  * export eden loader class
  */
-module.exports = new EdenLoader();
+export default new EdenLoader();

@@ -36,7 +36,7 @@ class ControllersTask {
     let config = {};
 
     // Get all routes
-    return gulp.src(this._runner.files('controllers/**/*.js'))
+    return gulp.src(this._runner.files('controllers/**/*.{js,jsx,ts,tsx}'))
       .pipe(through.obj((chunk, enc, cb) => {
         // parse file
         config = deepMerge(config, this.parse(parser.file(chunk.path)));
@@ -64,8 +64,8 @@ class ControllersTask {
   watch() {
     // Return files
     return [
-      'controllers/**/*.js',
-      'helpers/**/*.js',
+      'controllers/**/*.{js,jsx,ts,tsx}',
+      'helpers/**/*.{js,jsx,ts,tsx}',
     ];
   }
 

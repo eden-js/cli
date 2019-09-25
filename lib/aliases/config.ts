@@ -1,12 +1,14 @@
 // Require dependencies
-const fs        = require('fs-extra');
-const glob      = require('@edenjs/glob');
-const nconf     = require('nconf');
-const deepMerge = require('deepmerge');
+import fs from 'fs-extra';
+
+import glob from '@edenjs/glob';
+import nconf from 'nconf';
+import deepMerge from 'deepmerge';
 
 // Require local dependencies
-const loader        = require('lib/loader');
-const getBaseConfig = require('lib/baseconfig.js');
+import loader from 'lib/loader';
+
+import getBaseConfig from 'lib/baseconfig';
 
 // main config file
 let mainConfigFile = null;
@@ -64,12 +66,10 @@ nconf.argv({
 nconf.env({
   logicalSeparator : '.',
   parseValues      : true,
-  transform        : (obj) => {
-    return {
-      key   : obj.key.toLowerCase().replace(/_([a-z])/g, g => g[1].toUpperCase()),
-      value : obj.value,
-    };
-  },
+  transform        : ({ key, value }) => ({
+    key   : key.toLowerCase().replace(/_([a-z])/g, g => g[1].toUpperCase()),
+    value : value
+  }),
 });
 
 // main config file
@@ -111,4 +111,4 @@ for (const configPath of glob.sync(configLocations)) {
 nconf.defaults(getBaseConfig(nconf));
 
 // Export config
-module.exports = nconf;
+export default nconf;

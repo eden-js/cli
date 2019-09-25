@@ -1,19 +1,21 @@
 // Require dependencies
-const http         = require('http');
-const uuid         = require('uuid');
-const multer       = require('multer');
-const express      = require('express');
-const session      = require('express-session');
-const bodyParser   = require('body-parser');
-const responseTime = require('response-time');
-const cookieParser = require('cookie-parser');
+import http from 'http';
+
+import uuid from 'uuid';
+import multer from 'multer';
+import express from 'express';
+import session from 'express-session';
+import bodyParser from 'body-parser';
+import responseTime from 'response-time';
+import cookieParser from 'cookie-parser';
 
 // Require class dependencies
-const SessionStore = require('@edenjs/session-store');
+import SessionStore from '@edenjs/session-store';
 
 // Require local dependencies
-const eden   = require('eden');
-const config = require('config');
+import eden from 'eden';
+
+import config from 'config';
 
 // Require helpers
 const aclHelper = helper('user/acl');
@@ -23,12 +25,12 @@ const routes  = cache('routes');
 const classes = cache('classes');
 
 // Require Eden dependencies
-const view = require('./view');
+import view from './view';
 
 /**
  * Create Router class
  */
-class EdenRouter {
+export default class EdenRouter {
   /**
    * Construct Router class
    */
@@ -489,10 +491,3 @@ class EdenRouter {
     }
   }
 }
-
-/**
- * Export EdenRouter class
- *
- * @type {EdenRouter}
- */
-module.exports = EdenRouter;

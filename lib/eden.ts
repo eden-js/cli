@@ -1,19 +1,23 @@
 
 // Require dependencies
-const uuid    = require('uuid');
-const error   = require('serialize-error');
-const dotProp = require('dot-prop-immutable');
+import uuid from 'uuid';
+import error from 'serialize-error';
+import config from 'config';
+import dotProp from 'dot-prop-immutable';
 
 // Require class dependencies
-const Events    = require('events');
-const EdenModel = require('@edenjs/model');
-const { Logger }  = require('winston');
-const { Console } = require('winston').transports;
+import Events from 'events';
 
 // Require local dependencies
-const log    = require('lib/utilities/log');
-const config = require('config');
-const pack    = require('../package.json');
+const { Console } = require('winston').transports;
+import EdenModel from '@edenjs/model';
+import { Logger } from 'winston';
+
+// Require local dependencies
+import log from 'lib/utilities/log';
+
+// import local
+import pack from '../package.json';
 
 // Require cached resources
 const hooks     = [...(cache('controller.hooks')), ...(cache('daemon.hooks'))];
@@ -139,18 +143,18 @@ class Eden {
     }, true);
 
     // Add thread specific listener
-    this.on(`${this.cluster}.${opts.id}`, (data) => {
+    this.on(`${this.cluster}.${opts.id}`, ({ type, args, callee }) => {
       // Emit data
-      this.events.emit(data.type, ...data.args, {
-        callee : data.callee,
+      this.events.emit(type, ...args, {
+        callee,
       });
     }, true);
 
     // Add thread specific listener
-    this.on(`${this.cluster}.all`, (data) => {
+    this.on(`${this.cluster}.all`, ({ type, args, callee }) => {
       // Emit data
-      this.events.emit(data.type, ...data.args, {
-        callee : data.callee,
+      this.events.emit(type, ...args, {
+        callee,
       });
     }, true);
 
@@ -267,9 +271,9 @@ class Eden {
         });
 
         // do endpoints
-        eventable.forEach((e) => {
+        eventable.forEach(({ event, fn, all }) => {
           // do endpoint
-          this.on(e.event, this.register('controller')[file][e.fn], e.all);
+          this.on(event, this.register('controller')[file][fn], all);
         });
 
         // do endpoints
@@ -896,10 +900,8 @@ class Eden {
       // split A/B
       if (key.includes('*') && splitA.length > 1 && splitB.length > 1 && splitA.length === splitB.length) {
         // check parts
-        return !splitA.find((part, i) => {
-          // return match or star
-          return part !== splitB[i] && splitB[i] !== '*';
-        });
+        return !splitA.find((part, i) => // return match or star
+        part !== splitB[i] && splitB[i] !== '*');
       }
 
       // return false
@@ -955,7 +957,7 @@ class Eden {
     const daemonClasses = daemons.filter((daemon) => {
       // return cluster
       // eslint-disable-next-line max-len
-      return !daemon.cluster || (clusterConfig ? clusterConfig.includes(daemon.file) : daemon.cluster.includes(this.cluster));
+      return (clusterConfig ? clusterConfig.includes(daemon.file) : (!daemon.cluster || daemon.cluster.includes(this.cluster)));
     }).sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
     // loop toload
@@ -1008,7 +1010,7 @@ class Eden {
     // initialize database
     try {
       // Connects to database
-      const plug = new EdenModel.plugs[config.get('database.plug')](config.get('database.config'));
+      const plug = new (EdenModel.plugs[config.get('database.plug')])(config.get('database.config'));
 
       // Log registering
       this.logger.log('info', 'Registering database', {
@@ -1065,9 +1067,9 @@ class Eden {
       try {
         // Require Daemon
         const Daemon    = this.require(daemon.file);
-        const callable  = endpoints.filter(e => e.file === daemon.file);
-        const hookable  = hooks.filter(e => e.file === daemon.file);
-        const eventable = events.filter(e => e.file === daemon.file);
+        const callable  = endpoints.filter(({ file }) => file === daemon.file);
+        const hookable  = hooks.filter(({ file }) => file === daemon.file);
+        const eventable = events.filter(({ file }) => file === daemon.file);
 
         // Require daemon
         this.register('daemon')[daemon.file] = new Daemon();
@@ -1079,9 +1081,9 @@ class Eden {
         });
 
         // do events
-        eventable.forEach((e) => {
+        eventable.forEach(({ event, fn, all }) => {
           // do endpoint
-          this.on(e.event, this.register('daemon')[daemon.file][e.fn], e.all);
+          this.on(event, this.register('daemon')[daemon.file][fn], all);
         });
 
         // do events
@@ -1112,4 +1114,4 @@ class Eden {
  *
  * @type {Eden}
  */
-module.exports = new Eden();
+export default new Eden();

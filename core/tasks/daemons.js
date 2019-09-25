@@ -66,7 +66,7 @@ class DaemonsTask {
   watch() {
     // Return files
     return [
-      'daemons/**/*.js',
+      'daemons/**/*.{js,jsx,ts,tsx}',
     ];
   }
 

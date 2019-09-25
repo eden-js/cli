@@ -1,10 +1,8 @@
 // Require dependencies
-const chalk = require('chalk');
+import chalk from 'chalk';
 
 // Require format
-const {
-  format,
-} = require('winston');
+import { format } from 'winston';
 
 /**
  * Export log functionality
@@ -13,7 +11,7 @@ const {
  *
  * @returns {function(object): string}
  */
-module.exports = format.printf((info) => {
+export default format.printf((info) => {
   // Set message string
   let message = '';
 
