@@ -6,9 +6,9 @@ import nconf from 'nconf';
 import deepMerge from 'deepmerge';
 
 // Require local dependencies
-import loader from 'lib/loader';
+import loader from '../loader';
 
-import getBaseConfig from 'lib/baseconfig';
+import getBaseConfig from '../baseconfig';
 
 // main config file
 let mainConfigFile = null;
