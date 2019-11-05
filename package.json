@@ -37,7 +37,7 @@
   "dependencies": {
     "@babel/core": "^7.4.4",
     "@babel/polyfill": "^7.4.4",
-    "@babel/preset-env": "^7.4.4",
+    "@babel/preset-env": "^7.7.1",
     "@babel/preset-typescript": "^7.6.0",
     "@babel/register": "^7.6.2",
     "@edenjs/glob": "^1.0.0",
