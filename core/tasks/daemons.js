@@ -46,8 +46,7 @@ class DaemonsTask {
   async thread(data) {
     // Require dependencies
     const fs        = require('fs-extra');
-    const gulp      = require('gulp');
-    const through   = require('through2');
+    const glob      = require('@edenjs/glob');
     const deepMerge = require('deepmerge');
 
     // Require local dependencies
@@ -141,25 +140,23 @@ class DaemonsTask {
       };
     };
 
-    // Set variables
+    // Set config
     let config = {};
 
-    // Get all routes
-    await gulp.src(data.files)
-      .pipe(through.obj((chunk, enc, cb) => {
-        // parse file
-        config = deepMerge(config, parse(parser.file(chunk.path)));
+    // run through files
+    const files = await glob(data.files);
 
-        // Run callback
-        cb(null, chunk);
-      }))
-      .on('end', () => {
-        // Loop types in config
-        for (const type of Object.keys(config)) {
-          // Write config file
-          fs.writeJson(`${data.appRoot}/data/cache/models.json`, config[type]);
-        }
-      });
+    // loop files
+    files.forEach((file) => {
+      // parse file
+      config = deepMerge(config, parse(parser.file(file)));
+    });
+
+    // Loop types in config
+    for (const type of Object.keys(config)) {
+      // Write config file
+      fs.writeJson(`${data.appRoot}/.edenjs/.cache/${type}.json`, config[type]);
+    }
   }
 
   /**

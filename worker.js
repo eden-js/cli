@@ -16,7 +16,9 @@ if (global.data.require) {
 }
 
 // do job
-const result = vm.runInThisContext(`(async() => { ${workerData.logic} })()`);
+const result = vm.runInThisContext(`(async() => { ${workerData.logic} })()`, {
+  timeout : 500000,
+});
 
 // post message to parent
 result.then((r) => {

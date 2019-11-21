@@ -5,7 +5,7 @@ import fs from 'fs-extra';
 import Path from 'path';
 
 // Load models
-const models = fs.existsSync(Path.resolve(`${global.appRoot}/data/cache/models.json`)) ? require('cache/models.json') : {};
+const models = fs.existsSync(Path.resolve(`${global.appRoot}/.edenjs/.cache/models.json`)) ? require(`${global.appRoot}/.edenjs/.cache/models.json`) : {};
 
 /**
  * Loads cache global
@@ -16,7 +16,7 @@ const models = fs.existsSync(Path.resolve(`${global.appRoot}/data/cache/models.j
  */
 global.cache = (name) => {
   // Set cache name
-  const fmtName = Path.join(global.appRoot, 'data', 'cache', name);
+  const fmtName = Path.join(global.appRoot, '.edenjs', '.cache', name);
 
   // Try/Catch
   try {

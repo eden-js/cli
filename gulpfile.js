@@ -241,7 +241,7 @@ class Loader {
    */
   async write(name, obj) {
     // Write file
-    await fs.writeJson(`${global.appRoot}/data/cache/${name}.json`, obj);
+    await fs.writeJson(`${global.appRoot}/.edenjs/.cache/${name}.json`, obj);
   }
 
   /**
@@ -299,6 +299,12 @@ class Loader {
       worker.on('message', (message) => {
         // resolve done
         resolve(message.done);
+      });
+      worker.on('exit', (code) => {
+        // check code
+        if (code !== 0) {
+          reject(new Error(`Worker stopped with exit code ${code}`));
+        }
       });
     });
   }

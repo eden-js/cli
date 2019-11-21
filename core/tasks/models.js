@@ -56,7 +56,7 @@ class ModelsTask {
     }
 
     // Write models cache file
-    await fs.writeJson(`${data.appRoot}/data/cache/models.json`, models);
+    await fs.writeJson(`${data.appRoot}/.edenjs/.cache/models.json`, models);
   }
 
   /**
