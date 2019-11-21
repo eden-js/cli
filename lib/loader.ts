@@ -2,11 +2,58 @@
 import fs from 'fs-extra';
 import path from 'path';
 import glob from '@edenjs/glob';
+import Events from 'events';
 
 /**
  * eden loader class
  */
-class EdenLoader {
+class EdenLoader extends Events {
+  /**
+   * construct eden loader
+   */
+  constructor() {
+    // run super
+    super();
+
+    // build
+    this.build = this.build.bind(this);
+
+    // build
+    this.building = this.build();
+  }
+
+  /**
+   * build loader
+   */
+  async build() {
+    // create cache folder
+    fs.ensureDirSync(`${global.appRoot}/.edenjs`);
+    fs.ensureDirSync(`${global.appRoot}/.edenjs/.cache`);
+  }
+
+  /**
+   * caches name/data to .edenjs folder
+   *
+   * @param name 
+   * @param data 
+   */
+  cache(name, data) {
+    // check file if no data
+    if (!data) {
+      // check file exists
+      if (!fs.existsSync(`${global.appRoot}/.edenjs/.cache/${name}.json`)) return;
+
+      // load file
+      return JSON.parse(fs.readFileSync(`${global.appRoot}/.edenjs/.cache/${name}.json`, 'utf8'));
+    }
+
+    // write file
+    fs.writeFileSync(`${global.appRoot}/.edenjs/.cache/${name}.json`, JSON.stringify(data));
+
+    // check data
+    return data;
+  }
+
   /**
    * get import locations
    *
@@ -59,14 +106,17 @@ class EdenLoader {
       filePaths.push(path.resolve(localPath));
     }
 
-    // reverse
-    return filePaths.reverse().reduce((accum, item) => {
+    // do done
+    const done = filePaths.reverse().reduce((accum, item) => {
       // includes
       if (!accum.includes(item)) accum.push(item);
 
       // return accumulator
       return accum;
     }, []);
+
+    // reverse
+    return done;
   }
 
   /**

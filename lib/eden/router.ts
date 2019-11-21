@@ -242,10 +242,6 @@ export default class EdenRouter {
    * @private
    */
   _view(app) {
-    // Set view engine
-    app.set('views', `${global.appRoot}/data/cache/views`);
-    app.set('view engine', config.get('view.engine'));
-
     // Do view engine
     app.engine(config.get('view.engine'), view.render);
   }

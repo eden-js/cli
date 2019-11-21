@@ -49,6 +49,7 @@
     "babelify": "^10.0.0",
     "body-parser": "^1.19.0",
     "browserify": "^16.2.3",
+    "browserify-incremental": "^3.1.1",
     "chalk": "^2.4.2",
     "cookie-parser": "^1.4.4",
     "deepmerge": "^4.0.0",
@@ -80,6 +81,7 @@
     "vinyl-source-stream": "^2.0.0",
     "watchify": "^3.11.1",
     "winston": "^3.2.1",
+    "xtend": "^4.0.2",
     "yargonaut": "^1.1.4",
     "yargs": "^13.2.4"
   },

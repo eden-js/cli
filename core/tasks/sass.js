@@ -80,7 +80,9 @@ class SASSTask {
     // Create body for main file
     let body = '';
 
+    // global all saas files to import
     for (const file of await glob(sassFiles)) {
+      // import
       body += (Path.extname(file) === '.css' ? await fs.readFile(file, 'utf8') : `@import "${file}";`) + os.EOL;
     }
 
@@ -98,17 +100,20 @@ class SASSTask {
       job = job.pipe(gulpSourcemaps.init());
     }
 
+    // pipe
     job = job.pipe(gulpSass.sync({
       importer    : customImporter,
       outputStyle : 'compressed',
     }));
 
+    // check for production
     if (config.get('environment') === 'production') {
       job = job.pipe(gulpPrefix({
         browsers : config.get('browserlist'),
       }));
     }
 
+    // pipe to rename
     job = job.pipe(gulpRename('app.min.css'));
 
     // Write gulpSourcemaps

@@ -4,6 +4,7 @@ const os             = require('os');
 const gulp           = require('gulp');
 const path           = require('path');
 const glob           = require('@edenjs/glob');
+const xtend          = require('xtend');
 const babel          = require('@babel/core');
 const babelify       = require('babelify');
 const browserify     = require('browserify');
@@ -11,6 +12,7 @@ const gulpTerser     = require('gulp-terser');
 const gulpHeader     = require('gulp-header');
 const vinylSource    = require('vinyl-source-stream');
 const vinylBuffer    = require('vinyl-buffer');
+const browserifyinc  = require('browserify-incremental');
 const gulpSourcemaps = require('gulp-sourcemaps');
 const babelPresetEnv = require('@babel/preset-env');
 
@@ -54,13 +56,18 @@ class JavascriptTask {
     }
 
     // Browserify javascript
-    let b = browserify({
+    let b = browserify(xtend(browserifyinc.args, {
       paths         : global.importLocations,
       watch         : true,
       debug         : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
       entries       : [require.resolve('@babel/polyfill'), ...await glob(files)],
       commondir     : false,
       insertGlobals : true,
+    }));
+
+    // browserifyinc
+    browserifyinc(b, {
+      cacheFile : `${global.appRoot}/.edenjs/.cache/browserify.json`,
     });
 
     // check environment

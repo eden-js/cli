@@ -21,6 +21,10 @@ class ControllersTask {
     // Set private variables
     this._runner = runner;
 
+    // set cache file
+    this._cacheFile = `${global.appRoot}/.edenjs/.cache/controllers.json`;
+    this._cachePath = `${global.appRoot}/.edenjs/.controllers`;
+
     // Bind public methods
     this.run = this.run.bind(this);
     this.watch = this.watch.bind(this);
