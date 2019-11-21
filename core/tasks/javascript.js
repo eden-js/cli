@@ -1,21 +1,4 @@
-// Require dependencies
-const fs             = require('fs-extra');
-const os             = require('os');
-const gulp           = require('gulp');
-const path           = require('path');
-const glob           = require('@edenjs/glob');
-const xtend          = require('xtend');
-const babel          = require('@babel/core');
-const babelify       = require('babelify');
-const browserify     = require('browserify');
-const gulpTerser     = require('gulp-terser');
-const gulpHeader     = require('gulp-header');
-const vinylSource    = require('vinyl-source-stream');
-const vinylBuffer    = require('vinyl-buffer');
-const browserifyinc  = require('browserify-incremental');
-const gulpSourcemaps = require('gulp-sourcemaps');
-const babelPresetEnv = require('@babel/preset-env');
-
+// loader
 const loader = require('lib/loader');
 
 // Require local dependencies
@@ -35,59 +18,10 @@ class JavascriptTask {
   constructor(runner) {
     // Set private variables
     this._runner = runner;
-    this._b = null;
 
     // Bind public methods
     this.run = this.run.bind(this);
     this.watch = this.watch.bind(this);
-  }
-
-  /**
-   * browserify files
-   *
-   * @param  {*}  files
-   *
-   * @return {Promise}
-   */
-  async _browserify(files) {
-    // check b
-    if (this._b !== null) {
-      return this._b;
-    }
-
-    // Browserify javascript
-    let b = browserify(xtend(browserifyinc.args, {
-      paths         : global.importLocations,
-      watch         : true,
-      debug         : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
-      entries       : [require.resolve('@babel/polyfill'), ...await glob(files)],
-      commondir     : false,
-      insertGlobals : true,
-    }));
-
-    // browserifyinc
-    browserifyinc(b, {
-      cacheFile : `${global.appRoot}/.edenjs/.cache/browserify.json`,
-    });
-
-    // check environment
-    b = b.transform(babelify, {
-      presets : [
-        babel.createConfigItem([babelPresetEnv, {
-          targets : {
-            browsers : config.get('browserlist'),
-          },
-          useBuiltIns : 'entry',
-        }]),
-      ],
-      sourceMaps : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
-    });
-
-    // set b
-    this._b = b;
-
-    // return b
-    return b;
   }
 
   /**
@@ -96,8 +30,74 @@ class JavascriptTask {
    * @return {Promise}
    */
   async run(files) {
-    // return promise
-    const b = await this._browserify(files);
+    // set opts
+    const opts = {
+      files,
+      js         : loader.getFiles(config.get('js')),
+      dest       : `${global.appRoot}/data/www/public/js`,
+      cache      : `${global.appRoot}/.edenjs/.cache/browserify.json`,
+      imports    : global.importLocations,
+      browsers   : config.get('browserlist'),
+      polyfill   : require.resolve('@babel/polyfill'),
+      sourceMaps : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
+
+      appRoot  : global.appRoot,
+      edenRoot : global.edenRoot,
+    };
+
+    // run in thread
+    return this._runner.thread(this.thread, opts);
+  }
+
+  /**
+   * threadded run
+   */
+  async thread(data) {
+    // require
+    const fs             = require('fs-extra');
+    const os             = require('os');
+    const gulp           = require('gulp');
+    const path           = require('path');
+    const glob           = require('@edenjs/glob');
+    const xtend          = require('xtend');
+    const babel          = require('@babel/core');
+    const babelify       = require('babelify');
+    const browserify     = require('browserify');
+    const gulpTerser     = require('gulp-terser');
+    const gulpHeader     = require('gulp-header');
+    const vinylSource    = require('vinyl-source-stream');
+    const vinylBuffer    = require('vinyl-buffer');
+    const browserifyinc  = require('browserify-incremental');
+    const gulpSourcemaps = require('gulp-sourcemaps');
+    const babelPresetEnv = require('@babel/preset-env');
+
+    // Browserify javascript
+    let b = browserify(xtend(browserifyinc.args, {
+      paths         : data.imports,
+      watch         : true,
+      debug         : data.sourcemaps,
+      entries       : [data.polyfill, ...await glob(data.files)],
+      commondir     : false,
+      insertGlobals : true,
+    }));
+
+    // browserifyinc
+    browserifyinc(b, {
+      cacheFile : data.cache,
+    });
+
+    // check environment
+    b = b.transform(babelify, {
+      presets : [
+        babel.createConfigItem([babelPresetEnv, {
+          targets : {
+            browsers : data.browsers,
+          },
+          useBuiltIns : 'entry',
+        }]),
+      ],
+      sourceMaps : data.sourcemaps,
+    });
 
     // Create browserify bundle
     const bundle = b.bundle();
@@ -108,21 +108,22 @@ class JavascriptTask {
       .pipe(vinylBuffer()); // Needed for terser, sourcemaps
 
     // Init gulpSourcemaps
-    if (config.get('environment') === 'dev' && !config.get('noSourcemaps')) {
+    if (data.sourceMaps) {
       job = job.pipe(gulpSourcemaps.init({ loadMaps : true }));
     }
 
     // Build vendor prepend
     let head = '';
-    const js = loader.getFiles(config.get('js'));
+    const {js} = data;
 
+    // run through files
     for (const file of (js || [])) {
-      if (await fs.pathExists(path.join(global.edenRoot, file))) {
-        head += (await fs.readFile(path.join(global.edenRoot, file), 'utf8')) + os.EOL;
-      } else if (await fs.pathExists(path.join(global.appRoot, 'bundles', file))) { // Legacy format
-        head += (await fs.readFile(path.join(global.appRoot, 'bundles', file), 'utf8')) + os.EOL;
-      } else if (await fs.pathExists(path.join(global.appRoot, file))) {
-        head += (await fs.readFile(path.join(global.appRoot, file), 'utf8')) + os.EOL;
+      if (await fs.pathExists(path.join(data.edenRoot, file))) {
+        head += (await fs.readFile(path.join(data.edenRoot, file), 'utf8')) + os.EOL;
+      } else if (await fs.pathExists(path.join(data.appRoot, 'bundles', file))) { // Legacy format
+        head += (await fs.readFile(path.join(data.appRoot, 'bundles', file), 'utf8')) + os.EOL;
+      } else if (await fs.pathExists(path.join(data.appRoot, file))) {
+        head += (await fs.readFile(path.join(data.appRoot, file), 'utf8')) + os.EOL;
       } else {
         throw new Error(`JS file missing: ${file}`);
       }
@@ -132,7 +133,7 @@ class JavascriptTask {
     job = job.pipe(gulpHeader(head, false));
 
     // Only minify in live
-    if (config.get('environment') !== 'dev') {
+    if (!data.sourceMaps) {
       // Pipe uglify
       job = job.pipe(gulpTerser({
         ie8      : false,
@@ -145,17 +146,12 @@ class JavascriptTask {
     }
 
     // Write gulpSourcemaps
-    if (config.get('environment') === 'dev' && !config.get('noSourcemaps')) {
+    if (data.sourceMaps) {
       job = job.pipe(gulpSourcemaps.write('.'));
     }
 
     // Pipe job
-    job = job.pipe(gulp.dest(`${global.appRoot}/data/www/public/js`));
-
-    // Restart server on end
-    job.on('end', () => {
-      this._runner.emit('page', 'reload');
-    });
+    job = job.pipe(gulp.dest(data.dest));
 
     // Wait for job to end
     await new Promise((resolve, reject) => {

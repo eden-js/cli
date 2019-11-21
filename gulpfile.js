@@ -2,14 +2,15 @@
 require('./lib/env');
 
 // Require dependencies
-const fs        = require('fs-extra');
-const Cp        = require('child_process');
-const gulp      = require('gulp');
-const glob      = require('@edenjs/glob');
-const util      = require('util');
-const fetch     = require('node-fetch');
-const config    = require('config');
-const deepMerge = require('deepmerge');
+const fs         = require('fs-extra');
+const Cp         = require('child_process');
+const gulp       = require('gulp');
+const glob       = require('@edenjs/glob');
+const util       = require('util');
+const fetch      = require('node-fetch');
+const config     = require('config');
+const deepMerge  = require('deepmerge');
+const { Worker } = require('worker_threads');
 
 // Require local dependencies
 const loader = require('lib/loader');
@@ -61,11 +62,24 @@ class Loader {
 
     // Glob tasks
     let done = [];
+    let tasks = [];
 
+    // locations
     this._locations = global.bundleLocations;
 
+    // check tasks
+    if (fs.existsSync(`${global.appRoot}/.edenjs/.cache/tasks.json`)) {
+      // parse
+      tasks = JSON.parse(fs.readFileSync(`${global.appRoot}/.edenjs/.cache/tasks.json`, 'utf8'));
+    } else {
+      // set tasks
+      tasks = glob.sync(this.files('tasks/*.js'));
+
+      // stringify
+      fs.writeFile(`${global.appRoot}/.edenjs/.cache/tasks.json`, JSON.stringify(tasks));
+    }
+
     // Get files
-    const tasks      = glob.sync(this.files('tasks/*.js'));
     const watchers   = [];
     const installers = [];
 
@@ -119,7 +133,7 @@ class Loader {
 
     // Create tasks
     gulp.task('watch', gulp.parallel(...watchers));
-    gulp.task('install', gulp.series(...installers));
+    gulp.task('install', gulp.parallel(...installers));
   }
 
   /**
@@ -249,6 +263,44 @@ class Loader {
    */
   files(files) {
     return loader.getFiles(files, this._locations);
+  }
+
+  /**
+   * thread
+   *
+   * @param {Object} data 
+   */
+  thread(logic, data) {
+    // check if logic is function
+    if (typeof logic !== 'string') {
+      // logic stringify
+      logic = logic.toString().split('\n');
+
+      // remove first/last
+      logic.pop();
+      logic.shift();
+
+      // return logic
+      logic = logic.join('\n');
+    }
+
+    // return promise
+    return new Promise((resolve, reject) => {
+      // create new worker
+      const worker = new Worker(`${global.edenRoot}/worker.js`, {
+        workerData : {
+          data,
+          logic,
+        },
+      });
+
+      // resolve
+      worker.on('error', reject);
+      worker.on('message', (message) => {
+        // resolve done
+        resolve(message.done);
+      });
+    });
   }
 
   /**

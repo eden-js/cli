@@ -18,6 +18,7 @@
 require('./lib/env');
 
 // Require dependencies
+const fs               = require('fs-extra');
 const glob             = require('@edenjs/glob');
 const chalk            = require('chalk');
 const yargs            = require('yargs');
@@ -51,7 +52,19 @@ class EdenCLI extends EventEmitter {
    */
   async build() {
     // locations
-    const cliLocations = loader.getFiles('cli/**/*.js', global.bundleLocations);
+    let locations = [];
+
+    // check tasks
+    if (fs.existsSync(`${global.appRoot}/.edenjs/.cache/cli.json`)) {
+      // parse
+      locations = JSON.parse(fs.readFileSync(`${global.appRoot}/.edenjs/.cache/cli.json`, 'utf8'));
+    } else {
+      // set tasks
+      locations = await glob(loader.getFiles('cli/**/*.js', global.bundleLocations));
+
+      // stringify
+      fs.writeFile(`${global.appRoot}/.edenjs/.cache/cli.json`, JSON.stringify(locations));
+    }
 
     // set cli commands
     let cliCommands = [];
@@ -60,7 +73,7 @@ class EdenCLI extends EventEmitter {
     const logger = this.logger();
 
     // glob import locations
-    for (const cliPath of await glob(cliLocations)) {
+    for (const cliPath of locations) {
       // eslint-disable-next-line global-require, import/no-dynamic-require
       const cliModule = require(cliPath);
 

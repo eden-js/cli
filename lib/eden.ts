@@ -45,6 +45,7 @@ class Eden {
     this.ready = this.ready.bind(this);
     this.require = this.require.bind(this);
     this.register = this.register.bind(this);
+    this.background = this.background.bind(this);
     this.controller = this.controller.bind(this);
 
     // Bind event methods
@@ -194,6 +195,43 @@ class Eden {
 
     // Return this
     return this;
+  }
+  /**
+   * thread
+   *
+   * @param {Object} data 
+   */
+  background(logic, data) {
+    // check if logic is function
+    if (typeof logic !== 'string') {
+      // logic stringify
+      logic = logic.toString().split('\n');
+
+      // remove first/last
+      logic.pop();
+      logic.shift();
+
+      // return logic
+      logic = logic.join('\n');
+    }
+
+    // return promise
+    return new Promise((resolve, reject) => {
+      // create new worker
+      const worker = new Worker(`${global.edenRoot}/worker.js`, {
+        workerData : {
+          data,
+          logic,
+        },
+      });
+
+      // resolve
+      worker.on('error', reject);
+      worker.on('message', (message) => {
+        // resolve done
+        resolve(message.done);
+      });
+    });
   }
 
   /**

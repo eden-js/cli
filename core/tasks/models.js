@@ -1,7 +1,3 @@
-// Require dependencies
-const glob = require('@edenjs/glob');
-const path = require('path');
-
 /**
  * Create Models Task class
  *
@@ -23,25 +19,44 @@ class ModelsTask {
   }
 
   /**
+   * run in background
+   *
+   * @param {*} files 
+   */
+  async run(files) {
+    // run models in background
+    await this._runner.thread(this.thread, {
+      files,
+
+      appRoot : global.appRoot,
+    });
+
+    // Restart server
+    this._runner.restart();
+  }
+
+  /**
    * Run assets task
    *
    * @param   {array} files
    */
-  async run(files) {
+  async thread(data) {
+    // Require dependencies
+    const fs   = require('fs-extra');
+    const glob = require('@edenjs/glob');
+    const path = require('path');
+
     // Loop models
     const models = {};
 
     // loop models
-    for (const model of await glob(files)) {
+    for (const model of await glob(data.files)) {
       // add to models
       models[path.basename(model).split('.')[0].toLowerCase()] = model;
     }
 
     // Write models cache file
-    await this._runner.write('models', models);
-
-    // Restart server
-    this._runner.restart();
+    await fs.writeJson(`${data.appRoot}/data/cache/models.json`, models);
   }
 
   /**
