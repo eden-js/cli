@@ -1,43 +1,5 @@
-// Require dependencies
-const fs             = require('fs-extra');
-const os             = require('os');
-const Path           = require('path');
-const glob           = require('@edenjs/glob');
-const gulp           = require('gulp');
-const gulpRename     = require('gulp-rename');
-const gulpSass       = require('gulp-dart-sass');
-const gulpPrefix     = require('gulp-autoprefixer');
-const gulpSourcemaps = require('gulp-sourcemaps');
-const vinylSource    = require('vinyl-source-stream');
-const vinylBuffer    = require('vinyl-buffer');
-
 // Require local dependencies
 const config = require('config');
-
-function customImporter(url) {
-  if (url[0] !== '~') return null;
-  const filePath = url.substr(1);
-
-  let location = null;
-
-  if (location === null) try { location = require.resolve(`${filePath}.css`); } catch (err) { /* */ }
-
-  if (location === null) try { location = require.resolve(`${filePath}.scss`); } catch (err) { /* */ }
-
-  // Make `~example/files/file` also find `example/files/_file.scss`
-  if (location === null) {
-    try {
-      const slashPos = filePath.lastIndexOf('/') + 1;
-      location = require.resolve(`${filePath.substring(0, slashPos)}_${filePath.substring(slashPos, filePath.length)}.scss`);
-    } catch (err) { /* */ }
-  }
-
-  if (location !== null) {
-    return { file : location };
-  }
-
-  return null;
-}
 
 /**
  * Create SASS Task class
@@ -60,22 +22,95 @@ class SASSTask {
   }
 
   /**
+   * run in background
+   *
+   * @param {*} files 
+   */
+  async run(files) {
+    // run models in background
+    await this._runner.thread(this.thread, {
+      files,
+
+      sass       : config.get('sass') || [],
+      paths      : global.importLocations.map((i) => `${i}/node_modules`),
+      appRoot    : global.appRoot,
+      variables  : this._runner.files('public/scss/variables.scss'),
+      bootstrap  : this._runner.files('public/scss/bootstrap.scss'),
+      sourceMaps : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
+    });
+
+    // reload js
+    this._runner.emit('scss', 'reload');
+  }
+
+  /**
    * Run sass task
    *
    * @returns {Promise}
    */
-  async run() {
+  async thread(data) {
+    // require dependencies
+    const fs             = require('fs-extra');
+    const os             = require('os');
+    const Path           = require('path');
+    const glob           = require('@edenjs/glob');
+    const gulp           = require('gulp');
+    const gulpSass       = require('gulp-dart-sass');
+    const gulpRename     = require('gulp-rename');
+    const gulpPrefix     = require('gulp-autoprefixer');
+    const vinylSource    = require('vinyl-source-stream');
+    const vinylBuffer    = require('vinyl-buffer');
+    const { addPath }    = require('app-module-path');
+    const gulpSourcemaps = require('gulp-sourcemaps');
+
+    // add path
+    for (const path of data.paths) {
+      addPath(path);
+    }
+
+    // create custom importer
+    const customImporter = (url) => {
+      // return null for normal importer
+      if (url[0] !== '~') return null;
+
+      // file path minus tilda
+      const filePath = url.substr(1);
+
+      // location null
+      let location = null;
+
+      // try to resolve
+      try { location = require.resolve(`${filePath}.css`); } catch (err) { /* */ }
+      try { location = require.resolve(`${filePath}.scss`); } catch (err) { /* */ }
+
+      // Make `~example/files/file` also find `example/files/_file.scss`
+      if (location === null) {
+        try {
+          const slashPos = filePath.lastIndexOf('/') + 1;
+          location = require.resolve(`${filePath.substring(0, slashPos)}_${filePath.substring(slashPos, filePath.length)}.scss`);
+        } catch (err) { /* */ }
+      }
+
+      // return location if not null
+      if (location) {
+        return { file : location };
+      }
+
+      // return null
+      return null;
+    };
+
     // Grab gulp source for sass. Create local variables array for sass files
-    const sassFiles = this._runner.files('public/scss/variables.scss').reverse();
+    const sassFiles = data.variables.reverse();
 
     // Load sass
-    const configSass = config.get('sass') || [];
+    const configSass = data.sass;
 
     // Add config sass files
-    sassFiles.push(...configSass.map(p => Path.join(global.appRoot, p)));
+    sassFiles.push(...configSass.map(p => Path.join(data.appRoot, p)));
 
     // Push local bootstrap files
-    sassFiles.push(...this._runner.files('public/scss/bootstrap.scss'));
+    sassFiles.push(...data.bootstrap);
 
     // Create body for main file
     let body = '';
@@ -96,7 +131,7 @@ class SASSTask {
     job = job.pipe(vinylBuffer());
 
     // Init gulpSourcemaps
-    if (config.get('environment') === 'dev' && !config.get('noSourcemaps')) {
+    if (data.sourceMaps) {
       job = job.pipe(gulpSourcemaps.init());
     }
 
@@ -107,7 +142,7 @@ class SASSTask {
     }));
 
     // check for production
-    if (config.get('environment') === 'production') {
+    if (!data.sourceMaps) {
       job = job.pipe(gulpPrefix({
         browsers : config.get('browserlist'),
       }));
@@ -117,11 +152,11 @@ class SASSTask {
     job = job.pipe(gulpRename('app.min.css'));
 
     // Write gulpSourcemaps
-    if (config.get('environment') === 'dev' && !config.get('noSourcemaps')) {
+    if (data.sourceMaps) {
       job = job.pipe(gulpSourcemaps.write('.'));
     }
 
-    job = job.pipe(gulp.dest(`${global.appRoot}/data/www/public/css`));
+    job = job.pipe(gulp.dest(`${data.appRoot}/data/www/public/css`));
 
     // Wait for job to end
     await new Promise((resolve, reject) => {
@@ -129,9 +164,6 @@ class SASSTask {
       job.once('end', () => {
         // resolve
         resolve();
-
-        // reload js
-        this._runner.emit('scss', 'reload');
       });
       job.once('error', reject);
     });
