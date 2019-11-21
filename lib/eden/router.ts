@@ -195,7 +195,7 @@ export default class EdenRouter {
         limit    : config.get('upload.limit') || '50mb',
         extended : true,
       }));
-      app.use(express.static(`${global.appRoot}/data/www`));
+      app.use(express.static(`${global.appRoot}/www`));
       app.use(session({
         key   : config.get('session.key') || 'eden.session.id',
         genid : uuid,

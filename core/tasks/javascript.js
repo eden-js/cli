@@ -34,7 +34,7 @@ class JavascriptTask {
     const opts = {
       files,
       js         : loader.getFiles(config.get('js')),
-      dest       : `${global.appRoot}/data/www/public/js`,
+      dest       : `${global.appRoot}/www/public/js`,
       cache      : `${global.appRoot}/.edenjs/.cache/browserify.json`,
       imports    : global.importLocations,
       browsers   : config.get('browserlist'),

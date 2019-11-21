@@ -37,7 +37,7 @@ class SASSTask {
       variables  : this._runner.files('public/scss/variables.scss'),
       bootstrap  : this._runner.files('public/scss/bootstrap.scss'),
       sourceMaps : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
-    });
+    }, true);
 
     // reload js
     this._runner.emit('scss', 'reload');
@@ -156,7 +156,7 @@ class SASSTask {
       job = job.pipe(gulpSourcemaps.write('.'));
     }
 
-    job = job.pipe(gulp.dest(`${data.appRoot}/data/www/public/css`));
+    job = job.pipe(gulp.dest(`${data.appRoot}/www/public/css`));
 
     // Wait for job to end
     await new Promise((resolve, reject) => {

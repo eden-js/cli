@@ -58,8 +58,6 @@ class Loader {
    * This has to be a sync method because gulp won't change core to allow async task loading
    */
   build() {
-    fs.ensureDirSync(`${global.appRoot}/data/cache`);
-
     // Glob tasks
     let done = [];
     let tasks = [];
@@ -270,7 +268,7 @@ class Loader {
    *
    * @param {Object} data 
    */
-  thread(logic, data) {
+  thread(logic, data, noLogging) {
     // check if logic is function
     if (typeof logic !== 'string') {
       // logic stringify
@@ -292,6 +290,8 @@ class Loader {
           data,
           logic,
         },
+        stdout : noLogging,
+        stderr : noLogging,
       });
 
       // resolve

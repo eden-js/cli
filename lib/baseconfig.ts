@@ -18,7 +18,7 @@ function getBaseConfig(config) {
   baseConfig.environment = 'dev';
   baseConfig.logLevel = deffed(config.get('environment'), baseConfig.environment) === 'dev' ? 'debug' : 'info';
 
-  baseConfig.logo = '/data/www/public/assets/images/logo.svg';
+  baseConfig.logo = '/www/public/assets/images/logo.svg';
 
   baseConfig.noSourcemaps = false;
 

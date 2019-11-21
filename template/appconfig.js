@@ -19,7 +19,7 @@ config.version = '0.1.0';
 config.environment = 'dev';
 config.logLevel = config.environment === 'dev' ? 'debug' : 'info';
 
-config.logo = '/data/www/public/assets/images/logo.svg';
+config.logo = '/www/public/assets/images/logo.svg';
 
 config.noSourcemaps = false;
 
