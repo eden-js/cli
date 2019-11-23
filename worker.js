@@ -6,14 +6,13 @@ const { workerData, parentPort } = require('worker_threads');
 global.data = workerData.data;
 global.require = require;
 
-// check require
-if (global.data.require) {
-  // loop
-  for (key in global.data.require) {
-    // require
-    global[key] = require(global.data.require[key]);
-  }
-}
+// create send
+global.emitEvent = (...args) => {
+  // post message
+  parentPort.postMessage({
+    event : args,
+  });
+};
 
 // do job
 const result = vm.runInThisContext(`(async() => { ${workerData.logic} })()`, {

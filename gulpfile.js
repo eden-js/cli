@@ -268,7 +268,7 @@ class Loader {
    *
    * @param {Object} data 
    */
-  thread(logic, data, noLogging) {
+  thread(logic, data, noLogging, e) {
     // check if logic is function
     if (typeof logic !== 'string') {
       // logic stringify
@@ -297,8 +297,15 @@ class Loader {
       // resolve
       worker.on('error', reject);
       worker.on('message', (message) => {
-        // resolve done
-        resolve(message.done);
+        // check done
+        if (!message.event) {
+          // resolve done
+          return resolve(message.done);
+        }
+        // check event
+        if (message.event && e) {
+          e(...message.event);
+        }
       });
       worker.on('exit', (code) => {
         // check code

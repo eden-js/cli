@@ -11,9 +11,8 @@ yarn.lock
 node_modules/
 
 # edenjs stuff
-data/
+.edenjs/
 config.js
-edenappconfig.js
 
 # IDE
 .idea

@@ -1,14 +1,14 @@
 
 // bind dependencies
-const config     = require('config');
-const Controller = require('controller');
+import config     from 'config';
+import Controller from 'controller';
 
 /**
- * build $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()} controller
+ * build #!name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()!# controller
  *
  * @mount  /
  */
-class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}Controller extends Controller {
+export default class #!name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()!#Controller extends Controller {
   /**
    * construct Design controller
    */
@@ -123,7 +123,7 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}Controller
   async manifestAction(req, res) {
     // return JSON
     res.json({
-      name  : '$${model}',
+      name  : '#!name!#',
       icons : [
         {
           src     : `${config.get('cdn.url') || '/'}public/assets/icons/android-icon-36x36.png`,
@@ -193,10 +193,3 @@ class $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}Controller
     res.end();
   }
 }
-
-/**
- * export $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()} controller
- *
- * @type {$${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}Controller}
- */
-exports = module.exports = $${model.charAt(0).toUpperCase() + model.slice(1).toLowerCase()}Controller;

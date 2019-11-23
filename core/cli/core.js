@@ -8,7 +8,6 @@ const prettyTime = require('pretty-hrtime');
 const extractComments = require('extract-comments');
 
 // initialization logic
-const initEden = require('lib/utilities/init');
 const packageJSON = require('../../package.json');
 
 // Set yargs colors
@@ -42,10 +41,6 @@ class EdenCore extends Events {
       command : this.runCommand.bind(this),
       handler : this.runHandler.bind(this),
     };
-    this.init = {
-      command : this.initCommand.bind(this),
-      handler : this.initHandler.bind(this),
-    };
   }
 
 
@@ -66,7 +61,7 @@ class EdenCore extends Events {
     this._logger = logger;
 
     // add namespaced commands
-    return Promise.all(['base', 'start', 'run', 'init'].map((namespace) => {
+    return Promise.all(['base', 'start', 'run'].map((namespace) => {
       // return command
       return this[namespace].command(yy);
     }));
@@ -238,60 +233,6 @@ class EdenCore extends Events {
         }
       });
     });
-  }
-
-
-  // ////////////////////////////////////////////////////////////////////////////
-  //
-  //  INIT METHODS
-  //
-  // ////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Init Command function
-   *
-   * @param {yargs} yy
-   */
-  initCommand(yy) {
-    // command description
-    const command = 'init [dirType]';
-    const description = 'Initialize new or fix existing EdenJS directory.';
-
-    // create command
-    yy.command(command, description, () => {
-      // return build command
-      return yy
-        .positional('dirType', {
-          desc : 'EdenJS directory type',
-          type : 'string',
-        })
-        .choices('dirType', ['app', 'module', 'none'])
-        .option('migrateGit', {
-          alias    : 'g',
-          describe : 'Migrate .git directory if misplaced in current directory',
-        });
-    });
-
-    // return
-    return {
-      command,
-      description,
-
-      run : this.init.handler,
-    };
-  }
-
-  /**
-   * Init handler function
-   *
-   * @param {Object} args
-   */
-  async initHandler(args) {
-    // init eden
-    const res = await initEden(args.dirType, args.migrateGit);
-
-    // log initialized
-    this._logger.log('info', `[${chalk.green('init')}] Finished initializing type: ${res}`);
   }
 }
 

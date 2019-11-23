@@ -37,6 +37,7 @@ class JavascriptTask {
       dest       : `${global.appRoot}/www/public/js`,
       cache      : `${global.appRoot}/.edenjs/.cache/browserify.json`,
       imports    : global.importLocations,
+      requires   : config.get('view.require') || [],
       browsers   : config.get('browserlist'),
       polyfill   : require.resolve('@babel/polyfill'),
       sourceMaps : config.get('environment') === 'dev' && !config.get('noSourcemaps'),
@@ -74,7 +75,6 @@ class JavascriptTask {
     // Browserify javascript
     let b = browserify(xtend(browserifyinc.args, {
       paths         : data.imports,
-      watch         : true,
       debug         : data.sourcemaps,
       entries       : [data.polyfill, ...await glob(data.files)],
       commondir     : false,
@@ -85,6 +85,14 @@ class JavascriptTask {
     browserifyinc(b, {
       cacheFile : data.cache,
     });
+
+    // requires
+    if (data.requires && data.sourceMaps) {
+      // requires
+      data.requires.forEach((r) => {
+        b.require(r);
+      });
+    }
 
     // check environment
     b = b.transform(babelify, {

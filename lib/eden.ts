@@ -196,12 +196,13 @@ class Eden {
     // Return this
     return this;
   }
+
   /**
    * thread
    *
    * @param {Object} data 
    */
-  background(logic, data) {
+  background(logic, data, e) {
     // check if logic is function
     if (typeof logic !== 'string') {
       // logic stringify
@@ -228,8 +229,15 @@ class Eden {
       // resolve
       worker.on('error', reject);
       worker.on('message', (message) => {
-        // resolve done
-        resolve(message.done);
+        // check done
+        if (!message.event) {
+          // resolve done
+          return resolve(message.done);
+        }
+        // check event
+        if (message.event && e) {
+          e(...message.event);
+        }
       });
     });
   }

@@ -1,0 +1,49 @@
+{
+  "name": "#!name!#",
+  "description": "",
+  "version": "0.0.1",
+  "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.6.2",
+    "@babel/plugin-transform-typescript": "^7.6.0",
+    "@edenjs/admin": "^1.2.15",
+    "@edenjs/alert": "^1.0.2",
+    "@edenjs/asset": "^2.0.7",
+    "@edenjs/cache": "^1.0.0",
+    "@edenjs/cms": "^1.3.13",
+    "@edenjs/email": "^1.1.1",
+    "@edenjs/form": "^1.3.7",
+    "@edenjs/glob": "^1.0.0",
+    "@edenjs/grid": "^1.1.1",
+    "@edenjs/locale": "^2.0.11",
+    "@edenjs/menu": "^1.2.2",
+    "@edenjs/meta": "^1.0.0",
+    "@edenjs/pubsub-redis": "^1.2.2",
+    "@edenjs/riot": "^2.0.10",
+    "@edenjs/router": "^2.1.5",
+    "@edenjs/serviceworker": "^2.1.0",
+    "@edenjs/socket": "^2.3.2",
+    "@edenjs/user": "^1.1.1",
+    "bootstrap": "^4.3.1",
+    "dot-prop": "^5.1.0",
+    "jquery": "^3.4.1",
+    "popper.js": "^1.15.0",
+    "uuid": "^3.3.2",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "engines": {
+    "node": ">= 8.0.0"
+  },
+  "scripts": {
+    "run": "edenjs run",
+    "start": "edenjs start",
+    "build" : "edenjs run install"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "@edenjs/eslint-config-eden": "^2.0.14",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.17.2",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.12.4"
+  }
+}

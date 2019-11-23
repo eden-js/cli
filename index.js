@@ -14,6 +14,9 @@
   ╚══════╝╚═════╝ ╚══════╝╚═╝  ╚═══╝ ╚════╝ ╚══════╝
 */
 
+// setup globals
+global.isCLI = true;
+
 // Require environment
 require('./lib/env');
 
@@ -28,9 +31,6 @@ const { EventEmitter } = require('events');
 // Require internal utils
 const log    = require('lib/utilities/log');
 const loader = require('lib/loader');
-
-// setup globals
-global.isCLI = true;
 
 /**
  * create eden CLI
@@ -57,8 +57,11 @@ class EdenCLI extends EventEmitter {
     // check tasks
     if (fs.existsSync(`${global.appRoot}/.edenjs/.cache/cli.json`)) {
       // parse
-      locations = JSON.parse(fs.readFileSync(`${global.appRoot}/.edenjs/.cache/cli.json`, 'utf8'));
-    } else {
+      try {
+        locations = JSON.parse(fs.readFileSync(`${global.appRoot}/.edenjs/.cache/cli.json`, 'utf8'));
+      } catch (e) {}
+    }
+    if (!locations.length) {
       // set tasks
       locations = await glob(loader.getFiles('cli/**/*.js', global.bundleLocations));
 
