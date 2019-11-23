@@ -8,6 +8,7 @@ const prettyTime = require('pretty-hrtime');
 const extractComments = require('extract-comments');
 
 // initialization logic
+const env = require('../../lib/env');
 const packageJSON = require('../../package.json');
 
 // Set yargs colors
@@ -142,6 +143,9 @@ class EdenCore extends Events {
   startHandler() {
     // setup globals
     global.isCLI = false;
+
+    // register
+    env.register();
 
     // require base app
     const App = require(path.join(global.edenRoot, 'app.js')); // eslint-disable-line global-require, import/no-dynamic-require

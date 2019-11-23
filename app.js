@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+// false
+global.isCLI = false;
+
 // Require environment
 require('./lib/env');
 
