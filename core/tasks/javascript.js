@@ -72,10 +72,20 @@ class JavascriptTask {
     const gulpSourcemaps = require('gulp-sourcemaps');
     const babelPresetEnv = require('@babel/preset-env');
 
+    // get js
+    const { js } = data;
+
     // Browserify javascript
     let b = browserify(xtend(browserifyinc.args, {
-      paths         : data.imports,
-      debug         : data.sourcemaps,
+      paths  : data.imports,
+      debug  : data.sourcemaps,
+      ignore : (js || []).map((item) => {
+        // check item
+        if (item.indexOf('!') === 0) {
+          // return item
+          return item.substring(1);
+        }
+      }).filter(item => item),
       entries       : [data.polyfill, ...await glob(data.files)],
       commondir     : false,
       insertGlobals : true,
@@ -122,10 +132,11 @@ class JavascriptTask {
 
     // Build vendor prepend
     let head = '';
-    const {js} = data;
 
     // run through files
     for (const file of (js || [])) {
+      if (file.indexOf('!') === 0) continue;
+
       if (await fs.pathExists(path.join(data.edenRoot, file))) {
         head += (await fs.readFile(path.join(data.edenRoot, file), 'utf8')) + os.EOL;
       } else if (await fs.pathExists(path.join(data.appRoot, 'bundles', file))) { // Legacy format

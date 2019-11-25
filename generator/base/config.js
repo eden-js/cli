@@ -120,13 +120,19 @@ config.email = {
 // Set scss imports
 // These are imported into app.min.css by default
 config.sass = [
-  
+  './node_modules/bootstrap/scss/bootstrap.scss',
+
 ];
 
 // Set js imports
 // These are imported into app.min.js at the top
 config.js = [
-  
+  './node_modules/whatwg-fetch/dist/fetch.umd.js',
+  './node_modules/jquery/dist/jquery.min.js',
+  './node_modules/popper.js/dist/umd/popper.min.js',
+  './node_modules/bootstrap/dist/js/bootstrap.js',
+
+  '!jQuery',
 ];
 
 
