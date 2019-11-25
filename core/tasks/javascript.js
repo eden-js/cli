@@ -108,6 +108,7 @@ class JavascriptTask {
     b = b.transform(babelify, {
       presets : [
         babel.createConfigItem([babelPresetEnv, {
+          corejs  : 3,
           targets : {
             browsers : data.browsers,
           },
