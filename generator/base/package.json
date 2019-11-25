@@ -19,7 +19,7 @@
     "@edenjs/meta": "^1.0.0",
     "@edenjs/model": "^1.12.4",
     "@edenjs/pubsub-redis": "^1.2.2",
-    "@edenjs/riot": "^4.0.3",
+    "@edenjs/riot": "^4.0.4",
     "@edenjs/router": "^2.1.5",
     "@edenjs/serviceworker": "^2.1.0",
     "@edenjs/socket": "^2.3.2",
