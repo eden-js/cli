@@ -20,11 +20,11 @@ import log from 'lib/utilities/log';
 import pack from '../package.json';
 
 // Require cached resources
-const hooks     = [...(cache('controller.hooks')), ...(cache('daemon.hooks'))];
+const hooks     = [...(cache('controller.hooks', [])), ...(cache('daemon.hooks', []))];
 const models    = cache('models');
-const events    = [...(cache('controller.events')), ...(cache('daemon.events'))];
+const events    = [...(cache('controller.events', [])), ...(cache('daemon.events', []))];
 const daemons   = cache('daemons');
-const endpoints = [...(cache('controller.endpoints')), ...(cache('daemon.endpoints'))];
+const endpoints = [...(cache('controller.endpoints', [])), ...(cache('daemon.endpoints', []))];
 
 /**
  * Create Eden class

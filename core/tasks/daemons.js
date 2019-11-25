@@ -155,7 +155,7 @@ class DaemonsTask {
     // Loop types in config
     for (const type of Object.keys(config)) {
       // Write config file
-      fs.writeJson(`${data.appRoot}/.edenjs/.cache/${type}.json`, config[type]);
+      await fs.writeJson(`${data.appRoot}/.edenjs/.cache/${type}.json`, config[type]);
     }
   }
 

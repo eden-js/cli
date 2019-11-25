@@ -24,7 +24,7 @@
     "@edenjs/serviceworker": "^2.1.0",
     "@edenjs/socket": "^2.3.2",
     "@edenjs/sync": "^1.0.0",
-    "@edenjs/user": "^2.0.0",
+    "@edenjs/user": "^2.0.1",
     "babel-plugin-add-module-exports": "^1.0.2",
     "bootstrap": "^4.3.1",
     "dot-prop": "^5.1.0",
