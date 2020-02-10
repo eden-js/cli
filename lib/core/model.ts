@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable consistent-return */
 // Require class dependencies
-import { DbModel } from '@edenjs/model';
+import EdenModel from '@edenjs/model';
 
 // Require local dependencies
 import eden from 'eden';
@@ -10,7 +10,7 @@ import dotProp from 'dot-prop';
 /**
  * Create Model class
  */
-export default class Model extends DbModel {
+export default class Model extends EdenModel {
   /**
    * Construct Model class
    *
@@ -56,7 +56,7 @@ export default class Model extends DbModel {
    * @param  {User} by
    * @param  {*}    args
    *
-   * @return {Promise<DbModel>}
+   * @return {Promise<EdenModel>}
    *
    * @async
    */
@@ -95,7 +95,7 @@ export default class Model extends DbModel {
    * @param  {User} by
    * @param  {*}    args
    *
-   * @return {Promise<DbModel>}
+   * @return {Promise<EdenModel>}
    *
    * @async
    */
@@ -372,7 +372,7 @@ export default class Model extends DbModel {
    */
   __sanitise(field) {
     // Check field
-    if (!(field instanceof DbModel)) return field;
+    if (!(field instanceof EdenModel)) return field;
 
     // Check field has id
     if (!field.get('_id')) return false;
@@ -416,9 +416,9 @@ export default class Model extends DbModel {
       }));
     }
 
-    if (value instanceof DbModel || typeof value === 'object') {
+    if (value instanceof EdenModel || typeof value === 'object') {
       // Set is core
-      const isCore = value instanceof DbModel;
+      const isCore = value instanceof EdenModel;
 
       // Check keys
       if (!keys || !keys.length) {

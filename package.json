@@ -1,7 +1,7 @@
 {
   "name": "@edenjs/cli",
   "description": "Web Application Framework built on Express.js and Redis",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "bin": {
     "edenjs": "./index.js"
   },
@@ -42,7 +42,7 @@
     "@babel/preset-typescript": "^7.6.0",
     "@babel/register": "^7.6.2",
     "@edenjs/glob": "^1.0.0",
-    "@edenjs/model": "^1.12.4",
+    "@edenjs/model": "^2.1.0",
     "@edenjs/session-store": "0.0.2",
     "app-module-path": "^2.2.0",
     "babel-plugin-add-module-exports": "^1.0.2",

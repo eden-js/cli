@@ -1057,7 +1057,8 @@ class Eden {
     // initialize database
     try {
       // Connects to database
-      const plug = new (EdenModel.plugs[config.get('database.plug')])(config.get('database.config'));
+      const Plug = require(config.get('database.plug'));
+      const plug = new Plug(config.get('database.config'));
 
       // Log registering
       this.logger.log('info', 'Registering database', {
@@ -1065,7 +1066,7 @@ class Eden {
       });
 
       // Construct database with plug
-      this.database = new EdenModel.Db(plug);
+      await EdenModel.init(plug);
 
       // Loop models
       for (const key of Object.keys(models)) {
@@ -1073,7 +1074,7 @@ class Eden {
         const Model = model(key);
 
         // Register Model
-        await this.database.register(Model);
+        await EdenModel.register(Model);
 
         // Await initialize
         await Model.initialize();
@@ -1083,7 +1084,7 @@ class Eden {
       this.logger.log('info', 'Registered database', {
         class : 'Eden',
       });
-    } catch (e) { this.looger.log('error', e); }
+    } catch (e) { console.log(e); this.looger.log('error', e); }
 
     // unlock db register
     unlock();
