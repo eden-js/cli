@@ -260,7 +260,10 @@ class Loader {
    * @param {Array} files
    */
   files(files) {
-    return loader.getFiles(files, this._locations);
+    // return not included
+    return [...(loader.getFiles(files, this._locations).filter(i => !(config.get('ignore') || []).find(c => i.includes(c)))), ...(config.get('ignore') || []).map((i) => {
+      return `!${i}/*/**`;
+    })];
   }
 
   /**
