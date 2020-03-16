@@ -81,7 +81,7 @@
     "watchify": "^3.11.1",
     "winston": "^3.2.1",
     "yargonaut": "^1.1.4",
-    "yargs": "^13.2.4"
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
     "@edenjs/eslint-config-eden": "^2.0.14",
