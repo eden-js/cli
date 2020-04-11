@@ -1,17 +1,13 @@
 
 // Require dependencies
-import uuid from 'uuid';
 import error from 'serialize-error';
+import Events from 'events';
 import config from 'config';
 import dotProp from 'dot-prop-immutable';
-
-// Require class dependencies
-import Events from 'events';
-
-// Require local dependencies
-const { Console } = require('winston').transports;
 import EdenModel from '@edenjs/model';
 import { Logger } from 'winston';
+import { Console } from 'winston/transports';
+import { v5 as uuid } from 'uuid';
 
 // Require local dependencies
 import log from 'lib/utilities/log';

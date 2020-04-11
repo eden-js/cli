@@ -1,7 +1,6 @@
 // Require dependencies
 import eden from 'eden';
 import sirv from 'sirv';
-import uuid from 'uuid';
 import polka from 'polka';
 import config from 'config';
 import multer from 'multer';
@@ -12,6 +11,7 @@ import polkaCompat from 'polka-compat';
 import responseTime from 'response-time';
 import cookieParser from 'cookie-parser';
 import SessionStore from '@edenjs/session-store';
+import { v5 as uuid } from 'uuid';
 
 // Require helpers
 const aclHelper = helper('user/acl');
