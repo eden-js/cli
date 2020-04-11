@@ -187,7 +187,7 @@ class EdenGenerator extends Events {
     // name
     const name   = args.name || 'EdenJS';
     const port   = args.port || '6969';
-    const hash   = args.hash || uuid.v5();
+    const hash   = args.hash || uuid.v4();
     const domain = args.domain || 'edenjs.com';
 
     // generate base files

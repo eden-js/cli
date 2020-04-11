@@ -11,7 +11,7 @@ import polkaCompat from 'polka-compat';
 import responseTime from 'response-time';
 import cookieParser from 'cookie-parser';
 import SessionStore from '@edenjs/session-store';
-import { v5 as uuid } from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 // Require helpers
 const aclHelper = helper('user/acl');

@@ -5,9 +5,11 @@ import Events from 'events';
 import config from 'config';
 import dotProp from 'dot-prop-immutable';
 import EdenModel from '@edenjs/model';
-import { Logger } from 'winston';
-import { Console } from 'winston/transports';
-import { v5 as uuid } from 'uuid';
+import { v4 as uuid } from 'uuid';
+import { Logger, transports } from 'winston';
+
+// set transports
+const { Console } = transports;
 
 // Require local dependencies
 import log from 'lib/utilities/log';
