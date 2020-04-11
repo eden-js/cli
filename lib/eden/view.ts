@@ -56,36 +56,37 @@ class View {
   /**
    * Render view
    *
-   * @param  {string}    path
-   * @param  {object}    options
-   * @param  {function}  callback
+   * @param  {string} path
+   * @param  {object} opts
    *
    * @return {*}
    */
-  async render(path, options, callback) {
-    // Load req and res
-    const { res } = options;
-    const { req } = res;
-
-    // Create remove array
-    const remove = [
-      'i18n', 'res', 'page', 'route', 'layout', '_locals', 'settings', 'head', 'routeStart', 'url', 'path', 'isJSON', 'timer',
-    ];
+  async render({ req, res, next }, page, opts) {
+    // add locals
+    opts = Object.assign({}, res.locals, opts);
 
     // Set route
-    const route = options.route || {};
+    const { route } = req;
 
     // Run view route hook
     await eden.hook('view.route', route);
 
     // Set render Object
     const render = {
-      page  : options.page,
+      state : opts,
+
+      // mount specific logic
+      page : {
+        head  : res.head,
+        foot  : res.foot,
+        style : res.style,
+        title : opts.title || route.title,
+      },
       mount : {
-        url    : options.url,
-        path   : options.path || '404',
-        page   : path,
-        layout : (options.layout || route.layout || 'main'),
+        page,
+        url    : req.originalUrl,
+        path   : route.path  || '404',
+        layout : opts.layout || route.layout || 'main',
       },
       config : {
         cdn       : config.get('cdn') || false,
@@ -95,58 +96,43 @@ class View {
         socket    : config.get('socket'),
         direction : config.get('direction') || 2,
       },
-      isJSON  : req.isJSON,
-      session : req.sessionID,
+
+      // other variables
+      timer  : req.timer,
+      isJSON : req.isJSON,
+
+      // other mounts
+      helpers : {},
     };
 
-    // Set render timer
-    render.timer = options.timer;
-
-    // Check menus
-    if (options.title) render.page.title = options.title;
-
     // Log timing
-    eden.logger.log('debug', `${options.path} route in ${new Date().getTime() - render.timer.start}ms`, {
+    eden.logger.log('debug', `${opts.path} route in ${new Date().getTime() - render.timer.start}ms`, {
       class : (route && route.method) ? `${route.method.toUpperCase()} ${route.file}.${route.fn}` : 'No Route',
     });
 
-    // Create state
-    const state = {};
-
-    // Loop options
-    for (const key of Object.keys(options)) {
-      // Check if in remove
-      if (!remove.includes(key)) {
-        // Add to state
-        state[key] = options[key];
-      }
-    }
-
     // Run view state hook
-    await eden.hook('view.state', state);
+    await eden.hook('view.compile', { req, res, page, render, opts }, () => {
 
-    // Set page state
-    render.req = req;
-    render.state = state;
+    });
 
-    // Run view compile hook
-    await eden.hook('view.compile', render);
+    // check json
+    if (render.isJSON) {
+      // delete
+      ['timer', 'config', 'helpers'].forEach((key) => {
+        delete render[key];
+      });
 
-    // Delete req
-    delete render.req;
-
-    // Check if is JSON
-    if (options.isJSON) {
-      // Sanitise for JSON
-      delete render.timer;
-      delete render.config;
-      delete render.session;
+      // set done
+      let done = null;
 
       // Run view json hook
-      await eden.hook('view.json', render);
+      await eden.hook('view.json', { req, res, page, render, opts }, () => {
+        // stringify
+        done = JSON.stringify(render);
+      });
 
-      // Run callback
-      return callback(null, JSON.stringify(render));
+      // return done
+      return done;
     }
 
     // Set render timer
@@ -154,28 +140,24 @@ class View {
 
     // Do try/catch
     try {
-      // Set page
-      let page = '<!DOCTYPE html>';
-
-      // Add to page
-      page += `<html lang="${options.language}">`;
-      page += '<head>';
+      // start page
+      let page = `<!DOCTYPE html><html lang="${opts.language}"><head>`;
 
       // Set head
       let head = '';
 
       // Run view head hook
-      await eden.hook('view.head', head, () => {
+      await eden.hook('view.head', { req, res, page, render, opts, head }, () => {
         // Add to head
         head += '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 
         // Check config
         if (config.get('direction') === 0) {
-          head += `<title>${render.page.title ? render.page.title : render.config.title}</title>`;
+          head += `<title>${opts.title}</title>`;
         } else if (config.get('direction') === 1) {
-          head += `<title>${render.config.title}${render.page.title ? ` | ${render.page.title}` : ''}</title>`;
+          head += `<title>${render.config.title}${opts.title ? ` | ${opts.title}` : ''}</title>`;
         } else {
-          head += `<title>${render.page.title ? `${render.page.title} | ` : ''}${render.config.title}</title>`;
+          head += `<title>${opts.title ? `${opts.title} | ` : ''}${render.config.title}</title>`;
         }
 
         // Continue head
@@ -187,26 +169,19 @@ class View {
 
       // Add head to page
       page += `${head}</head>`;
-      page += `<body${render.page.class ? ` class="${render.page.class}"` : ''}>`;
+      page += `<body${res.class ? ` class="${res.class}"` : ''}>`;
 
       // Set compiled element
       let compiled = '';
 
-      // Stringify user render
-      const userFrontend = render.user ? JSON.stringify(render.user) : null;
-
       // Run view render hook
-      await eden.hook('view.render', {
-        req,
-        res,
-        render,
-      }, async () => {
+      await eden.hook('view.render', { req, res, page, render, opts, head }, async () => {
         // Compile view
         compiled = await eden.view(render);
       });
 
-      // Delete user
-      delete render.user;
+      // helpers
+      delete render.helpers;
 
       // Stringify render frontend
       const renderFrontend = JSON.stringify(render);
@@ -218,24 +193,15 @@ class View {
       let foot = '';
 
       // Run view foot hook
-      await eden.hook('view.foot', ({
-        render,
-        foot,
-      }), () => {
-        // Delete session
-        delete render.session;
-
+      await eden.hook('view.foot', { req, res, page, render, opts, foot }, () => {
         // Add to foot
-        foot += `<!-- DATA.START --><script data-eden="before-user" id="eden-preuser">window.eden = JSON.parse (decodeURIComponent(atob("${Buffer.from(encodeURIComponent(renderFrontend)).toString('base64')}")));</script><!-- DATA.END -->`;
+        foot += `<!-- DATA.START --><script data-eden="before-user" id="eden-preuser">window.eden = JSON.parse(decodeURIComponent(atob("${Buffer.from(encodeURIComponent(renderFrontend)).toString('base64')}")));</script><!-- DATA.END -->`;
         foot += '<!-- USER.START -->';
-
-        // Check user
-        if (userFrontend) foot += `<script data-eden="before-script" id="eden-prescript">window.eden.user = JSON.parse(decodeURIComponent(atob("${Buffer.from(encodeURIComponent(userFrontend)).toString('base64')}")));</script>`;
 
         // Add to foot
         foot += '<!-- USER.END -->';
         foot += `<script data-eden="script" id="eden-script" type="text/javascript" src="${config.get('cdn.url') || '/'}public/js/app.min.js${config.get('version') ? `?v=${config.get('version')}` : ''}"></script>`;
-        foot += render.page.script || '';
+        foot += render.page.foot || '';
       });
 
       // Add foot to page
@@ -247,20 +213,14 @@ class View {
         class : (route && route.method) ? `${route.method.toUpperCase()} ${route.file}.${route.fn}` : 'No Route',
       });
 
-      // Run view rendered hook
-      await eden.hook('view.rendered', {
-        render,
-        page,
-      });
-
       // Run callback
-      return callback(null, page);
+      return page;
     } catch (e) {
       // Run error
       eden.error(e);
 
       // Run callback
-      return callback(e);
+      return null;
     }
   }
 }

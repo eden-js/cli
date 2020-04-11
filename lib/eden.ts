@@ -68,7 +68,6 @@ class Eden {
     this.get = this.get.bind(this);
     this.set = this.set.bind(this);
     this.del = this.del.bind(this);
-    this.cache = this.get.bind(this);
     this.clear = this.clear.bind(this);
 
     // Bind private methods

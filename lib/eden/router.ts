@@ -1,21 +1,17 @@
 // Require dependencies
-import http from 'http';
-
+import eden from 'eden';
+import sirv from 'sirv';
 import uuid from 'uuid';
+import polka from 'polka';
+import config from 'config';
 import multer from 'multer';
-import express from 'express';
 import session from 'express-session';
+import redirect from '@polka/redirect';
 import bodyParser from 'body-parser';
+import polkaCompat from 'polka-compat';
 import responseTime from 'response-time';
 import cookieParser from 'cookie-parser';
-
-// Require class dependencies
 import SessionStore from '@edenjs/session-store';
-
-// Require local dependencies
-import eden from 'eden';
-
-import config from 'config';
 
 // Require helpers
 const aclHelper = helper('user/acl');
@@ -37,27 +33,30 @@ export default class EdenRouter {
   constructor() {
     // Set variables
     this.app = null;
-    this.server = null;
     this.multer = null;
-    this.router = null;
 
     // Bind methods
     this.build = this.build.bind(this);
 
     // Bind private methods
-    this._api = this._api.bind(this);
-    this._view = this._view.bind(this);
-    this._error = this._error.bind(this);
-    this._default = this._default.bind(this);
+    this.apiAction = this.apiAction.bind(this);
+    this.initAction = this.initAction.bind(this);
+    this.errorAction = this.errorAction.bind(this);
 
     // Bind super private methods
-    this.__error = this.__error.bind(this);
-    this.__rotue = this.__route.bind(this);
-    this.__upload = this.__upload.bind(this);
+    this.buildRoute = this.buildRoute.bind(this);
+    this.buildUpload = this.buildUpload.bind(this);
 
     // Run build
     this.building = this.build();
   }
+
+
+  // /////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  //  Build Methods
+  //
+  // /////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Build Router
@@ -67,39 +66,32 @@ export default class EdenRouter {
   async build() {
     // Log building to debug
     eden.logger.log('debug', 'building eden router', {
-      class : 'EdenRouter',
+      class : this.constructor.name,
     });
 
-    // Set express
-    this.app = express();
+    // create app
+    this.app = polka({
+      onError : this.errorAction
+    });
 
     // create express app
-    await eden.hook('eden.router.create', this.app);
-
-    // Set port
-    this.app.set('port', eden.port);
-
-    // Create server
-    this.server = http.createServer(this.app);
-
-    // create express app
-    await eden.hook('eden.server.create', this.server);
-
-    // Listen to port
-    this.server.listen(eden.port, eden.host);
+    await eden.hook('eden.router.app', this.app, () => {
+      // Create server
+      return this.app.listen(eden.port);
+    });
 
     // Log built to debug
-    eden.logger.log('debug', `[${eden.port}] [${eden.host}] server listening`, {
-      class : 'EdenRouter',
+    eden.logger.log('info', `[${eden.port}] [${eden.host}] server listening`, {
+      class : this.constructor.name,
     });
-
-    // Set server event handlers
-    this.server.on('error', this.__error);
 
     // Set multer
     this.multer = multer(config.get('upload') || {
       dest : '/tmp',
     });
+
+    // hook multer
+    await eden.hook('eden.router.multer', this.multer);
 
     // Loop HTTP request types
     ['use', 'get', 'post', 'push', 'delete', 'all'].forEach((type) => {
@@ -110,93 +102,30 @@ export default class EdenRouter {
       };
     });
 
-    // Set express build methods
-    const methods = ['_default', '_api', '_view', '_router', '_error'];
-
-    // Loop methods
-    for (let i = 0; i < methods.length; i += 1) {
-      // Run express build method
-      await this[methods[i]](this.app);
-    }
-
-    // create express app
-    await eden.hook('eden.server.complete', this.server);
-
-    // create express app
-    await eden.hook('eden.router.complete', this.app);
-
-    // Log built to debug
-    eden.logger.log('debug', 'completed building eden router', {
-      class : 'EdenRouter',
-    });
-  }
-
-  /**
-   * Adds defaults to given express app
-   *
-   * @param {express} app
-   *
-   * @private
-   *
-   * @async
-   */
-  async _default(app) {
-    // Add request middleware
-    app.use((req, res, next) => {
-      // Set header
-      res.header('X-Powered-By', 'EdenFrame');
-
-      // Set isJSON request
-      const isJSON = (req.headers.accept || req.headers.Accept || '').includes('application/json');
-      req.isJSON = isJSON;
-      res.isJSON = isJSON;
-      res.locals.isJSON = isJSON;
-
-      // Set url
-      res.locals.url = req.originalUrl;
-
-      // Check is JSON
-      if (res.isJSON) {
-        // Set header
-        res.header('Content-Type', 'application/json');
-      } else {
-        // Set header
-        res.header('Link', [
-          `<${config.get('cdn.url') || '/'}public/css/app.min.css${config.get('version') ? `?v=${config.get('version')}` : ''}>; rel=preload; as=style`,
-          `<${config.get('cdn.url') || '/'}public/js/app.min.js${config.get('version') ? `?v=${config.get('version')}` : ''}>; rel=preload; as=script`,
-        ].join(','));
-      }
-
-      // Set route timer start
-      res.locals.timer = {
-        start : new Date().getTime(),
-      };
-
-      // Set locals response and page
-      res.locals.res = res;
-      res.locals.page = {};
-
-      // Run next
-      next();
-    });
+    // create initial route
+    this.app.use(polkaCompat());
+    this.app.use(this.initAction);
+    this.app.use('api', this.apiAction);
 
     // Run eden app hook
-    await eden.hook('eden.app', app, () => {
+    await eden.hook('eden.app', this.app, () => {
       // initialize
       SessionStore.initialize(session);
 
       // Add express middleware
-      app.use(responseTime());
-      app.use(cookieParser(config.get('secret')));
-      app.use(bodyParser.json({
+      this.app.use(responseTime());
+      this.app.use(cookieParser(config.get('secret')));
+      this.app.use(bodyParser.json({
         limit : config.get('upload.limit') || '50mb',
       }));
-      app.use(bodyParser.urlencoded({
+      this.app.use(bodyParser.urlencoded({
         limit    : config.get('upload.limit') || '50mb',
         extended : true,
       }));
-      app.use(express.static(`${global.appRoot}/www`));
-      app.use(session({
+      this.app.use(sirv(`${global.appRoot}/www`, {
+        maxAge : config.get('cache.age') || 31536000, // 1Y
+      }));
+      this.app.use(session({
         key   : config.get('session.key') || 'eden.session.id',
         genid : uuid,
         store : new SessionStore({
@@ -213,212 +142,147 @@ export default class EdenRouter {
         saveUninitialized : true,
       }));
     });
-  }
-
-  /**
-   * Api functionality
-   *
-   * @param {express} app
-   *
-   * @private
-   */
-  _api(app) {
-    // Set on all api routes
-    app.all('/api/*', (req, res, next) => {
-      // Set headers
-      res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-
-      // Run next
-      next();
-    });
-  }
-
-  /**
-   * View engine
-   *
-   * @param {express} app
-   *
-   * @private
-   */
-  _view(app) {
-    // Do view engine
-    app.engine(config.get('view.engine'), view.render);
-  }
-
-  /**
-   * Build router
-   *
-   * @param {express} app
-   *
-   * @private
-   *
-   * @async
-   */
-  async _router(app) {
-    // Create express router
-    this.router = new express.Router();
-
+    
     // Set router classes
-    const controllerClasses = Object.keys(classes).map(key => classes[key]).filter((c) => {
+    const controllers = Object.values(classes).filter((c) => {
       // check thread
       return !c.cluster || c.cluster.includes(eden.label);
-    }).sort((a, b) => (b.priority || 0) - (a.priority || 0));
+    }).sort((a, b) => {
+      if ((b.priority || 0) > (a.priority || 0)) return 1;
+      if ((b.priority || 0) < (a.priority || 0)) return -1;
 
-    // Loop router classes
-    for (const controller of controllerClasses) {
-      // Load controller
-      await eden.controller(controller.file);
-    }
+      return 0;
+    });
 
     // Run eden routes hook
-    await eden.hook('eden.routes', routes);
+    await eden.hook('eden.router.controllers', controllers, async () => {
+      // Loop router classes
+      for (const controller of controllers) {
+        // Load controller
+        await eden.controller(controller.file);
+      }
+    });
 
     // Sort routes
-    routes.sort((a, b) => (b.priority || 0) - (a.priority || 0));
+    routes.sort((a, b) => {
+      if ((b.priority || 0) > (a.priority || 0)) return 1;
+      if ((b.priority || 0) < (a.priority || 0)) return -1;
 
-    // Loop routes
-    for (let i = 0; i < routes.length; i += 1) {
-      // Run route
-      await this.__route(routes[i]);
-    }
+      return 0;
+    });
 
-    // Use router on route
-    app.use('/', this.router);
-  }
+    // Run eden routes hook
+    await eden.hook('eden.router.routes', routes, async () => {
+      // create map
+      const routeMap = {};
 
-  /**
-   * Use error handler
-   *
-   * @param {express} app
-   *
-   * @private
-   */
-  _error(app) {
-    // Use 404 handler
-    app.use((req, res) => {
-      // Set status 404
-      res.status(404);
+      // create route map
+      for (const route of routes) {
+        // fix path
+        route.path = route.path.length > 1 ? route.path.replace(/\/$/, '') : route.path;
+  
+        // check in map
+        if (!routeMap[`${route.method}+++${route.path}`]) {
+          routeMap[`${route.method}+++${route.path}`] = [route];
+        } else {
+          routeMap[`${route.method}+++${route.path}`].push(route);
+        }
+      }
 
-      // Render 404 page
-      res.render('error', {
-        message : '404 page not found',
-      });
+      // route map
+      for (const key of Object.keys(routeMap)) {
+        // split route
+        const [method, route] = key.split('+++');
+
+        // create routes
+        const routes = [].concat(...(await Promise.all(routeMap[key].map(this.buildRoute))));
+
+        // add to router
+        this.app[method](route, ...routes);
+      }
+    });
+
+    // Log built to debug
+    eden.logger.log('debug', 'completed building eden router', {
+      class : this.constructor.name,
     });
   }
 
   /**
-   * Creates route
+   * builds route from eden config
    *
-   * @param {object} route
-   *
-   * @private
-   *
-   * @async
+   * @param route 
    */
-  async __route(route) {
-    // no path
-    if (!route.path || !route.method) return;
-
+  async buildRoute(route) {
     // Set path
-    let { path } = route;
+    let { path, method } = route;
 
-    // Add to path
-    path = path.length > 1 ? path.replace(/\/$/, '') : path;
+    // no path
+    if (!path || !method) return;
 
-    // Create route arguements
-    const args = [path];
+    // set args
+    const args = [];
 
     // Run route args hook
-    await eden.hook('eden.route.args', {
+    await eden.hook('eden.router.route', {
       args,
       path,
       route,
-    });
+    }, async () => {
+      // Check upload
+      const upload = this.buildUpload(route);
 
-    // Push timer arg
-    args.push((req, res, next) => {
-      // Set route timer
-      res.locals.timer.route = new Date().getTime();
+      // Push upload to args
+      if (upload) args.push(upload);
 
-      // Run next
-      next();
-    });
+      // Add actual route
+      args.push(async (req, res, next) => {
+        // Set route
+        req.path  = path;
+        req.route = route;
 
-    // Check upload
-    const upload = this.__upload(route);
+        // Set title
+        if (route.title) req.title(route.title);
 
-    // Push upload to args
-    if (upload) args.push(upload);
+        // Run acl middleware
+        const aclCheck = await aclHelper.middleware(req, res, route);
 
-    // Add actual route
-    args.push(async (req, res, next) => {
-      // Set route
-      res.locals.path = path;
-
-      // Set route
-      res.locals.route = route;
-
-      // Set title
-      if (route.title) req.title(route.title);
-
-      // Run acl middleware
-      const aclCheck = await aclHelper.middleware(req, res);
-
-      // Alter render function
-      const { render } = res;
-
-      // Create new render function
-      res.render = (...renderArgs) => {
-        // Load view
-        if (typeof renderArgs[0] !== 'string' && route.view) {
-          // UnShift Array
-          renderArgs.unshift(route.view);
+        // Check acl result
+        if (aclCheck === 0) {
+          // Run next
+          return next();
+        } if (aclCheck === 2) {
+          // Return
+          return null;
         }
 
-        // Apply to render
-        render.apply(res, renderArgs);
-      };
+        // Try catch
+        try {
+          // Get controller
+          const controller = await eden.controller(route.file);
 
-      // Check acl result
-      if (aclCheck === 0) {
-        // Run next
-        return next();
-      } if (aclCheck === 2) {
-        // Return
-        return null;
-      }
+          // Try run controller function
+          return controller[route.fn](req, res, next);
+        } catch (e) {
+          // Set error
+          eden.error(e);
 
-      // Try catch
-      try {
-        // Get controller
-        const controller = await eden.controller(route.file);
-
-        // Try run controller function
-        return controller[route.fn](req, res, next);
-      } catch (e) {
-        // Set error
-        eden.error(e);
-
-        // Run next
-        return next();
-      }
+          // Run next
+          return next();
+        }
+      });
     });
 
-    // Call router function
-    this.router[route.method](...args);
+    // return array
+    return args;
   }
 
   /**
-   * Upload method check
+   * builds upload from eden config
    *
-   * @param   {object} route
-   *
-   * @returns {*}
-   *
-   * @private
+   * @param route 
    */
-  __upload(route) {
+  buildUpload(route) {
     // Add upload middleware
     if (route.method !== 'post') return false;
 
@@ -449,41 +313,122 @@ export default class EdenRouter {
     return this.multer[upType](...upApply);
   }
 
+
+  // /////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  //  Action Methods
+  //
+  // /////////////////////////////////////////////////////////////////////////////////////////////
+
   /**
-   * On error function
+   * initialize eden route action
    *
-   * @param {Error} error
+   * @param req 
+   * @param res 
+   * @param next 
    */
-  __error(error) {
-    // Check syscall
-    if (error.syscall !== 'listen') {
-      // Throw error
-      eden.error(error);
-    }
+  initAction(req, res, next) {
+    // add headers
+    req.set    = res.set = req.header = res.header = res.setHeader; // simple header set methods
+    res.head   = ''; // to add to head tag
+    res.foot   = ''; // to add post body tag
+    res.page   = {}; // page variables
+    res.style  = ''; // to add to style tag
+    res.class  = ''; // body class
+    res.locals = {}; // middleware variables for rendering
 
-    // Set bind
-    const bind = typeof this.app.get('port') === 'string' ? `Pipe ${this.app.get('port')}` : `Port ${this.app.get('port')}`;
+    // status
+    res.status = (status) => {
+      res.__status = status;
+    };
 
-    // Check error code
-    if (error.code === 'EACCES') {
-      // Log access error to error
-      eden.logger.log('error', `${bind} requires elevated privileges`, {
-        class : 'EdenRouter',
-      });
+    // replace send
+    const send = res.send;
+    res.send = (data, ...args) => {
+      // status
+      if (res.__status) {
+        // send
+        send(data, res.__status);
+      } else {
+        // send default
+        send(data, ...args);
+      }
+    };
 
-      // Exit process
-      process.exit(1);
-    } else if (error.code === 'EADDRINUSE') {
-      // Log address in use to error
-      eden.logger.log('error', `${bind} is already in use`, {
-        class : 'EdenRouter',
-      });
+    // Set header
+    res.header('X-Powered-By', 'EdenJS');
 
-      // Exit
-      process.exit(1);
+    // create render function
+    res.render = async (...args) => {
+      // set view
+      if (typeof args[0] !== 'string') args.unshift(req.route.view);
+
+      // render
+      res.end(await view.render({ req, res, next }, ...args));
+    };
+    res.json = async (data) => {
+      // send json
+      res.header('Content-Type', 'application/json');
+
+      // send
+      res.end(JSON.stringify(data));
+    };
+    res.redirect = (url) => {
+      redirect(res, url);
+    };
+
+    // Set isJSON request
+    req.isJSON = res.isJSON = (req.headers.accept || req.headers.Accept || '').includes('application/json');
+
+    // create timer
+    req.timer = {
+      start : new Date().getTime(),
+      route : new Date().getTime(),
+    };
+
+    // Check is JSON
+    if (req.isJSON) {
+      // Set header
+      res.header('Content-Type', 'application/json');
     } else {
-      // Throw error with eden
-      eden.error(error);
+      // Set header
+      res.header('Link', [
+        `<${config.get('cdn.url') || '/'}public/css/app.min.css${config.get('version') ? `?v=${config.get('version')}` : ''}>; rel=preload; as=style`,
+        `<${config.get('cdn.url') || '/'}public/js/app.min.js${config.get('version') ? `?v=${config.get('version')}` : ''}>; rel=preload; as=script`,
+      ].join(','));
     }
+
+    // Run next
+    next();
+  }
+
+  /**
+   * API action
+   *
+   * @param req 
+   * @param res 
+   * @param next 
+   */
+  apiAction(req, res, next) {
+    // Set headers
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+
+    // Run next
+    next();
+  }
+
+  /**
+   * Use error handler
+   *
+   * @param {express} app
+   *
+   * @private
+   */
+  async errorAction(req, res) {
+    // render
+    res.send(await view.render({ req, res }, 'error', {
+      message : '404 page not found',
+    }), 404);
   }
 }
