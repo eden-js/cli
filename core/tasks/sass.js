@@ -1,4 +1,5 @@
 // Require local dependencies
+const fs = require('fs-extra');
 const config = require('config');
 
 /**
@@ -40,7 +41,7 @@ class SASSTask {
     }, true);
 
     // reload js
-    this._runner.emit('scss', 'reload');
+    this._runner.emit('scss', await fs.readFile(`${global.appRoot}/www/public/css/app.min.css`, 'utf8'));
   }
 
   /**

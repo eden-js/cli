@@ -561,9 +561,9 @@ class Eden {
           success : true,
         }, !!((opts && opts.callee) || all));
       } catch (e) {
-        // Run function
+         // Run function
         return this.emit(id, {
-          error   : error(e),
+          error   : e,
           success : false,
         }, !!((opts && opts.callee) || all));
       }

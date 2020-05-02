@@ -173,32 +173,10 @@ export default class EdenRouter {
 
     // Run eden routes hook
     await eden.hook('eden.router.routes', routes, async () => {
-      // create map
-      const routeMap = {};
-
       // create route map
       for (const route of routes) {
-        // fix path
-        route.path = route.path.length > 1 ? route.path.replace(/\/$/, '') : route.path;
-  
-        // check in map
-        if (!routeMap[`${route.method}+++${route.path}`]) {
-          routeMap[`${route.method}+++${route.path}`] = [route];
-        } else {
-          routeMap[`${route.method}+++${route.path}`].push(route);
-        }
-      }
-
-      // route map
-      for (const key of Object.keys(routeMap)) {
-        // split route
-        const [method, route] = key.split('+++');
-
-        // create routes
-        const routes = [].concat(...(await Promise.all(routeMap[key].map(this.buildRoute))));
-
         // add to router
-        this.app[method](route, ...routes);
+        this.app[route.method.toLowerCase()](route.path, ...(await this.buildRoute(route)));
       }
     });
 
@@ -237,7 +215,7 @@ export default class EdenRouter {
 
       // Add actual route
       args.push(async (req, res, next) => {
-        // Set route
+        // EDEN ROUTE METHOD
         req.path  = path;
         req.route = route;
 
@@ -390,12 +368,6 @@ export default class EdenRouter {
     if (req.isJSON) {
       // Set header
       res.header('Content-Type', 'application/json');
-    } else {
-      // Set header
-      res.header('Link', [
-        `<${config.get('cdn.url') || '/'}public/css/app.min.css${config.get('version') ? `?v=${config.get('version')}` : ''}>; rel=preload; as=style`,
-        `<${config.get('cdn.url') || '/'}public/js/app.min.js${config.get('version') ? `?v=${config.get('version')}` : ''}>; rel=preload; as=script`,
-      ].join(','));
     }
 
     // Run next
@@ -425,10 +397,10 @@ export default class EdenRouter {
    *
    * @private
    */
-  async errorAction(req, res) {
+  async errorAction(err, req, res) {
     // render
     res.send(await view.render({ req, res }, 'error', {
-      message : '404 page not found',
-    }), 404);
+      message : err.message || '404 page not found',
+    }), err.code);
   }
 }

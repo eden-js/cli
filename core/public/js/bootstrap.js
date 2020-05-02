@@ -48,6 +48,15 @@ class EdenStore extends Events {
       // Set variable value
       this[key] = variables[key];
     }
+
+    // Dev hooks
+    setTimeout(() => {
+      // replace css
+      this.socket.on('dev:scss', (scss) => {
+        // replace with
+        $('#eden-prehead').replaceWith(`<style id="eden-prehead">${scss}</style>`);
+      });
+    }, 2000);
   }
 
   /**

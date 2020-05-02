@@ -87,7 +87,7 @@ A basic tutorial on how to get started with EdenJS is available: [TUTORIAL.md](T
 
 ## Built With
 
-* [Express](https://expressjs.com/) - Fast, unopinionated, minimalist web framework for Node.js.
+* [Polka](https://github.com/lukeed/polka) - A micro web server so fast, it'll make you dance!
 * [socket.io](https://socket.io/) - Node.js realtime framework server.
 
 ## Versioning

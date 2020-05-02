@@ -61,12 +61,12 @@ class View {
    *
    * @return {*}
    */
-  async render({ req, res, next }, page, opts) {
+  async render({ req, res, next }, page, opts = {}) {
     // add locals
     opts = Object.assign({}, res.locals, opts);
 
     // Set route
-    const { route } = req;
+    const route = req.route || {};
 
     // Run view route hook
     await eden.hook('view.route', route);
@@ -98,15 +98,15 @@ class View {
       },
 
       // other variables
-      timer  : req.timer,
-      isJSON : req.isJSON,
+      timer  : req.timer  || {},
+      isJSON : req.isJSON || false,
 
       // other mounts
       helpers : {},
     };
 
     // Log timing
-    eden.logger.log('debug', `${opts.path} route in ${new Date().getTime() - render.timer.start}ms`, {
+    eden.logger.log('debug', `${route.path} route in ${new Date().getTime() - render.timer.start}ms`, {
       class : (route && route.method) ? `${route.method.toUpperCase()} ${route.file}.${route.fn}` : 'No Route',
     });
 
