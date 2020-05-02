@@ -342,6 +342,7 @@ export default class EdenRouter {
       if (typeof args[0] !== 'string') args.unshift(req.route.view);
 
       // render
+      res.header('Content-Type', 'text/html');
       res.end(await view.render({ req, res, next }, ...args));
     };
     res.json = async (data) => {
