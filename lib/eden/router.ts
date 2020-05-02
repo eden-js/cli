@@ -342,12 +342,12 @@ export default class EdenRouter {
       if (typeof args[0] !== 'string') args.unshift(req.route.view);
 
       // render
-      res.header('Content-Type', 'text/html');
+      res.header('Content-Type', 'text/html; charset=utf-8');
       res.end(await view.render({ req, res, next }, ...args));
     };
     res.json = async (data) => {
       // send json
-      res.header('Content-Type', 'application/json');
+      res.header('Content-Type', 'application/json; charset=utf-8');
 
       // send
       res.end(JSON.stringify(data));
@@ -399,6 +399,15 @@ export default class EdenRouter {
    * @private
    */
   async errorAction(err, req, res) {
+    // check JSON
+    if (req.isJSON) {
+      // send json
+      res.header('Content-Type', 'application/json; charset=utf-8');
+    } else {
+      // send HTML
+      res.header('Content-Type', 'text/html; charset=utf-8');
+    }
+
     // render
     res.send(await view.render({ req, res }, 'error', {
       message : err.message || '404 page not found',
