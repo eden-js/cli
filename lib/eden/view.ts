@@ -89,12 +89,13 @@ class View {
         layout : opts.layout || route.layout || 'main',
       },
       config : {
-        cdn       : config.get('cdn') || false,
-        logo      : config.get('logo') || false,
-        title     : config.get('title'),
-        domain    : config.get('domain'),
-        socket    : config.get('socket'),
-        direction : config.get('direction') || 2,
+        cdn         : config.get('cdn') || false,
+        logo        : config.get('logo') || false,
+        title       : config.get('title'),
+        domain      : config.get('domain'),
+        socket      : config.get('socket'),
+        direction   : config.get('direction') || 2,
+        environment : config.get('environment') || 'dev',
       },
 
       // other variables

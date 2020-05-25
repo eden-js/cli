@@ -49,6 +49,9 @@ class EdenStore extends Events {
       this[key] = variables[key];
     }
 
+    // check environment
+    if (this.get('config.environment') !== 'dev') return;
+
     // Dev hooks
     setTimeout(() => {
       // replace css
