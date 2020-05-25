@@ -41,7 +41,7 @@ class SASSTask {
     }, true);
 
     // reload js
-    this._runner.emit('scss', await fs.readFile(`${global.appRoot}/www/public/css/app.min.css`, 'utf8'));
+    if (config.get('environment') === 'dev') this._runner.emit('scss', await fs.readFile(`${global.appRoot}/www/public/css/app.min.css`, 'utf8'));
   }
 
   /**
