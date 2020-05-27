@@ -228,7 +228,7 @@ export default class Model extends EdenModel {
 
     // Check if has model and data is array
     if (Array.isArray(data)) {
-      hasModels = !!data.find(sub => sub && sub.id && sub.model);
+      hasModels = !!data.find(sub => sub && typeof sub.id === 'string' && typeof sub.model === 'string');
     }
 
     // Check has models

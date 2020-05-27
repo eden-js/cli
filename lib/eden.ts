@@ -352,7 +352,7 @@ class Eden {
     global.printError(e);
 
     // Emit error
-    this.emit('Eden.error', e);
+    this.emit('eden.error', e);
   }
 
   /**
