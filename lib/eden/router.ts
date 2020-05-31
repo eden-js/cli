@@ -399,7 +399,6 @@ export default class EdenRouter {
    * @private
    */
   async errorAction(err, req, res) {
-    console.log(req.isJSON);
     // check JSON
     if (req.isJSON) {
       // send json
