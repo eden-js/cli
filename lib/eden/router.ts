@@ -399,6 +399,7 @@ export default class EdenRouter {
    * @private
    */
   async errorAction(err, req, res) {
+    console.log(req.isJSON);
     // check JSON
     if (req.isJSON) {
       // send json
@@ -409,8 +410,9 @@ export default class EdenRouter {
     }
 
     // render
-    res.send(await view.render({ req, res }, 'error', {
+    res.statusCode = err.code;
+    res.end(await view.render({ req, res }, 'error', {
       message : err.message || '404 page not found',
-    }), err.code);
+    }));
   }
 }

@@ -255,7 +255,7 @@ export default class Model extends EdenModel {
         // Resolve values
         resolve(values);
       });
-    } if (data.id && data.model) {
+    } if (typeof data.id === 'string' && typeof data.model === 'string') {
       // Return loaded data
       return this.__load(data);
     }
