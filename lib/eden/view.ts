@@ -196,12 +196,12 @@ class View {
       // Run view foot hook
       await eden.hook('view.foot', { req, res, page, render, opts, foot }, () => {
         // Add to foot
-        foot += `<!-- DATA.START --><script data-eden="before-user" id="eden-preuser">window.eden = JSON.parse(decodeURIComponent(atob("${Buffer.from(encodeURIComponent(renderFrontend)).toString('base64')}")));</script><!-- DATA.END -->`;
+        foot += `<!-- DATA.START --><script data-eden="before-user" id="eden-preuser">window.eden = JSON.parse(decodeURIComponent("${encodeURIComponent(renderFrontend)}"));</script><!-- DATA.END -->`;
         foot += '<!-- USER.START -->';
 
         // Add to foot
         foot += '<!-- USER.END -->';
-        foot += `<script data-eden="script" id="eden-script" type="text/javascript" src="${config.get('cdn.url') || '/'}public/js/app.min.js${config.get('version') ? `?v=${config.get('version')}` : ''}"></script>`;
+        foot += `<script data-eden="script" id="eden-script" type="text/javascript" src="${config.get('cdn.url') || '/'}public/js/app.min.js${config.get('version') ? `?v=${config.get('version')}` : ''}" async></script>`;
         foot += render.page.foot || '';
       });
 

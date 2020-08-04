@@ -142,13 +142,6 @@ class SASSTask {
       outputStyle : 'compressed',
     }));
 
-    // check for production
-    if (!data.sourceMaps) {
-      job = job.pipe(gulpPrefix({
-        browsers : config.get('browserlist'),
-      }));
-    }
-
     // pipe to rename
     job = job.pipe(gulpRename('app.min.css'));
 
@@ -157,6 +150,7 @@ class SASSTask {
       job = job.pipe(gulpSourcemaps.write('.'));
     }
 
+    // create job
     job = job.pipe(gulp.dest(`${data.appRoot}/www/public/css`));
 
     // Wait for job to end
@@ -166,7 +160,9 @@ class SASSTask {
         // resolve
         resolve();
       });
-      job.once('error', reject);
+      job.once('error', (err) => {
+        reject(err);
+      });
     });
   }
 
