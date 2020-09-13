@@ -16,7 +16,6 @@ class EdenStore extends Events {
 
     // Set public variables
     this.bound = 'true';
-    this.testing = 'SUP';
 
     // Bind private variables
     this._hooks = {};
@@ -56,8 +55,18 @@ class EdenStore extends Events {
     setTimeout(() => {
       // replace css
       this.socket.on('dev:scss', (scss) => {
+        // replacing css
+        console.log('[hot] replacing scss');
+
+        // pre head
+        if (!$('#eden-styles').length) {
+          // append
+          $('body').append('<style id="eden-styles" type="text/css"></style>');
+        }
+        $('#eden-prehead').attr('href', '');
+
         // replace with
-        $('#eden-prehead').replaceWith(`<style id="eden-prehead">${scss}</style>`);
+        $('#eden-styles').html(`${scss}`);
       });
     }, 2000);
   }

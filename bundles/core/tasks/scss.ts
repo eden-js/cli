@@ -33,18 +33,27 @@ export default class ScssTask {
     const opts = {
       files,
 
-      scss       : this.cli.get('config.frontend.scss.includes') || [],
+      scss       : this.cli.get('config.frontend.scss.include') || [],
+      bases      : this.cli.get('bases', []),
       appRoot    : global.appRoot,
-      variables  : await loader.find(this.cli.get('bundles').map((b) => b.path), 'public/scss/variables.scss'),
-      bootstrap  : await loader.find(this.cli.get('bundles').map((b) => b.path), 'public/scss/bootstrap.scss'),
+      variables  : await loader.find(this.cli.get('bundles').map((b) => b.path), '/public/scss/variables.scss'),
+      bootstrap  : await loader.find(this.cli.get('bundles').map((b) => b.path), '/public/scss/bootstrap.scss'),
       sourceMaps : this.cli.get('config.environment') === 'dev',
     };
 
-    // run models in background
-    await this.cli.thread(this.thread, opts, true);
+    // try/catch
+    try {
+      // run models in background
+      await this.cli.thread(this.thread, opts);
+    } catch (e) {
+      console.log(e);
+    }
 
     // reload js
-    if (this.cli.get('config.environment') === 'dev') this.cli.emit('scss', await fs.readFile(`${global.appRoot}/www/public/css/app.min.css`, 'utf8'));
+    if (this.cli.get('config.environment') === 'dev') {
+      // emit hot
+      this.cli.emit('hot', 'scss', await fs.readFile(`${global.appRoot}/www/public/css/app.min.css`, 'utf8'));
+    }
 
     // return loaded
     return `${files.length.toLocaleString()} scss entries compiled!`;
@@ -74,22 +83,22 @@ export default class ScssTask {
       if (url[0] !== '~') return null;
 
       // file path minus tilda
-      const filePath = url.substr(1);
+      const filePath = url.substr(1).split('.')[0];
 
       // location null
       let location = null;
 
-      // try to resolve
-      try { location = require.resolve(`${filePath}.css`); } catch (err) { /* */ }
-      try { location = require.resolve(`${filePath}.scss`); } catch (err) { /* */ }
+      // loop for bases
+      [data.appRoot, ...data.bases].forEach((base) => {
+        // find
+        ['.scss', '.css'].forEach((type) => {
+          // get location
+          const check = `${base}/node_modules/${filePath}${type}`;
 
-      // Make `~example/files/file` also find `example/files/_file.scss`
-      if (location === null) {
-        try {
-          const slashPos = filePath.lastIndexOf('/') + 1;
-          location = require.resolve(`${filePath.substring(0, slashPos)}_${filePath.substring(slashPos, filePath.length)}.scss`);
-        } catch (err) { /* */ }
-      }
+          // return location
+          if (!location && fs.existsSync(check)) location = check;
+        });
+      });
 
       // return location if not null
       if (location) {
@@ -160,6 +169,7 @@ export default class ScssTask {
         resolve();
       });
       job.once('error', (err) => {
+        console.log(err);
         reject(err);
       });
     });

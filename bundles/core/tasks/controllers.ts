@@ -71,7 +71,7 @@ export default class ControllersTask {
       // clusters
 
       // add cluster to accumulator
-      accum[c] = Object.values(controllers).filter((v) => !v.cluster || v.cluster.includes(c)).map((controller) => {
+      accum[c] = Object.values(controllers).filter((v) => v.cluster && (v.cluster.includes('all') || v.cluster.includes(c))).map((controller) => {
         // return file
         return `
 // ${controller.file} START
@@ -117,6 +117,9 @@ ${['calls', 'hooks', 'routes', 'events', 'endpoints'].map((type) => {
       return this.cli.write(`${key}/controllers.js`, `const exporting = {};\n\n${matrix[key]}\n\nmodule.exports = exporting;`);
     }));
 
+    // Restart server
+    this.cli.emit('restart');
+
     // show loaded
     return `${Object.keys(controllers).length.toLocaleString()} controllers loaded!`;
   }
@@ -138,7 +141,7 @@ ${['calls', 'hooks', 'routes', 'events', 'endpoints'].map((type) => {
     const parse = (file, path) => {
       // get mount
       const mount    = file.tags.mount ? file.tags.mount[0].value : '';
-      const cluster  = file.tags.cluster ? file.tags.cluster.map(c => c.value) : null;
+      const cluster  = file.tags.cluster ? file.tags.cluster.map(c => c.value) : ['front'];
       const priority = file.tags.priority ? parseInt(file.tags.priority[0].value, 10) : 10;
 
       // skip custom methods

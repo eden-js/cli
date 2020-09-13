@@ -69,7 +69,7 @@ export default class DaemonsTask {
       // clusters
 
       // add cluster to accumulator
-      accum[c] = Object.values(daemons).filter((v) => !v.cluster || v.cluster.includes(c)).map((daemon) => {
+      accum[c] = Object.values(daemons).filter((v) => v.cluster && (v.cluster.includes('all') || v.cluster.includes(c))).map((daemon) => {
         // return file
         return `
 // ${daemon.file} START
@@ -115,6 +115,9 @@ ${['hooks', 'events', 'endpoints'].map((type) => {
       return this.cli.write(`${key}/daemons.js`, `const exporting = {};\n\n${matrix[key]}\n\nmodule.exports = exporting;`);
     }));
 
+    // Restart server
+    this.cli.emit('restart');
+
     // show loaded
     return `${Object.keys(daemons).length.toLocaleString()} daemons loaded!`;
   }
@@ -139,7 +142,7 @@ ${['hooks', 'events', 'endpoints'].map((type) => {
       // get mount
       const hooks     = [];
       const events    = [];
-      const cluster   = file.tags.cluster ? file.tags.cluster.map(c => c.value) : null;
+      const cluster   = file.tags.cluster ? file.tags.cluster.map(c => c.value) : ['back'];
       const priority  = file.tags.priority ? parseInt(file.tags.priority[0].value, 10) : 10;
       const endpoints = [];
 

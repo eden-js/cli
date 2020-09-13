@@ -50,6 +50,9 @@ exporting['${name}'] = () => {
     // write file
     this.cli.write(`.index/models.js`, `const exporting = {};\n\n${data}\n\nmodule.exports = exporting;`);
 
+    // Restart server
+    this.cli.emit('restart');
+
     // return models
     return `${Object.keys(models).length.toLocaleString()} models indexed!`;
   }

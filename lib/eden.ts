@@ -174,6 +174,9 @@ class Eden {
     this.__data.daemons = global.daemons;
     this.__data.controllers = global.controllers;
 
+    // initialize daemons
+    this.logger.log('info', 'initializing static functions');
+
     // initialize daemons then controllers
     for (const daemon of Object.keys(this.get('daemons'))) {
       // initialize
@@ -190,11 +193,17 @@ class Eden {
       }
     }
 
+    // initialize daemons
+    this.logger.log('info', 'initialized static functions');
+
     // Connect database
     await this.buildDatabase();
 
     // add router
-    if (!this.get('config.router.disable')) {
+    if (!this.get('config.router.disable') && global.cluster !== 'back') {
+      // initialize daemons
+      this.logger.log('info', 'initializing controllers');
+
       // Require router
       const Router = require('./eden/router'); // eslint-disable-line global-require
 
@@ -203,13 +212,22 @@ class Eden {
 
       // await router building
       await this.router.building;
+
+      // initialize daemons
+      this.logger.log('info', 'initialized controllers');
     }
+
+    // initialize daemons
+    this.logger.log('info', 'initializing daemons');
 
     // create daemons
     for (const daemon of Object.keys(this.get('daemons'))) {
       // initialize
       await this.init(this.get(`daemons.${daemon}`));
     }
+
+    // initialize daemons
+    this.logger.log('info', 'initialized daemons');
 
     // Add ping/pong logic
     this.on('eden.ping', () => {
@@ -248,7 +266,7 @@ class Eden {
     if (this.get(`controller.${ctrl.data.file}`)) return this.get(`controller.${ctrl.data.file}`);
 
     // log
-    this.logger.log('info', 'initializing', {
+    this.logger.log('debug', 'initializing', {
       class : ctrl.data.file,
     });
 
@@ -275,7 +293,7 @@ class Eden {
     });
 
     // log
-    this.logger.log('info', 'initialized', {
+    this.logger.log('debug', 'initialized', {
       class : ctrl.data.file,
     });
 
@@ -859,11 +877,11 @@ class Eden {
   buildLogger() {
     // Set logger
     return winston.createLogger({
-      level      : config.get('logLevel') || 'info',
+      level      : this.get('config.log.level') || 'info',
       transports : [
         new winston.transports.Console({
+          format    : log,
           colorize  : true,
-          formatter : log,
           timestamp : true,
         }),
       ],

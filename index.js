@@ -23,9 +23,12 @@ require('./lib/env');
 // Require dependencies
 const fs               = require('fs-extra');
 const cp               = require('child_process');
+const uuid             = require('uuid/v4');
 const path             = require('path');
+const fetch            = require('node-fetch');
 const JSON5            = require('json5');
 const dotProp          = require('dot-prop');
+const chokidar         = require('chokidar');
 const Spinnies         = require('spinnies');
 const deepMerge        = require('deepmerge');
 const { argv }         = require('yargs');
@@ -121,12 +124,6 @@ class EdenCLI extends EventEmitter {
     // resolver
     let resolver = null;
 
-    // add restart listener
-    this.on('restart', () => {
-      // restart
-      this.start();
-    });
-
     // spinnies
     this.spinnies = new Spinnies();
 
@@ -214,8 +211,14 @@ class EdenCLI extends EventEmitter {
     // then
     await promise;
     await Promise.all(building).then(() => {
+      // add restart listener
+      this.on('restart', () => {
+        // restart
+        this.start();
+      });
+
       // launch
-      this.launch();
+      this[argv._[0]]();
     });
   }
 
@@ -225,7 +228,87 @@ class EdenCLI extends EventEmitter {
    * @param {*} that
    * @param {*} next
    */
-  async launch() {
+  async dev() {
+    // compile
+    await this.compile();
+
+    // start
+    this.start();
+
+    // hot reload
+    this.on('hot', async (type, ...args) => {
+      // try/catch
+      try {
+        // emit build event
+        await fetch(`http://localhost:${this.get('config.port')}/dev/event`, {
+          body : JSON.stringify({
+            type,
+            args,
+          }),
+          headers : {
+            'Content-Type'   : 'application/json',
+            authentication : `AUTH:${this.get('config.secret')}`,
+          },
+          method : 'POST',
+        });
+      } catch (e) {
+        // check event
+        console.log(e);
+      }
+    });
+
+    // steps
+    const steps = this.get('chain', {});
+
+    // loop tasks
+    Object.keys(this.get('tasks')).forEach((key, i) => {
+      // watcher
+      const watcher = this.get(`task.${key}`).watch();
+
+      // create runner function
+      this.set(`runner.${key}`, async () => {
+        // running
+        await this.running;
+
+        // create id
+        const id = uuid();
+
+        // create spinnie
+        this.spinnies.add(id, {
+          text : steps[key].message,
+        });
+
+        // run function
+        this.running = steps[key].fn(this, (text, noFinish, noNext) => {
+          // noFinish
+          if (!noFinish && steps[key]) {
+            // create spinnie
+            this.spinnies.succeed(id, {
+              text,
+            });
+          }
+
+          // check if parent
+          if (!noNext && steps[key].parent) {
+            // run parent
+            this.get(`runner.${steps[key].parent}`)();
+          }
+        });
+      });
+
+      // watch
+      chokidar.watch(this.get('bundles').map((b) => `${b.path}${watcher}`, {
+        ignoreInitial : true,
+      }))
+        .on('change', this.get(`runner.${key}`))
+        .on('unlink', this.get(`runner.${key}`));
+    });
+  }
+
+  /**
+   * compiles edenjs
+   */
+  async compile() {
     // write memory
     await this.write('.index/data.js', `module.exports = ${JSON5.stringify(this.get('index'))};`);
     await this.write('.index/config.js', `module.exports = ${JSON5.stringify(this.get('config'))};`);
@@ -242,11 +325,12 @@ class EdenCLI extends EventEmitter {
       // create file
       await this.write(`cluster.${cluster}.js`, `
 // time starting up
-console.log('initializing edenjs');
-console.time('initializing edenjs');
+console.log('initializing edenjs "${cluster}"');
+console.time('initializing edenjs "${cluster}"');
 
 // not CLI
 global.CLI      = false;
+global.cluster  = '${cluster}';
 global.appRoot  = '${global.appRoot}';
 global.edenRoot = '${global.edenRoot}';
 
@@ -284,7 +368,7 @@ console.timeEnd('requiring "${entry.split('.')[0]}"');
   }).join('')}
 
 // time starting up
-console.timeEnd('initializing edenjs');
+console.timeEnd('initializing edenjs "${cluster}"');
 
 // time starting up
 console.time('starting edenjs');
@@ -386,11 +470,10 @@ eden.start().then(() => {
    * start server
    */
   async start() {
-    return;
     // set server
-    if (this.server !== null) {
+    if (this.server) {
       // dead promise
-      const deadPromise =  new Promise((resolve) => this.server.once('exit', resolve));
+      const deadPromise = new Promise((resolve) => this.server.once('exit', resolve));
 
       // kill server
       this.server.kill();
@@ -400,7 +483,7 @@ eden.start().then(() => {
     }
 
     // server
-    this.server = cp.fork(`${__dirname}/app.js`, ['start']);
+    this.server = cp.fork(`${__dirname}/spawn.js`, ['start', `--clusters=${argv.clusters || 'front,back'}`]);
   }
 
   /**
@@ -552,6 +635,12 @@ eden.start().then(() => {
       return accum;
     }, {}));
 
+    // check dev
+    if (!['dev', 'compile'].includes(argv._[0])) {
+      // return nothing else
+      next(`${Object.keys(that.get('tasks')).length.toLocaleString()} tasks loaded!`);
+    }
+
     // loop tasks
     Object.keys(that.get('tasks')).forEach((key, i) => {
       // task
@@ -595,8 +684,11 @@ eden.start().then(() => {
       });
     });
 
-    // loaded bundles
-    next(`${Object.keys(that.get('tasks')).length.toLocaleString()} tasks loaded!`);
+    // check dev
+    if (['dev', 'compile'].includes(argv._[0])) {
+      // after next
+      next(`${Object.keys(that.get('tasks')).length.toLocaleString()} tasks loaded!`);
+    }
   }
 }
 
