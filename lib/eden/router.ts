@@ -1,5 +1,4 @@
 // Require dependencies
-import eden from 'eden';
 import sirv from 'sirv';
 import polka from 'polka';
 import config from 'config';
@@ -16,10 +15,6 @@ import { v4 as uuid } from 'uuid';
 // Require helpers
 const aclHelper = helper('user/acl');
 
-// Require cache
-const routes  = cache('routes');
-const classes = cache('classes');
-
 // Require Eden dependencies
 import view from './view';
 
@@ -30,7 +25,10 @@ export default class EdenRouter {
   /**
    * Construct Router class
    */
-  constructor() {
+  constructor(eden) {
+    // set eden
+    this.eden = eden;
+
     // Set variables
     this.app = null;
     this.multer = null;

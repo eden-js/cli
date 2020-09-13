@@ -1,28 +1,17 @@
 
 // Require dependencies
-import error from 'serialize-error';
-import Events from 'events';
 import config from 'config';
-import dotProp from 'dot-prop-immutable';
+import dotProp from 'dot-prop';
+import winston from 'winston';
 import EdenModel from '@edenjs/model';
+import EventEmitter from 'events';
 import { v4 as uuid } from 'uuid';
-import { Logger, transports } from 'winston';
-
-// set transports
-const { Console } = transports;
 
 // Require local dependencies
-import log from 'lib/utilities/log';
+import log from './log';
 
 // import local
 import pack from '../package.json';
-
-// Require cached resources
-const hooks     = [...(cache('controller.hooks', [])), ...(cache('daemon.hooks', []))];
-const models    = cache('models');
-const events    = [...(cache('controller.events', [])), ...(cache('daemon.events', []))];
-const daemons   = cache('daemons');
-const endpoints = [...(cache('controller.endpoints', [])), ...(cache('daemon.endpoints', []))];
 
 /**
  * Create Eden class
@@ -33,18 +22,24 @@ class Eden {
    */
   constructor() {
     // Bind private variables
-    this.__register = {
+    this.__data = {
+      config  : global.config,
       version : pack.version,
     };
 
+    // Bind cache methods
+    this.get = this.get.bind(this);
+    this.set = this.set.bind(this);
+    this.del = this.del.bind(this);
+    this.register = this.register.bind(this);
+
     // Bind public methods
     this.start = this.start.bind(this);
+
+    // alt methods
     this.error = this.error.bind(this);
     this.ready = this.ready.bind(this);
-    this.require = this.require.bind(this);
-    this.register = this.register.bind(this);
     this.background = this.background.bind(this);
-    this.controller = this.controller.bind(this);
 
     // Bind event methods
     this.on = this.on.bind(this);
@@ -62,16 +57,82 @@ class Eden {
     this.post = this.post.bind(this);
     this.hook = this.hook.bind(this);
 
-    // Bind cache methods
-    this.get = this.get.bind(this);
-    this.set = this.set.bind(this);
-    this.del = this.del.bind(this);
-    this.clear = this.clear.bind(this);
-
     // Bind private methods
-    this._logger = this._logger.bind(this);
-    this._daemons = this._daemons.bind(this);
-    this._database = this._database.bind(this);
+    this.buildLogger = this.buildLogger.bind(this);
+    this.buildDatabase = this.buildDatabase.bind(this);
+  }
+
+
+  // /////////////////////////////////////////////////////////////////////////////////////////////
+  //
+  //  Get/Set Methods
+  //
+  // /////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * gets key/value
+   *
+   * @param key
+   * @param remote
+   */
+  get(key, remote = false) {
+    // get from dotprop
+    if (remote) {
+      // return get
+      return this.get('register.pubsub').get(key);
+    }
+
+    // return get
+    return dotProp.get(this.__data, key);
+  }
+
+  /**
+   * sets value
+   *
+   * @param key
+   * @param value
+   * @param ttl
+   */
+  set(key, value, ttl = false) {
+    // set
+    dotProp.set(this.__data, key, value);
+
+    // set value
+    if (ttl) {
+      // return get
+      return this.get('register.pubsub').set(key, value, ttl === true ? (24 * 60 * 60 * 1000) : ttl);
+    }
+    
+    // return value
+    return this.get(key);
+  }
+
+  /**
+   * deletes key
+   *
+   * @param key
+   * @param remote
+   */
+  del(key, remote) {
+    // set
+    dotProp.delete(this.__data, key);
+
+    // set in pubsub
+    if (remote) {
+      // return delete
+      return this.get('register.pubsub').del(key);
+    }
+  }
+
+  /**
+   * register alias
+   *
+   * @param key
+   * @param value
+   */
+  register(key, value) {
+    // return value
+    return value ? this.set(`register.${key}`, value) : this.get(`register.${key}`);
   }
 
 
@@ -93,56 +154,71 @@ class Eden {
    *
    * @async
    */
-  async start(opts) {
+  async start () {
     // Set variables
-    this.id = parseInt(opts.id, 10);
-    this.port = opts.port;
-    this.host = opts.host || config.get('host') || '0.0.0.0';
-    this.email = false;
-    this.events = new Events();
-    this.logger = opts.logger || this._logger();
-    this.version = pack.version;
-    this.cluster = opts.cluster;
-    this.database = false;
+    this.id = this.get('config.id') || uuid();
 
     // Set process name
     try {
       // Set process name
-      process.title = `${config.get('domain')} - ${this.cluster} #${this.id}`;
+      process.title = `${this.get('config.domain')} - ${this.get('config.cluster')} #${this.id}`;
     } catch (e) { /* */ }
 
-    // create classes
-    await this._initialize();
+    // add helpers
+    this.events = new EventEmitter();
+    this.logger = this.buildLogger();
+
+    // set data
+    this.__data.models = global.models;
+    this.__data.helpers = global.helpers;
+    this.__data.daemons = global.daemons;
+    this.__data.controllers = global.controllers;
+
+    // initialize daemons then controllers
+    for (const daemon of Object.keys(this.get('daemons'))) {
+      // initialize
+      if (this.get(`daemons.${daemon}.ctrl`).initialize) {
+        // initialze daemon
+        await this.get(`daemons.${daemon}.ctrl`).initialize(this);
+      }
+    }
+    for (const controller of Object.keys(this.get('controllers'))) {
+      // initialize
+      if (this.get(`controllers.${controller}.ctrl`).initialize) {
+        // initialze daemon
+        await this.get(`controllers.${controller}.ctrl`).initialize(this);
+      }
+    }
 
     // Connect database
-    await this._database();
+    await this.buildDatabase();
 
-    // check port
-    if (this.port) {
+    // add router
+    if (!this.get('config.router.disable')) {
       // Require router
       const Router = require('./eden/router'); // eslint-disable-line global-require
 
       // Bind Eden classes
-      this.router = new Router();
+      this.router = new Router(this);
 
       // await router building
       await this.router.building;
     }
 
-    // Build daemons
-    await this._daemons();
-
-    // Clear all endpoints
-    this.del('endpoint.*');
+    // create daemons
+    for (const daemon of Object.keys(this.get('daemons'))) {
+      // initialize
+      await this.init(this.get(`daemons.${daemon}`));
+    }
 
     // Add ping/pong logic
     this.on('eden.ping', () => {
       // Pong
-      this.emit('eden.pong', `${this.cluster}.${opts.id}`, true);
+      this.emit('eden.pong', `${this.get('config.cluster')}.${this.id}`, true);
     }, true);
 
     // Add thread specific listener
-    this.on(`${this.cluster}.${opts.id}`, ({ type, args, callee }) => {
+    this.on(`${this.get('config.cluster')}.${this.id}`, ({ type, args, callee }) => {
       // Emit data
       this.events.emit(type, ...args, {
         callee,
@@ -150,7 +226,7 @@ class Eden {
     }, true);
 
     // Add thread specific listener
-    this.on(`${this.cluster}.all`, ({ type, args, callee }) => {
+    this.on(`${this.get('config.cluster')}.all`, ({ type, args, callee }) => {
       // Emit data
       this.events.emit(type, ...args, {
         callee,
@@ -159,39 +235,52 @@ class Eden {
 
     // Emit ready
     this.emit('eden.ready', true, false);
-    this.emit(`eden.${this.cluster}.${opts.id}.ready`, true);
+    this.emit(`eden.${this.get('config.cluster')}.${this.id}.ready`, true);
   }
 
   /**
-   * Registers value to Eden
+   * initializes a controller
    *
-   * Eden has an internal register system for registering core logic across the application.
-   * By default Eden uses this to register the view engine, file transport engine,
-   * and database engine.
-   *
-   * Simply run `this.eden.register([name], [value])` within one of your Controllers or Daemons
-   * to create/overwrite a current Eden register.
-   *
-   * This is not persistent cross thread. You will need to ensure you register your core
-   * Eden variables in every possible Eden thread you intend to use them in.
-   *
-   * @param  {string} name
-   * @param  {*}      value
-   *
-   * @return {*}
+   * @param ctrl 
    */
-  register(name, value) {
-    // Check value
-    if (typeof value === 'undefined') {
-      // Return register
-      return dotProp.get(this.__register, name);
-    }
+  async init(ctrl) {
+    // check initialized
+    if (this.get(`controller.${ctrl.data.file}`)) return this.get(`controller.${ctrl.data.file}`);
 
-    // Set register value
-    this.__register = dotProp.set(this.__register, name, value);
+    // log
+    this.logger.log('info', 'initializing', {
+      class : ctrl.data.file,
+    });
 
-    // Return this
-    return this;
+    // created
+    const created = new ctrl.ctrl();
+
+    // create controller
+    this.set(`controller.${ctrl.data.file}`, created);
+
+    // loop events
+    ctrl.events.forEach(({ event, fn, all }) => {
+      // do endpoint
+      this.on(event, created[fn], all);
+    });
+    // loop endpoints
+    ctrl.endpoints.forEach(({ endpoint, fn, all }) => {
+      // do endpoint
+      this.endpoint(endpoint, created[fn], all);
+    });
+    // loop hooks
+    ctrl.hooks.forEach(({ hook, type, fn, priority }) => {
+      // do endpoint
+      this[type](hook, created[fn], priority);
+    });
+
+    // log
+    this.logger.log('info', 'initialized', {
+      class : ctrl.data.file,
+    });
+
+    // return created
+    return created;
   }
 
   /**
@@ -237,107 +326,6 @@ class Eden {
         }
       });
     });
-  }
-
-  /**
-   * Requires file to register
-   *
-   * This just safely and gracefully requires a file. We use this to catch syntax and other errors
-   * when requiring Controllers and/or Daemons.
-   * However this function can be used to require any file with `this.eden.require([file])`.
-   *
-   * @param  {string} file
-   *
-   * @return {Promise}
-   */
-  require(file) {
-    // Log which file to require to debug
-    this.logger.log('debug', `Requiring ${file}`, {
-      class : 'Eden',
-    });
-
-    let requiredFile = null;
-
-    // Try catch
-    try {
-      // Return required file
-      requiredFile = require(file); // eslint-disable-line global-require, import/no-dynamic-require
-    } catch (e) {
-      // Print error
-      this.error(e);
-
-      // Exit process
-      process.exit();
-    }
-
-    return requiredFile;
-  }
-
-  /**
-   * Get controller
-   *
-   * This function is the core module loader for Eden.
-   * All Eden Controllers and Daemons should be required and initialized with this method
-   * as to prevent them loading multiple times,
-   * and to ensure they exist within the Eden Controller register.
-   *
-   * To use this method to call a Controller cross-bundle use:
-   *
-   * `this.eden.controller('app/bundles/[bundle]/controllers/[controller].js')`
-   *
-   * @param  {string} file
-   *
-   * @return {Controller}
-   *
-   * @async
-   */
-  async controller(file) {
-    // Check register
-    if (!this.register('controller')) this.register('controller', {});
-
-    // Try catch
-    try {
-      // Find in register and check if Controller registered
-      if (!this.register('controller')[file]) {
-        // Require Controller class
-        const callable   = endpoints.filter(e => e.file === file);
-        const hookable   = hooks.filter(e => e.file === file);
-        const eventable  = events.filter(e => e.file === file);
-        const Controller = await this.require(file);
-
-        // Register Controller instance
-        this.register('controller')[file] = new Controller();
-
-        // do endpoints
-        callable.forEach((endpoint) => {
-          // do endpoint
-          this.endpoint(endpoint.endpoint, this.register('controller')[file][endpoint.fn], endpoint.all);
-        });
-
-        // do endpoints
-        eventable.forEach(({ event, fn, all }) => {
-          // do endpoint
-          this.on(event, this.register('controller')[file][fn], all);
-        });
-
-        // do endpoints
-        hookable.forEach((hook) => {
-          // do endpoint
-          this[hook.type](hook.hook, this.register('controller')[file][hook.fn], hook.priority);
-        });
-      }
-
-      // Return registered Controller instance
-      return this.register('controller')[file];
-    } catch (e) {
-      // Print error
-      this.error(e);
-
-      // Exit process
-      process.exit();
-    }
-
-    return null;
   }
 
   /**
@@ -405,7 +393,7 @@ class Eden {
     // On str/fn
     if (all) {
       // Pubsub on
-      this.register('pubsub').on(str, fn);
+      this.get('register.pubsub').on(str, fn);
     } else {
       // Add event listener
       this.events.on(str, fn);
@@ -439,7 +427,7 @@ class Eden {
     // On str/fn
     if (all) {
       // Pubsub on
-      this.register('pubsub').once(str, fn);
+      this.get('register.pubsub').once(str, fn);
     } else {
       // Add event listener
       this.events.once(str, fn);
@@ -462,7 +450,7 @@ class Eden {
    */
   off(str, fn, all) {
     // Emit function
-    return !all ? this.events.removeListener(str, fn) : this.register('pubsub').removeListener(str, fn);
+    return !all ? this.events.removeListener(str, fn) : this.get('register.pubsub').removeListener(str, fn);
   }
 
   /**
@@ -587,7 +575,7 @@ class Eden {
     const all = typeof args[args.length - 1] === 'boolean' ? args[args.length - 1] : false;
 
     // Emit function
-    return !all ? this.events.emit(str, ...args) : this.register('pubsub').emit(str, ...args);
+    return !all ? this.events.emit(str, ...args) : this.get('register.pubsub').emit(str, ...args);
   }
 
   /**
@@ -623,7 +611,7 @@ class Eden {
         // Emit to single thread
         types.forEach((type) => {
           // do pubsub type emit
-          this.register('pubsub').emit(`${type}.${thread !== null ? thread : 'all'}`, {
+          this.get('register.pubsub').emit(`${type}.${thread !== null ? thread : 'all'}`, {
             type   : `eden.call.${str}`,
             args   : [emission],
             callee : `${this.cluster}.${this.id}`,
@@ -640,7 +628,7 @@ class Eden {
         // Emit to single thread
         types.forEach((type) => {
           // Emit to single thread
-          this.register('pubsub').emit(`${type}.${thread !== null ? thread : 'all'}`, {
+          this.get('register.pubsub').emit(`${type}.${thread !== null ? thread : 'all'}`, {
             type   : str,
             args,
             callee : `${this.cluster}.${this.id}`,
@@ -652,6 +640,7 @@ class Eden {
 
 
   // /////////////////////////////////////////////////////////////////////////////////////////////
+  //
   //  Lock Methods
   //
   // /////////////////////////////////////////////////////////////////////////////////////////////
@@ -680,128 +669,8 @@ class Eden {
    */
   lock(key, ttl = 86400) {
     // create lock
-    return this.register('pubsub').lock(key, ttl);
+    return this.get('register.pubsub').lock(key, ttl);
   }
-
-  // /////////////////////////////////////////////////////////////////////////////////////////////
-  //
-  //  Cache Methods
-  //
-  // /////////////////////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Fets (and sets) cache by key
-   *
-   * This method gets and returns a sanitisable object from redis.
-   * It also allows you to specify a default cache value.
-   * To get a value simply:
-   *
-   * `const value = await this.eden.get([key])`
-   *
-   * To get a value, or a default returned value simply:
-   *
-   * `const value = await this.eden.get([key], () => {
-   *   // Return new value to cache for 60 seconds
-   *   return {
-   *     'cached' : true
-   *   };
-   * }, 60 * 1000)`
-   *
-   * @param  {string}   key
-   * @param  {function} notCached
-   * @param  {number}   ttl
-   *
-   * @return {*}
-   *
-   * @async
-   */
-  async get(key, notCached, ttl = 86400) {
-    // Check cached
-    if (typeof notCached === 'number') {
-      // spin
-      ttl = notCached;
-      notCached = null;
-    }
-
-    // get value
-    let value = await this.register('pubsub').get(key);
-
-    // check value
-    if (!value && notCached) {
-      // lock value
-      const unlock = await this.register('pubsub').lock(key);
-
-      // await not cached
-      value = await notCached();
-
-      // cache
-      this.register('pubsub').set(key, value, ttl);
-
-      // unlock
-      unlock();
-    }
-
-    // Return cached value
-    return value;
-  }
-
-  /**
-   * Sets cache by key
-   *
-   * This method allows you to set a sanitisable value in redis for use cross-thread.
-   * This is used by Eden core to cache pages when
-   * you use the `@cache` annotation specifying a route
-   *
-   * To set a value to Eden cache simply:
-   *
-   * `await this.eden.set([key], {
-   *    'cached' : true
-   * }, 60 * 1000)`
-   *
-   * @param  {string} key
-   * @param  {*}      value
-   * @param  {number} ttl
-   *
-   * @return {*}
-   *
-   * @async
-   */
-  set(key, value, ttl = 86400) {
-    // set in pubsub
-    return this.register('pubsub').set(key, value, ttl);
-  }
-
-  /**
-   * Delete cache by key
-   *
-   * This method allows you to remove an existing cache by key from redis. To do this simply:
-   *
-   * `await this.eden.del([key])`
-   *
-   * @param   {string} key
-   *
-   * @returns {Promise}
-   */
-  del(key) {
-    // set in pubsub
-    return this.register('pubsub').del(key);
-  }
-
-  /**
-   * Delete cache
-   *
-   * @param {String} key
-   *
-   * This method clears the _entire_ Eden lock and cache, please be careful with this
-   * method as it applies cross-thread; though only to the current application
-   *
-   * @async
-   */
-  clear(key) {
-    // delete key
-    return this.register('pubsub').del(key);
-  }
-
 
   // /////////////////////////////////////////////////////////////////////////////////////////////
   //
@@ -829,7 +698,7 @@ class Eden {
     this.__hook(hook);
 
     // add register
-    this.register('hook')[hook].pre.push({
+    this.get('register.hook')[hook].pre.push({
       fn,
       priority,
     });
@@ -850,7 +719,7 @@ class Eden {
     this.__hook(hook);
 
     // add register
-    this.register('hook')[hook].post.push({
+    this.get('register.hook')[hook].post.push({
       fn,
       priority,
     });
@@ -921,19 +790,19 @@ class Eden {
    */
   __hook(hook) {
     // Check register
-    if (!this.register('hook')) this.register('hook', {});
+    if (!this.get('register.hook')) this.register('hook', {});
 
     // Check hook exists
-    if (!this.register('hook')[hook]) {
+    if (!this.get('register.hook')[hook]) {
       // add register hook
-      this.register('hook')[hook] = {
+      this.get('register.hook')[hook] = {
         pre  : [],
         post : [],
       };
     }
 
     // keys
-    const keys = Object.keys(this.register('hook')).filter((key) => {
+    const keys = Object.keys(this.get('register.hook')).filter((key) => {
       // exact match
       if (key === hook) return true;
 
@@ -961,7 +830,7 @@ class Eden {
     // loop keys
     keys.forEach((key) => {
       // get register
-      const { pre, post } = this.register('hook')[key] || {};
+      const { pre, post } = this.get('register.hook')[key] || {};
 
       // push post
       fns.pre.push(...(pre || []));
@@ -984,54 +853,18 @@ class Eden {
   // /////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * initialize application
-   *
-   * @return {Promise}
-   */
-  async _initialize() {
-    // get cluster
-    const clusterConfig = config.get('clusterMapping')[this.cluster];
-
-    // initialize
-    this.logger.log('info', 'initializing daemon classes', {
-      class : 'Eden',
-    });
-
-    // get daemons
-    const daemonClasses = daemons.filter((daemon) => {
-      // return cluster
-      // eslint-disable-next-line max-len
-      return (clusterConfig ? clusterConfig.includes(daemon.file) : (!daemon.cluster || daemon.cluster.includes(this.cluster)));
-    }).sort((a, b) => (b.priority || 0) - (a.priority || 0));
-
-    // loop toload
-    for (const daemon of daemonClasses) {
-      // Require Daemon
-      const Daemon = this.require(daemon.file);
-
-      // check initialize
-      if (Daemon.initialize) await Daemon.initialize(this);
-    }
-
-    // initialize
-    this.logger.log('info', 'initialized daemon classes', {
-      class : 'Eden',
-    });
-  }
-
-  /**
    * Registers logger
    *
    * @return {Logger} logger
    *
    * @private
    */
-  _logger() {
+  buildLogger() {
     // Set logger
-    return new Logger({
+    return winston.createLogger({
       level      : config.get('logLevel') || 'info',
       transports : [
-        new Console({
+        new winston.transports.Console({
           colorize  : true,
           formatter : log,
           timestamp : true,
@@ -1041,21 +874,17 @@ class Eden {
   }
 
   /**
-   * Registers database
-   *
-   * @private
-   *
-   * @async
+   * builds database
    */
-  async _database() {
+  async buildDatabase() {
     // retister db
     const unlock = await this.lock('database.register');
 
     // initialize database
     try {
       // Connects to database
-      const Plug = require(config.get('database.plug'));
-      const plug = new Plug(config.get('database.config'));
+      const Plug = require(this.get('config.database.plug'));
+      const plug = new Plug(this.get('config.database.config'));
 
       // Log registering
       this.logger.log('info', 'Registering database', {
@@ -1066,7 +895,7 @@ class Eden {
       await EdenModel.init(plug);
 
       // Loop models
-      for (const key of Object.keys(models)) {
+      for (const key of Object.keys(this.get('models'))) {
         // Set Model
         const Model = model(key);
 
@@ -1085,72 +914,6 @@ class Eden {
 
     // unlock db register
     unlock();
-  }
-
-  /**
-   * Builds Daemons
-   *
-   * @private
-   */
-  _daemons() {
-    // Check register
-    if (!this.register('daemon')) this.register('daemon', {});
-
-    // get cluster
-    const clusterConfig = config.get('clusterMapping')[this.cluster];
-
-    // get daemons
-    const daemonClasses = daemons.filter((daemon) => {
-      // return cluster
-      // eslint-disable-next-line max-len
-      return (clusterConfig ? clusterConfig.includes(daemon.file) : (!daemon.cluster || daemon.cluster.includes(this.cluster)));
-    }).sort((a, b) => (b.priority || 0) - (a.priority || 0));
-
-    // loop toload
-    for (const daemon of daemonClasses) {
-      // Run daemon
-      try {
-        // Require Daemon
-        const Daemon    = this.require(daemon.file);
-        const callable  = endpoints.filter(({ file }) => file === daemon.file);
-        const hookable  = hooks.filter(({ file }) => file === daemon.file);
-        const eventable = events.filter(({ file }) => file === daemon.file);
-
-        // Require daemon
-        this.register('daemon')[daemon.file] = new Daemon();
-
-        // do endpoints
-        callable.forEach((endpoint) => {
-          // do endpoint
-          this.endpoint(endpoint.endpoint, this.register('daemon')[daemon.file][endpoint.fn], endpoint.all);
-        });
-
-        // do events
-        eventable.forEach(({ event, fn, all }) => {
-          // do endpoint
-          this.on(event, this.register('daemon')[daemon.file][fn], all);
-        });
-
-        // do events
-        hookable.forEach((hook) => {
-          // do endpoint
-          this[hook.type](hook.hook, this.register('daemon')[daemon.file][hook.fn]);
-        });
-
-        // Log running Daemon
-        this.logger.log('info', `Running daemon ${daemon.file}`, {
-          class : 'Eden',
-        });
-      } catch (e) {
-        // Print error
-        this.error(e);
-
-        // Log Daemon failed to error
-        this.logger.log('error', `Daemon ${daemon.file} failed!`, {
-          class : 'Eden',
-        });
-      }
-    }
   }
 }
 

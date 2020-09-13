@@ -1,30 +1,46 @@
-// Require class dependencies
-import eden from 'eden';
+// Require dependencies
+import yargs from 'yargs';
 import dotProp from 'dot-prop';
+import deepMerge from 'deepmerge';
 import { EventEmitter } from 'events';
 
 /**
- * Create Base class
+ * create eden CLI
  */
-export default class Base extends EventEmitter {
+class EdenConfig extends EventEmitter {
   /**
-   * Construct Base class
+   * construct eden CLI
    */
-  constructor() {
-    // Run super
+  constructor(data = {}) {
+    // run super
     super();
 
-    // data
-    this.__data = {};
+    // set data
+    this.__data = data;
 
-    // bind
+    // merge appconfig
+    const argConfig = { ...(yargs.argv) };
+    delete argConfig._;
+    delete argConfig.$0;
+
+    // set env
+    argConfig.env = process.env;
+
+    // loop env
+    Object.keys(process.env).forEach((key) => {
+      // check key
+      if (['_'].includes(key)) return;
+
+      // dotprop
+      dotProp.set(argConfig, key.toLowerCase().split('_').join('.'), process.env[key]);
+    });
+
+    // arg config
+    this.__data = deepMerge(this.__data, argConfig);
+
+    // bind methods
     this.get = this.get.bind(this);
     this.set = this.set.bind(this);
-
-    // Bind public variables
-    this.eden = eden;
-    this.call = eden.call;
-    this.logger = eden.logger;
   }
 
   /**
@@ -70,3 +86,6 @@ export default class Base extends EventEmitter {
     return actualValue;
   }
 }
+
+// export default config
+export default new EdenConfig(global.config);
