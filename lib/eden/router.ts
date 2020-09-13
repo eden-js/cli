@@ -142,7 +142,7 @@ export default class EdenRouter {
     });
     
     // Set router classes
-    const controllers = Object.keys(this.eden.get('controllers'));
+    const controllers = Object.keys(this.eden.get('controllers') || {});
 
     // Run eden routes hook
     await this.eden.hook('eden.router.controllers', controllers, async () => {

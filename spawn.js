@@ -29,7 +29,7 @@ class App {
     if (!this.master) {
       // require file
       // eslint-disable-next-line global-require,import/no-dynamic-require
-      require(`${process.cwd()}/.edenjs/cluster.${process.env.cluster}.js`);
+      require(`${process.cwd()}/.edenjs/cluster.${process.env.EDEN_CLUSTER}.js`);
 
       // return
       return;
@@ -43,12 +43,21 @@ class App {
     // Build logger
     this.buildLogger();
 
-    // clusters
-    if (typeof argv.cluster === 'string') argv.cluster = argv.cluster.split(',');
-    if (!argv.cluster) argv.cluster = ['front', 'back'];
+    // check cluster
+    let clusters = ['front', 'back'];
+
+    // check cluster
+    if (process.env.CLUSTER) {
+      // split by env
+      clusters = process.env.CLUSTER.split(',');
+    }
+    if (argv.cluster) {
+      // cluster
+      clusters = argv.cluster.split(',');
+    }
 
     // launch clusters
-    argv.cluster.forEach((c) => {
+    clusters.forEach((c) => {
       // launch
       this.spawn(c);
     });
@@ -85,7 +94,7 @@ class App {
     const env = {
       ...args,
 
-      cluster : c,
+      EDEN_CLUSTER : c,
     };
 
     // Fork new thread

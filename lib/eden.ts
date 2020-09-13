@@ -156,12 +156,12 @@ class Eden {
    */
   async start () {
     // Set variables
-    this.id = this.get('config.id') || uuid();
+    this.id = config.get('id') || uuid();
 
     // Set process name
     try {
       // Set process name
-      process.title = `${this.get('config.domain')} - ${this.get('config.cluster')} #${this.id}`;
+      process.title = `${config.get('domain')} - ${config.get('cluster')} #${this.id}`;
     } catch (e) { /* */ }
 
     // add helpers
@@ -178,14 +178,14 @@ class Eden {
     this.logger.log('info', 'initializing static functions');
 
     // initialize daemons then controllers
-    for (const daemon of Object.keys(this.get('daemons'))) {
+    for (const daemon of Object.keys(this.get('daemons') || {})) {
       // initialize
       if (this.get(`daemons.${daemon}.ctrl`).initialize) {
         // initialze daemon
         await this.get(`daemons.${daemon}.ctrl`).initialize(this);
       }
     }
-    for (const controller of Object.keys(this.get('controllers'))) {
+    for (const controller of Object.keys(this.get('controllers') || {})) {
       // initialize
       if (this.get(`controllers.${controller}.ctrl`).initialize) {
         // initialze daemon
@@ -200,7 +200,7 @@ class Eden {
     await this.buildDatabase();
 
     // add router
-    if (!this.get('config.router.disable') && global.cluster !== 'back') {
+    if (!config.get('router.disable') && global.cluster !== 'back') {
       // initialize daemons
       this.logger.log('info', 'initializing controllers');
 
@@ -221,7 +221,7 @@ class Eden {
     this.logger.log('info', 'initializing daemons');
 
     // create daemons
-    for (const daemon of Object.keys(this.get('daemons'))) {
+    for (const daemon of Object.keys(this.get('daemons') || {})) {
       // initialize
       await this.init(this.get(`daemons.${daemon}`));
     }
@@ -232,11 +232,11 @@ class Eden {
     // Add ping/pong logic
     this.on('eden.ping', () => {
       // Pong
-      this.emit('eden.pong', `${this.get('config.cluster')}.${this.id}`, true);
+      this.emit('eden.pong', `${config.get('cluster')}.${this.id}`, true);
     }, true);
 
     // Add thread specific listener
-    this.on(`${this.get('config.cluster')}.${this.id}`, ({ type, args, callee }) => {
+    this.on(`${config.get('cluster')}.${this.id}`, ({ type, args, callee }) => {
       // Emit data
       this.events.emit(type, ...args, {
         callee,
@@ -244,7 +244,7 @@ class Eden {
     }, true);
 
     // Add thread specific listener
-    this.on(`${this.get('config.cluster')}.all`, ({ type, args, callee }) => {
+    this.on(`${config.get('cluster')}.all`, ({ type, args, callee }) => {
       // Emit data
       this.events.emit(type, ...args, {
         callee,
@@ -253,7 +253,7 @@ class Eden {
 
     // Emit ready
     this.emit('eden.ready', true, false);
-    this.emit(`eden.${this.get('config.cluster')}.${this.id}.ready`, true);
+    this.emit(`eden.${config.get('cluster')}.${this.id}.ready`, true);
   }
 
   /**
@@ -877,7 +877,7 @@ class Eden {
   buildLogger() {
     // Set logger
     return winston.createLogger({
-      level      : this.get('config.log.level') || 'info',
+      level      : config.get('log.level') || 'info',
       transports : [
         new winston.transports.Console({
           format    : log,
@@ -898,8 +898,8 @@ class Eden {
     // initialize database
     try {
       // Connects to database
-      const Plug = require(this.get('config.database.plug'));
-      const plug = new Plug(this.get('config.database.config'));
+      const Plug = require(config.get('database.plug'));
+      const plug = new Plug(config.get('database.config'));
 
       // Log registering
       this.logger.log('info', 'Registering database', {
