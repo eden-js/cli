@@ -63,7 +63,7 @@ export default class EdenRouter {
    */
   async build() {
     // Log building to debug
-    eden.logger.log('debug', 'building eden router', {
+    this.eden.logger.log('debug', 'building eden router', {
       class : this.constructor.name,
     });
 
@@ -73,13 +73,13 @@ export default class EdenRouter {
     });
 
     // create express app
-    await eden.hook('eden.router.app', this.app, () => {
+    await this.eden.hook('eden.router.app', this.app, () => {
       // Create server
-      return this.app.listen(eden.port);
+      return this.app.listen(this.eden.get('config.port'));
     });
 
     // Log built to debug
-    eden.logger.log('info', `[${eden.port}] [${eden.host}] server listening`, {
+    this.eden.logger.log('info', `[${this.eden.get('config.host')}:${this.eden.get('config.port')}] server listening`, {
       class : this.constructor.name,
     });
 
@@ -89,7 +89,7 @@ export default class EdenRouter {
     });
 
     // hook multer
-    await eden.hook('eden.router.multer', this.multer);
+    await this.eden.hook('eden.router.multer', this.multer);
 
     // Loop HTTP request types
     ['use', 'get', 'post', 'push', 'delete', 'all'].forEach((type) => {
@@ -106,7 +106,7 @@ export default class EdenRouter {
     this.app.use('api', this.apiAction);
 
     // Run eden app hook
-    await eden.hook('eden.app', this.app, () => {
+    await this.eden.hook('eden.app', this.app, () => {
       // initialize
       SessionStore.initialize(session);
 
@@ -127,7 +127,7 @@ export default class EdenRouter {
         key   : config.get('session.key') || 'eden.session.id',
         genid : uuid,
         store : new SessionStore({
-          eden,
+          eden : this.eden,
         }),
         secret : config.get('secret'),
         resave : true,
@@ -142,35 +142,44 @@ export default class EdenRouter {
     });
     
     // Set router classes
-    const controllers = Object.values(classes).filter((c) => {
-      // check thread
-      return !c.cluster || c.cluster.includes(eden.label);
-    }).sort((a, b) => {
-      if ((b.priority || 0) > (a.priority || 0)) return 1;
-      if ((b.priority || 0) < (a.priority || 0)) return -1;
-
-      return 0;
-    });
+    const controllers = Object.keys(this.eden.get('controllers'));
 
     // Run eden routes hook
-    await eden.hook('eden.router.controllers', controllers, async () => {
+    await this.eden.hook('eden.router.controllers', controllers, async () => {
       // Loop router classes
-      for (const controller of controllers) {
+      for (const key of controllers) {
         // Load controller
-        await eden.controller(controller.file);
+        await this.eden.init(this.eden.get(`controllers.${key}`));
       }
     });
 
     // Sort routes
-    routes.sort((a, b) => {
-      if ((b.priority || 0) > (a.priority || 0)) return 1;
-      if ((b.priority || 0) < (a.priority || 0)) return -1;
+    const routes = [];
 
+    // add routes
+    controllers.forEach((controller) => {
+      // push routes
+      routes.push(...(this.eden.get(`controllers.${controller}.routes`).map((route) => {
+        // return clone
+        return {
+          ctrl : controller,
+          ...route,
+        };
+      })));
+    });
+
+    // sort routes
+    routes.sort((a, b) => {
+      // check priority
+      if ((a.priority || 0) < (b.priority || 0)) return 1;
+      if ((a.priority || 0) > (b.priority || 0)) return -1;
+
+      // return no change
       return 0;
     });
 
     // Run eden routes hook
-    await eden.hook('eden.router.routes', routes, async () => {
+    await this.eden.hook('eden.router.routes', routes, async () => {
       // create route map
       for (const route of routes) {
         // add to router
@@ -179,7 +188,7 @@ export default class EdenRouter {
     });
 
     // Log built to debug
-    eden.logger.log('debug', 'completed building eden router', {
+    this.eden.logger.log('debug', 'completed building eden router', {
       class : this.constructor.name,
     });
   }
@@ -200,7 +209,7 @@ export default class EdenRouter {
     const args = [];
 
     // Run route args hook
-    await eden.hook('eden.router.route', {
+    await this.eden.hook('eden.router.route', {
       args,
       path,
       route,
@@ -235,13 +244,13 @@ export default class EdenRouter {
         // Try catch
         try {
           // Get controller
-          const controller = await eden.controller(route.file);
+          const ctrl = await this.eden.get(`controller.${route.ctrl}`);
 
           // Try run controller function
-          return controller[route.fn](req, res, next);
+          return ctrl[route.fn](req, res, next);
         } catch (e) {
           // Set error
-          eden.error(e);
+          this.eden.error(e);
 
           // Run next
           return next();

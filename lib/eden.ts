@@ -337,10 +337,7 @@ class Eden {
    */
   error(e) {
     // Log error
-    global.printError(e);
-
-    // Emit error
-    this.emit('eden.error', e);
+    throw e;
   }
 
   /**

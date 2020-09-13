@@ -53,8 +53,8 @@ export default class ControllersTask {
     // create matrix
     const controllers = threadData.controllers.sort((a, b) => {
       // check priority
-      if ((a.priority || 0) > (b.priority || 0)) return 1;
-      if ((a.priority || 0) < (b.priority || 0)) return -1;
+      if ((a.priority || 0) < (b.priority || 0)) return 1;
+      if ((a.priority || 0) > (b.priority || 0)) return -1;
 
       // return 0
       return 0;
@@ -91,8 +91,8 @@ ${['calls', 'hooks', 'routes', 'events', 'endpoints'].map((type) => {
     return newItem;
   }).sort((a, b) => {
     // check priority
-    if ((a.priority || 0) > (b.priority || 0)) return 1;
-    if ((a.priority || 0) < (b.priority || 0)) return -1;
+    if ((a.priority || 0) < (b.priority || 0)) return 1;
+    if ((a.priority || 0) > (b.priority || 0)) return -1;
 
     // return 0
     return 0;
