@@ -144,15 +144,6 @@ class Eden {
 
   /**
    * Starts Eden framework
-   *
-   * This function is called from `/app.js` in every `compute` and `express` thread.
-   * The amount of threads are specified in `/app/config.js`
-   * under `expressThreads` and `computeThreads`.
-   * gen2 has webbed toes
-   *
-   * @param {object} opts
-   *
-   * @async
    */
   async start () {
     // Set variables
