@@ -124,7 +124,7 @@ class EdenCLI extends EventEmitter {
 
     // spinnies
     this.spinnies = new Spinnies({
-      disableSpins : (argv.environment || 'dev') !== 'live',
+      disableSpins : (argv.environment || 'dev') === 'live',
     });
 
     // return promise
