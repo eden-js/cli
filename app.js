@@ -481,7 +481,7 @@ eden.start().then(() => {
     }
 
     // server
-    this.server = cp.fork(`${__dirname}/spawn.js`, ['start', `--clusters=${argv.clusters || 'front,back'}`]);
+    this.server = cp.fork(`${__dirname}/spawn.js`, [`--cluster=${argv.cluster || 'front,back'}`]);
   }
 
   /**

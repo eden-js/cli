@@ -191,7 +191,7 @@ class Eden {
     await this.buildDatabase();
 
     // add router
-    if (!config.get('router.disable') && global.cluster !== 'back') {
+    if (!config.get('router.disable') && !['back', 'discord'].includes(global.cluster)) {
       // initialize daemons
       this.logger.log('info', 'initializing controllers');
 

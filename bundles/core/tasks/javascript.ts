@@ -97,6 +97,7 @@ export default class JavascriptTask {
       }).filter(item => item),
       entries       : [data.polyfill, ...await glob(data.files)],
       commondir     : false,
+      extensions    : ['.es6', '.es', '.jsx', '.js', '.mjs', '.ts'],
       insertGlobals : true,
     }));
 
@@ -116,6 +117,14 @@ export default class JavascriptTask {
           useBuiltIns : 'entry',
         }]),
       ],
+      plugins : [
+        '@babel/plugin-transform-runtime',
+        ['@babel/plugin-transform-typescript', {
+          strictMode : false,
+        }],
+        'add-module-exports',
+      ],
+      extensions : ['.es6', '.es', '.jsx', '.js', '.mjs', '.ts'],
       sourceMaps : data.sourcemaps,
     });
 
