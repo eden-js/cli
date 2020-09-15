@@ -4,6 +4,7 @@
 global.CLI = true;
 
 // Require dependencies
+const fs = require('fs-extra');
 const cluster = require('cluster');
 const winston = require('winston');
 const { argv } = require('yargs');
@@ -28,8 +29,14 @@ class App {
     // get cluster
     if (!this.master) {
       // require file
+      if (fs.existsSync(`${process.cwd()}/.edenjs/cluster.${process.env.EDEN_CLUSTER}.js`)) {
+        // require file
       // eslint-disable-next-line global-require,import/no-dynamic-require
-      require(`${process.cwd()}/.edenjs/cluster.${process.env.EDEN_CLUSTER}.js`);
+        require(`${process.cwd()}/.edenjs/cluster.${process.env.EDEN_CLUSTER}.js`);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log(`${process.cwd()}/.edenjs/cluster.${process.env.EDEN_CLUSTER}.js NOT FOUND`);
+      }
 
       // return
       return;
