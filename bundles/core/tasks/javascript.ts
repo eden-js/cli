@@ -41,7 +41,7 @@ export default class JavascriptTask {
     // set opts
     const opts = {
       files,
-      js      : this.cli.get('config.frontend.javascript.include'),
+      js      : Array.from(new Set(this.cli.get('config.frontend.javascript.include'))),
       dest    : `${global.appRoot}/www/public/js`,
       cache   : `${global.appRoot}/.edenjs/.cache/browserify.json`,
       imports : [...imports, ...(this.cli.get('config.import.modules', []).map((mod) => {

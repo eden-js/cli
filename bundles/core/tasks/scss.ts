@@ -33,7 +33,7 @@ export default class ScssTask {
     const opts = {
       files,
 
-      scss       : this.cli.get('config.frontend.scss.include') || [],
+      scss       : Array.from(new Set(this.cli.get('config.frontend.scss.include') || [])),
       bases      : this.cli.get('bases', []),
       appRoot    : global.appRoot,
       variables  : await loader.find(this.cli.get('bundles').map((b) => b.path), '/public/scss/variables.scss'),
