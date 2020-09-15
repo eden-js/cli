@@ -48,7 +48,6 @@ export default class JavascriptTask {
         return `${mod}/node_modules`;
       })), global.appRoot, `${global.appRoot}/node_modules`, `${global.edenRoot}/node_modules`],
       browsers   : this.cli.get('config.frontend.javascript.browserlist'),
-      polyfill   : require.resolve('@babel/polyfill'),
       sourceMaps : this.cli.get('config.environment') === 'dev',
 
       appRoot  : global.appRoot,
@@ -88,14 +87,14 @@ export default class JavascriptTask {
     let b = browserify(xtend(browserifyinc.args, {
       paths  : data.imports,
       debug  : data.sourcemaps,
-      ignore : ['lodash', ...((data.js || []).map((item) => {
+      ignore : [...((data.js || []).map((item) => {
         // check item
         if (item.indexOf('!') === 0) {
           // return item
           return item.substring(1);
         }
       }).filter(item => item))],
-      entries       : [data.polyfill, ...await glob(data.files)],
+      entries       : [...await glob(data.files)],
       commondir     : false,
       extensions    : ['.es6', '.es', '.jsx', '.js', '.mjs', '.ts'],
       insertGlobals : true,
