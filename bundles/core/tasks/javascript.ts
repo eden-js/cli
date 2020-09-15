@@ -88,13 +88,13 @@ export default class JavascriptTask {
     let b = browserify(xtend(browserifyinc.args, {
       paths  : data.imports,
       debug  : data.sourcemaps,
-      ignore : (data.js || []).map((item) => {
+      ignore : ['lodash', ...((data.js || []).map((item) => {
         // check item
         if (item.indexOf('!') === 0) {
           // return item
           return item.substring(1);
         }
-      }).filter(item => item),
+      }).filter(item => item))],
       entries       : [data.polyfill, ...await glob(data.files)],
       commondir     : false,
       extensions    : ['.es6', '.es', '.jsx', '.js', '.mjs', '.ts'],
@@ -118,11 +118,9 @@ export default class JavascriptTask {
         }]),
       ],
       plugins : [
-        '@babel/plugin-transform-runtime',
         ['@babel/plugin-transform-typescript', {
           strictMode : false,
         }],
-        'add-module-exports',
       ],
       extensions : ['.es6', '.es', '.jsx', '.js', '.mjs', '.ts'],
       sourceMaps : data.sourcemaps,
@@ -138,7 +136,9 @@ export default class JavascriptTask {
 
     // Init gulpSourcemaps
     if (data.sourceMaps) {
-      job = job.pipe(gulpSourcemaps.init({ loadMaps : true }));
+      job = job.pipe(gulpSourcemaps.init({
+        loadMaps : true
+      }));
     }
 
     // Build vendor prepend
