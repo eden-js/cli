@@ -73,7 +73,7 @@ class App {
    */
   exit(worker) {
     // Spawn new thread
-    this.spawn(worker.process.env.cluster);
+    this.spawn(worker.process.env.EDEN_CLUSTER);
   }
 
   /**
