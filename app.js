@@ -317,7 +317,7 @@ class EdenCLI extends EventEmitter {
   async compile() {
     // create spinnie
     this.spinnies.add('compile', {
-      text : 'Compiling',
+      text : `compiling clusters ${Object.keys(this.get('cluster'))}`,
     });
 
     // write memory
@@ -397,7 +397,7 @@ eden.start().then(() => {
 
     // create spinnie
     this.spinnies.succeed('compile', {
-      text : 'compiled cluster!',
+      text : `${Object.keys(this.get('cluster'))} clusters compiled!`,
     });
   }
 
