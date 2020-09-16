@@ -309,6 +309,11 @@ class EdenCLI extends EventEmitter {
    * compiles edenjs
    */
   async compile() {
+    // create spinnie
+    this.spinnies.add('compile', {
+      text : 'Compiling',
+    });
+
     // write memory
     await this.write('.index/data.js', `module.exports = ${JSON5.stringify(this.get('index'))};`);
     await this.write('.index/config.js', `module.exports = ${JSON5.stringify(this.get('config'))};`);
@@ -383,6 +388,11 @@ eden.start().then(() => {
 });
       `);
     }));
+
+    // create spinnie
+    this.spinnies.succeed('compile', {
+      text : 'compiled cluster!',
+    });
   }
 
   /**
