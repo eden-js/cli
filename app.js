@@ -37,6 +37,12 @@ const { EventEmitter } = require('events');
 const loader     = require('./lib/loader');
 const baseConfig = require('./config');
 
+// create array merge function
+const arrayMerge = (destinationArray, sourceArray, options) => {
+  // return merged
+  return Array.from(new Set([...destinationArray, ...sourceArray]));
+};
+
 /**
  * create eden CLI
  */
@@ -537,7 +543,9 @@ eden.start().then(() => {
     });
 
     // set config
-    that.set('config', deepMerge(baseConfig, argConfig));
+    that.set('config', deepMerge(argConfig, baseConfig, {
+      arrayMerge,
+    }));
 
     // loaded bundles
     next('config loaded!');
@@ -606,12 +614,16 @@ eden.start().then(() => {
       if (await fs.exists(`${base}/config.js`)) {
         // merge config
         // eslint-disable-next-line global-require,import/no-dynamic-require
-        that.set('config', deepMerge(require(`${base}/config.js`), that.get('config')));
+        that.set('config', deepMerge(require(`${base}/config.js`), that.get('config'), {
+          arrayMerge,
+        }));
       }
       if (await fs.exists(`${base}/config.ts`)) {
         // merge config
         // eslint-disable-next-line global-require,import/no-dynamic-require
-        that.set('config', deepMerge(require(`${base}/config.ts`), that.get('config')));
+        that.set('config', deepMerge(require(`${base}/config.ts`), that.get('config'), {
+          arrayMerge,
+        }));
       }
     }));
 
