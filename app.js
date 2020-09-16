@@ -210,16 +210,16 @@ class EdenCLI extends EventEmitter {
 
     // then
     await promise;
-    await Promise.all(building).then(() => {
-      // add restart listener
-      this.on('restart', () => {
-        // restart
-        this.start();
-      });
+    await Promise.all(building);
 
-      // launch
-      this[argv._[0]]();
+    // add restart listener
+    this.on('restart', () => {
+      // restart
+      this.start();
     });
+
+    // launch
+    await this[argv._[0]]();
   }
 
   /**
