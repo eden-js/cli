@@ -72,7 +72,9 @@ exporting['${name}'] = () => {
     // loop models
     for (const helper of await glob(data.files)) {
       // add to models
-      helpers[helper.split('/bundles/')[1].split('.')[0]] = helper;
+      if (!helpers[helper.split('/bundles/')[1].split('.')[0]]) {
+        helpers[helper.split('/bundles/')[1].split('.')[0]] = helper;
+      }
     }
     
     // return models
