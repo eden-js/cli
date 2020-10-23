@@ -23,6 +23,7 @@ class Eden {
   constructor() {
     // Bind private variables
     this.__data = {
+      id      : config.get('id') || uuid(),
       config  : global.config,
       version : pack.version,
     };
@@ -146,13 +147,10 @@ class Eden {
    * Starts Eden framework
    */
   async start () {
-    // Set variables
-    this.id = config.get('id') || uuid();
-
     // Set process name
     try {
       // Set process name
-      process.title = `${config.get('domain')} - ${config.get('cluster')} #${this.id}`;
+      process.title = `${config.get('domain')} - ${config.get('cluster')} #${this.get('id')}`;
     } catch (e) { /* */ }
 
     // add helpers
@@ -220,22 +218,24 @@ class Eden {
     // initialize daemons
     this.logger.log('info', 'initialized daemons');
 
+    // let last ping
+    let lastPing = 0;
+
     // Add ping/pong logic
-    this.on('eden.ping', () => {
+    this.on('eden.ping', (id) => {
       // Pong
-      this.emit('eden.pong', `${config.get('cluster')}.${this.id}`, true);
+      this.thread(id).emit('eden.pong', this.__data.id, global.cluster);
     }, true);
-
-    // Add thread specific listener
-    this.on(`${config.get('cluster')}.${this.id}`, ({ type, args, callee }) => {
-      // Emit data
-      this.events.emit(type, ...args, {
-        callee,
+    this.on('eden.pong', (id, cluster) => {
+      // set threads
+      this.set(`threads.${id}`, {
+        ping : (new Date()).getTime() - lastPing,
+        cluster,
       });
-    }, true);
+    }, false);
 
     // Add thread specific listener
-    this.on(`${config.get('cluster')}.all`, ({ type, args, callee }) => {
+    this.on(`${this.__data.id}`, ({ type, args, callee }) => {
       // Emit data
       this.events.emit(type, ...args, {
         callee,
@@ -244,7 +244,18 @@ class Eden {
 
     // Emit ready
     this.emit('eden.ready', true, false);
-    this.emit(`eden.${config.get('cluster')}.${this.id}.ready`, true);
+
+    // do ping
+    const ping = () => {
+      // reset last ping
+      lastPing = (new Date()).getTime();
+
+      // emit ping
+      this.emit('eden.ping', this.__data.id, true);
+    };
+
+    // ping interval
+    this.threadInterval = setInterval(ping, 5000);
   }
 
   /**
@@ -550,16 +561,34 @@ class Eden {
         res = await fn(...args);
 
         // Run function
-        return this.emit(id, {
+        if (opts && opts.callee) {
+          // emit
+          return this.thread(opts.callee).emit(id, {
+            result  : res,
+            success : true,
+          });
+        }
+        
+        // emit
+        this.emit(id, {
           result  : res,
           success : true,
-        }, !!((opts && opts.callee) || all));
+        }, all);
       } catch (e) {
-         // Run function
+        // Run function
+        if (opts && opts.callee) {
+          // emit
+          return this.thread(opts.callee).emit(id, {
+            error   : e,
+            success : false,
+          });
+        }
+
+        // Run function
         return this.emit(id, {
           error   : e,
           success : false,
-        }, !!((opts && opts.callee) || all));
+        }, all);
       }
     }, !!all);
   }
@@ -597,48 +626,54 @@ class Eden {
    *
    * @return {*}
    */
-  thread(types, thread = null) {
-    // make type an array
-    if (!Array.isArray(types)) types = [types];
-
+  thread(id) {
     // Returns thread call logic
     return {
       call : (str, ...args) => {
-        // Set id
-        const id = uuid();
-
         // Create emission
         const emission = {
-          id,
+          id : uuid(),
           str,
           args,
         };
 
-        // Emit to single thread
-        types.forEach((type) => {
-          // do pubsub type emit
-          this.get('register.pubsub').emit(`${type}.${thread !== null ? thread : 'all'}`, {
-            type   : `eden.call.${str}`,
-            args   : [emission],
-            callee : `${this.cluster}.${this.id}`,
-          });
+        // Await one response
+        const data = new Promise((resolve, reject) => {
+          // On message
+          this.once(emission.id, (res) => {
+            // check success
+            if (!res.success) {
+              // deserialize error
+              const promiseError = new Error(res.error.message);
+
+              // set stack
+              promiseError.stack = res.error.stack;
+
+              // throw error
+              reject(promiseError);
+            }
+
+            // resolve result
+            resolve(res.result);
+          }, false);
         });
 
-        // Await one response
-        return new Promise((resolve) => {
-          // On message
-          this.once(id, resolve, true);
+        // do pubsub type emit
+        this.get('register.pubsub').emit(id, {
+          type   : `eden.call.${str}`,
+          args   : [emission],
+          callee : this.__data.id,
         });
+
+        // return res
+        return data;
       },
       emit : (str, ...args) => {
         // Emit to single thread
-        types.forEach((type) => {
-          // Emit to single thread
-          this.get('register.pubsub').emit(`${type}.${thread !== null ? thread : 'all'}`, {
-            type   : str,
-            args,
-            callee : `${this.cluster}.${this.id}`,
-          });
+        this.get('register.pubsub').emit(id, {
+          args,
+          type   : str,
+          callee : this.__data.id,
         });
       },
     };

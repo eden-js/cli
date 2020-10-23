@@ -60,7 +60,7 @@ export default class Model extends EdenModel {
    *
    * @async
    */
-  async save(by, ...args) {
+  async save(opts, ...args) {
     // Set saved
     let saved = null;
 
@@ -72,15 +72,17 @@ export default class Model extends EdenModel {
     const updates = this.__updates;
 
     // Await model update/create hook
-    await eden.hook(`${this.constructor.name.toLowerCase()}.${this.__id ? 'update' : 'create'}`, this, { by, updates }, async () => {
+    await eden.hook(`${this.constructor.name.toLowerCase()}.${this.__id ? 'update' : 'create'}`, this, { ...opts, updates }, async () => {
       // Run parent save
       saved = await super.replace(...args);
     });
 
     // Emit model save to all threads
     eden.emit('model.save', {
+      ...opts,
+
       id      : this.__id,
-      by      : by && by.get && by.get('_id') ? by.get('_id').toString() : null,
+      user    : opts && opts.user && opts.user.get('_id') ? opts.user.get('_id').toString() : null,
       model   : this.constructor.name.toLowerCase(),
       updates : Array.from(updates.values()),
     }, true);
@@ -228,7 +230,7 @@ export default class Model extends EdenModel {
 
     // Check if has model and data is array
     if (Array.isArray(data)) {
-      hasModels = !!data.find(sub => sub && typeof sub.id === 'string' && typeof sub.model === 'string');
+      hasModels = !!data.find(sub => sub && typeof sub.id === 'string' && typeof sub.model === 'string' && Object.keys(sub).length === 2);
     }
 
     // Check has models
@@ -241,7 +243,7 @@ export default class Model extends EdenModel {
         // Loop data
         for (let i = 0; i < data.length; i += 1) {
           // Check data type
-          if (data[i] && data[i].id && data[i].model) {
+          if (data[i] && data[i].id && data[i].model && Object.keys(data[i]).length === 2) {
             // Set loaded value
             const value = await this.__load(data[i]);
 
@@ -255,7 +257,7 @@ export default class Model extends EdenModel {
         // Resolve values
         resolve(values);
       });
-    } if (typeof data.id === 'string' && typeof data.model === 'string') {
+    } if (typeof data.id === 'string' && typeof data.model === 'string' && Object.keys(data).length === 2) {
       // Return loaded data
       return this.__load(data);
     }
@@ -351,6 +353,9 @@ export default class Model extends EdenModel {
     } else {
       // Load model
       found = model(field.model);
+
+      // check model
+      if (!found) return field;
 
       // Set found by id
       found = await found.findById(field.id);
