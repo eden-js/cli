@@ -1,5 +1,6 @@
 
 // Require dependencies
+import os from 'os';
 import config from 'config';
 import dotProp from 'dot-prop';
 import winston from 'winston';
@@ -23,7 +24,7 @@ class Eden {
   constructor() {
     // Bind private variables
     this.__data = {
-      id      : config.get('id') || uuid(),
+      id      : os.hostname(),
       config  : global.config,
       version : pack.version,
     };
