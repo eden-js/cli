@@ -24,7 +24,7 @@ class Eden {
   constructor() {
     // Bind private variables
     this.__data = {
-      id      : os.hostname(),
+      id      : `${os.hostname()}-${global.cluster}`,
       config  : global.config,
       version : pack.version,
     };
@@ -190,7 +190,7 @@ class Eden {
     await this.buildDatabase();
 
     // add router
-    if (!config.get('router.disable') && !['back', 'discord'].includes(global.cluster)) {
+    if (!config.get('router.disable') && !['back'].includes(global.cluster)) {
       // initialize daemons
       this.logger.log('info', 'initializing controllers');
 
