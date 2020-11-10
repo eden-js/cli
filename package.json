@@ -42,7 +42,7 @@
     "@babel/preset-typescript": "^7.10.4",
     "@babel/register": "^7.11.5",
     "@edenjs/glob": "^1.0.0",
-    "@edenjs/model": "^2.1.0",
+    "@edenjs/model": "^2.1.1",
     "@edenjs/session-store": "0.0.3",
     "@polka/redirect": "^1.0.0-next.0",
     "app-module-path": "^2.2.0",
