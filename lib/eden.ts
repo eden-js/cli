@@ -230,7 +230,8 @@ class Eden {
     this.on('eden.pong', (id, cluster) => {
       // set threads
       this.set(`threads.${id}`, {
-        ping : (new Date()).getTime() - lastPing,
+        ping    : (new Date()).getTime() - lastPing,
+        updated : new Date(),
         cluster,
       });
     }, false);
