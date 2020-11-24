@@ -91,7 +91,7 @@ class View {
       config : {
         cdn         : config.get('cdn') || false,
         logo        : config.get('logo') || false,
-        title       : config.get('title'),
+        title       : opts.website || config.get('title'),
         domain      : config.get('domain'),
         socket      : config.get('socket'),
         direction   : config.get('direction') || 2,
