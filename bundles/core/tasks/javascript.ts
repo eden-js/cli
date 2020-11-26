@@ -72,7 +72,6 @@ export default class JavascriptTask {
     const path           = require('path');
     const glob           = require('@edenjs/glob');
     const xtend          = require('xtend');
-    const babel          = require('@babel/core');
     const babelify       = require('babelify');
     const browserify     = require('browserify');
     const gulpTerser     = require('gulp-terser');
@@ -81,7 +80,6 @@ export default class JavascriptTask {
     const vinylBuffer    = require('vinyl-buffer');
     const browserifyinc  = require('browserify-incremental');
     const gulpSourcemaps = require('gulp-sourcemaps');
-    const babelPresetEnv = require('@babel/preset-env');
 
     // Browserify javascript
     let b = browserify(xtend(browserifyinc.args, {
