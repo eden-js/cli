@@ -108,20 +108,19 @@ export default class JavascriptTask {
     // check environment
     b = b.transform(babelify, {
       presets : [
-        babel.createConfigItem([babelPresetEnv, {
+        ['@babel/preset-env', {
           targets : {
-            browsers : data.browsers,
+            browsers : '> 0.25%, not dead',
           },
-          useBuiltIns : 'entry',
-        }]),
+        }],
       ],
       plugins : [
         ['@babel/plugin-transform-typescript', {
           strictMode : false,
         }],
       ],
-      extensions : ['.es6', '.es', '.jsx', '.js', '.mjs', '.ts'],
       sourceMaps : data.sourcemaps,
+      extensions : ['.es6', '.es', '.jsx', '.js', '.mjs', '.ts'],
     });
 
     // Create browserify bundle
