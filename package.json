@@ -76,6 +76,7 @@
     "polka": "^1.0.0-next.11",
     "polka-compat": "^1.0.0",
     "pretty-error": "^2.1.2",
+    "regenerator-runtime": "^0.13.7",
     "response-time": "^2.3.2",
     "serialize-error": "^7.0.1",
     "sirv": "^1.0.7",

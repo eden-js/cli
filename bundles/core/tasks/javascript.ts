@@ -50,6 +50,7 @@ export default class JavascriptTask {
       browsers   : this.cli.get('config.frontend.javascript.browserlist'),
       sourceMaps : this.cli.get('config.environment') === 'dev',
 
+      entry    : path.resolve(path.dirname(__dirname) + '/public/js/entry'),
       appRoot  : global.appRoot,
       edenRoot : global.edenRoot,
     };
@@ -92,7 +93,7 @@ export default class JavascriptTask {
           return item.substring(1);
         }
       }).filter(item => item))],
-      entries       : [...await glob(data.files)],
+      entries       : [data.entry, ...await glob(data.files)],
       commondir     : false,
       extensions    : ['.es6', '.es', '.jsx', '.js', '.mjs', '.ts'],
       insertGlobals : true,
@@ -113,7 +114,6 @@ export default class JavascriptTask {
         }],
       ],
       plugins : [
-        ['@babel/transform-runtime'],
         ['@babel/plugin-transform-typescript', {
           strictMode : false,
         }],
