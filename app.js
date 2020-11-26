@@ -21,7 +21,7 @@ require('./lib/env');
 // Require dependencies
 const fs               = require('fs-extra');
 const cp               = require('child_process');
-const uuid             = require('uuid/v4');
+const uuid             = require('uuid').v4;
 const path             = require('path');
 const fetch            = require('node-fetch');
 const JSON5            = require('json5');

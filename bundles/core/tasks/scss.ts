@@ -39,12 +39,14 @@ export default class ScssTask {
       variables  : await loader.find(this.cli.get('bundles').map((b) => b.path), '/public/scss/variables.scss'),
       bootstrap  : await loader.find(this.cli.get('bundles').map((b) => b.path), '/public/scss/bootstrap.scss'),
       sourceMaps : this.cli.get('config.environment') === 'dev',
+
+      compiler : require.resolve('node-sass'),
     };
 
     // try/catch
     try {
       // run models in background
-      await this.cli.thread(this.thread, opts);
+      await this.thread(opts);
     } catch (e) {
       console.log(e);
     }
@@ -71,11 +73,14 @@ export default class ScssTask {
     const Path           = require('path');
     const glob           = require('@edenjs/glob');
     const gulp           = require('gulp');
-    const gulpSass       = require('gulp-dart-sass');
+    const gulpSass       = require('gulp-sass');
     const gulpRename     = require('gulp-rename');
     const vinylSource    = require('vinyl-source-stream');
     const vinylBuffer    = require('vinyl-buffer');
     const gulpSourcemaps = require('gulp-sourcemaps');
+
+    // add compiler
+    gulpSass.compiler = require(data.compiler);
 
     // create custom importer
     const customImporter = (url) => {
@@ -146,8 +151,7 @@ export default class ScssTask {
 
     // pipe
     job = job.pipe(gulpSass.sync({
-      importer    : customImporter,
-      outputStyle : 'compressed',
+      importer : customImporter,
     }));
 
     // pipe to rename
