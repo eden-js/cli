@@ -113,6 +113,7 @@ export default class JavascriptTask {
         }],
       ],
       plugins : [
+        ['@babel/transform-runtime'],
         ['@babel/plugin-transform-typescript', {
           strictMode : false,
         }],
