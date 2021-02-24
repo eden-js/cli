@@ -29,6 +29,9 @@ class EdenStore extends Events {
     this.hook = this.hook.bind(this);
     this.clear = this.clear.bind(this);
 
+    // set max listeners
+    this.setMaxListeners(0);
+
     // Check window and init
     if (typeof window !== 'undefined') {
       // Init frontend
