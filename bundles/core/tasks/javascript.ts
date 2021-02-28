@@ -68,7 +68,6 @@ export default class JavascriptTask {
   async thread(data) {
     // require
     const fs             = require('fs-extra');
-    const gz             = require('gulp-gzip');
     const os             = require('os');
     const gulp           = require('gulp');
     const path           = require('path');
@@ -184,11 +183,6 @@ export default class JavascriptTask {
     // Write gulpSourcemaps
     if (data.sourceMaps) {
       job = job.pipe(gulpSourcemaps.write('.'));
-    } else {
-      // gzip
-      job = job.pipe(gz({ gzipOptions : {
-        level : 9,
-      } }));
     }
 
     // Pipe job
