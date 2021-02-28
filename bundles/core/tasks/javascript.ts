@@ -184,12 +184,14 @@ export default class JavascriptTask {
     // Write gulpSourcemaps
     if (data.sourceMaps) {
       job = job.pipe(gulpSourcemaps.write('.'));
+    } else {
+      // gzip
+      job = job.pipe(gz({ gzipOptions : {
+        level : 9,
+      } }));
     }
 
     // Pipe job
-    job = job.pipe(gz({ gzipOptions : {
-      level : 9,
-    } }))
     job = job.pipe(gulp.dest(data.dest));
 
     // Wait for job to end
