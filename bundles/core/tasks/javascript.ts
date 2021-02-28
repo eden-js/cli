@@ -68,6 +68,7 @@ export default class JavascriptTask {
   async thread(data) {
     // require
     const fs             = require('fs-extra');
+    const gz             = require('gulp-gzip');
     const os             = require('os');
     const gulp           = require('gulp');
     const path           = require('path');
@@ -186,6 +187,9 @@ export default class JavascriptTask {
     }
 
     // Pipe job
+    job = job.pipe(gz({ gzipOptions : {
+      level : 9,
+    } }))
     job = job.pipe(gulp.dest(data.dest));
 
     // Wait for job to end
