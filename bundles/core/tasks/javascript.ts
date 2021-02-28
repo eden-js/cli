@@ -73,6 +73,7 @@ export default class JavascriptTask {
     const path           = require('path');
     const glob           = require('@edenjs/glob');
     const xtend          = require('xtend');
+    const terser         = require('terser');
     const babelify       = require('babelify');
     const browserify     = require('browserify');
     const gulpTerser     = require('gulp-terser');
@@ -155,20 +156,28 @@ export default class JavascriptTask {
       }
     }
 
-    // Apply head to file
-    job = job.pipe(gulpHeader(head, false));
+    // terser opts
+    const terserOpts = {
+      ie8      : false,
+      mangle   : true,
+      compress : {
+        passes : 2,
+      },
+      output   : {
+        comments : false,
+      },
+    };
 
     // Only minify in live
     if (!data.sourceMaps) {
+      // Apply head to file
+      job = job.pipe(gulpHeader((await terser.minify(head, terserOpts)).code, false));
+
       // Pipe uglify
-      job = job.pipe(gulpTerser({
-        ie8      : false,
-        mangle   : true,
-        compress : true,
-        output   : {
-          comments : false,
-        },
-      }));
+      job = job.pipe(gulpTerser(terserOpts));
+    } else {
+      // Apply head to file
+      job = job.pipe(gulpHeader(head, false));
     }
 
     // Write gulpSourcemaps
