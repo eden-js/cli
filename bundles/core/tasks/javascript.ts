@@ -87,6 +87,7 @@ export default class JavascriptTask {
     let b = browserify(xtend(browserifyinc.args, {
       paths  : data.imports,
       debug  : data.sourcemaps,
+      dedupe : true,
       ignore : [...((data.js || []).map((item) => {
         // check item
         if (item.indexOf('!') === 0) {
@@ -95,8 +96,7 @@ export default class JavascriptTask {
         }
       }).filter(item => item))],
       entries       : [data.entry, ...await glob(data.files)],
-      commondir     : false,
-      extensions    : ['.es6', '.es', '.jsx', '.js', '.mjs', '.ts'],
+      extensions    : ['.tsx.js', '.jsx.js', '.ts', '.es6', '.es', '.jsx', '.js', '.mjs'],
       insertGlobals : true,
     }));
 
@@ -110,7 +110,7 @@ export default class JavascriptTask {
       presets : [
         ['@babel/preset-env', {
           targets : {
-            browsers : '> 0.25%, not dead',
+            browsers : data.browsers ? data.browsers.join(', ') : '> 0.25%, not dead',
           },
         }],
       ],
@@ -120,7 +120,7 @@ export default class JavascriptTask {
         }],
       ],
       sourceMaps : data.sourcemaps,
-      extensions : ['.es6', '.es', '.jsx', '.js', '.mjs', '.ts'],
+      extensions : ['.tsx.js', '.jsx.js', '.ts', '.es6', '.es', '.jsx', '.js', '.mjs'],
     });
 
     // Create browserify bundle

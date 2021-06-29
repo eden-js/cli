@@ -73,7 +73,7 @@ export default class ScssTask {
     const Path           = require('path');
     const glob           = require('@edenjs/glob');
     const gulp           = require('gulp');
-    const gulpSass       = require('gulp-sass');
+    const gulpSass       = require('gulp-sass')(require('node-sass'));
     const gulpRename     = require('gulp-rename');
     const vinylSource    = require('vinyl-source-stream');
     const vinylBuffer    = require('vinyl-buffer');
@@ -150,7 +150,7 @@ export default class ScssTask {
     }
 
     // pipe
-    job = job.pipe(gulpSass.sync({
+    job = job.pipe(gulpSass({
       importer : customImporter,
     }));
 

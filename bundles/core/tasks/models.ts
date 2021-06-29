@@ -70,8 +70,11 @@ exporting['${name}'] = () => {
     // Loop models
     const models = {};
 
+    // reverse glob
+    const files = (await glob(data.files)).reverse();
+
     // loop models
-    for (const model of await glob(data.files)) {
+    for (const model of files) {
       // add to models
       models[path.basename(model).split('.')[0].toLowerCase()] = model;
     }
