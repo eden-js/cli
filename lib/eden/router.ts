@@ -247,8 +247,11 @@ export default class EdenRouter {
           const ctrl = await this.eden.get(`controller.${route.ctrl}`);
 
           // Try run controller function
-          return ctrl[route.fn](req, res, next);
+          return await ctrl[route.fn](req, res, next);
         } catch (e) {
+          // log error
+          console.log('test', e);
+
           // Set error
           this.eden.error(e);
 
