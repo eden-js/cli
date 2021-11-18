@@ -43,6 +43,13 @@ const arrayMerge = (destinationArray, sourceArray, options) => {
   return Array.from(new Set([...destinationArray, ...sourceArray]));
 };
 
+// timeout
+let timeout;
+const debounce = (fn, to = 200) => {
+  clearTimeout(timeout);
+  timeout = setTimeout(fn, to);
+};
+
 /**
  * create eden CLI
  */
@@ -306,8 +313,8 @@ class EdenCLI extends EventEmitter {
       chokidar.watch(this.get('bundles').map((b) => `${b.path}${watcher}`, {
         ignoreInitial : true,
       }))
-        .on('change', this.get(`runner.${key}`))
-        .on('unlink', this.get(`runner.${key}`));
+        .on('change', () => debounce(() => this.get(`runner.${key}`), 200))
+        .on('unlink', () => debounce(() => this.get(`runner.${key}`), 200));
     });
   }
 

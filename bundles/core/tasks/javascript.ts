@@ -78,6 +78,7 @@ export default class JavascriptTask {
     const browserify     = require('browserify');
     const gulpTerser     = require('gulp-terser');
     const gulpHeader     = require('gulp-header');
+    const gulpReplace    = require('gulp-replace');
     const vinylSource    = require('vinyl-source-stream');
     const vinylBuffer    = require('vinyl-buffer');
     const browserifyinc  = require('browserify-incremental');
@@ -167,6 +168,9 @@ export default class JavascriptTask {
         comments : false,
       },
     };
+
+    // replace
+    job = job.pipe(gulpReplace('process.env.NODE_ENV', JSON.stringify(process.env.NODE_ENV || 'development')));
 
     // Only minify in live
     if (!data.sourceMaps) {
