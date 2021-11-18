@@ -71,7 +71,7 @@
     "gulp-terser": "^2.1.0",
     "json5": "^2.2.0",
     "multer": "^1.4.3",
-    "node-fetch": "^3.1.0",
+    "node-fetch": "^2.6.6",
     "node-sass": "^6.0.1",
     "polka": "^1.0.0-next.22",
     "polka-compat": "^1.0.0",
