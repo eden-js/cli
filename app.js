@@ -313,8 +313,8 @@ class EdenCLI extends EventEmitter {
       chokidar.watch(this.get('bundles').map((b) => `${b.path}${watcher}`, {
         ignoreInitial : true,
       }))
-        .on('change', () => debounce(() => this.get(`runner.${key}`), 200))
-        .on('unlink', () => debounce(() => this.get(`runner.${key}`), 200));
+        .on('change', () => debounce(this.get(`runner.${key}`), 200))
+        .on('unlink', () => debounce(this.get(`runner.${key}`), 200));
     });
   }
 

@@ -160,7 +160,7 @@ export default class JavascriptTask {
     // terser opts
     const terserOpts = {
       ie8      : false,
-      mangle   : true,
+      mangle   : false,
       compress : {
         passes : 2,
       },
