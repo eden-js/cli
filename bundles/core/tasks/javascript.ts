@@ -87,7 +87,7 @@ export default class JavascriptTask {
     // Browserify javascript
     let b = browserify(xtend(browserifyinc.args, {
       paths  : data.imports,
-      debug  : data.sourcemaps,
+      debug  : data.sourceMaps,
       dedupe : true,
       ignore : [...((data.js || []).map((item) => {
         // check item
@@ -120,7 +120,7 @@ export default class JavascriptTask {
           strictMode : false,
         }],
       ],
-      sourceMaps : data.sourcemaps,
+      sourceMaps : data.sourceMaps,
       extensions : ['.tsx.js', '.jsx.js', '.ts', '.es6', '.es', '.jsx', '.js', '.mjs'],
     });
 

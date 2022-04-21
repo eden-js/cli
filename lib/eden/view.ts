@@ -163,7 +163,7 @@ class View {
 
         // Continue head
         head += render.page.style || '';
-        head += `<link rel="stylesheet" href="${config.get('cdn.url') || '/'}public/css/app.min.css${config.get('version') ? `?v=${config.get('version')}` : ''}" data-eden="head-start" id="eden-prehead">`;
+        head += `<link rel="stylesheet" href="${config.get('cdn.url') || '/'}public/css/app.min.css${config.get('version') ? `?v=${config.get('version')}` : ''}" async data-eden="head-start" id="eden-prehead">`;
         head += render.page.head || '';
         head += '<meta name="eden" value="head-end" data-eden="head-end" id="eden-posthead">';
       });

@@ -332,6 +332,10 @@ class Eden {
           data,
           logic,
         },
+        resourceLimits : {
+          maxOldGenerationSizeMb   : 1024 * 5,
+          maxYoungGenerationSizeMb : 1024 * 5,
+        }
       });
 
       // resolve

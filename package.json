@@ -95,6 +95,10 @@
   "overrides": {
     "browserify": {
       "timers-browserify": "^2.0.12"
+    },
+    "@edenjs/eslint-config-eden": {
+      "eslint": "^8.13.0",
+      "eslint-config-airbnb": "^19.0.4"
     }
   },
   "devDependencies": {
